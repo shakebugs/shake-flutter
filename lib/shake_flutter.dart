@@ -1,8 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/services.dart';
-import 'package:shake/models/shake_file.dart';
-import 'package:shake/models/shake_report_configuration.dart';
+import 'package:shake_flutter/models/shake_file.dart';
+import 'package:shake_flutter/models/shake_report_configuration.dart';
 
 class Shake {
   static const MethodChannel _channel = const MethodChannel('shake');
