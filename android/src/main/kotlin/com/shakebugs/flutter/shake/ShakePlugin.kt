@@ -1,6 +1,9 @@
 package com.shakebugs.flutter.shake
 
+import android.app.Activity
 import android.app.Application
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.NonNull
 import com.shakebugs.shake.Shake
@@ -10,6 +13,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+
 
 /** ShakePlugin */
 public class ShakePlugin : FlutterPlugin, MethodCallHandler {
@@ -90,9 +94,11 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
                 result.success(enabled)
             }
             "setShowFloatingReportButton" -> {
-                val enabled: Boolean? = call.argument("enabled")
-                enabled?.let {
-                    Shake.getReportConfiguration().showFloatingReportButton = it
+                Handler(Looper.getMainLooper()).post {
+                    val enabled: Boolean? = call.argument("enabled")
+                    enabled?.let {
+                        Shake.getReportConfiguration().showFloatingReportButton = it
+                    }
                 }
             }
             "isShowFloatingReportButton" -> {
