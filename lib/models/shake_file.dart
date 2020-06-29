@@ -13,4 +13,11 @@ class ShakeFile {
       this.name = basenameWithoutExtension(path);
     }
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "path": path,
+      "name": name,
+    };
+  }
 }

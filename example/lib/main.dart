@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shake/models/shake_file.dart';
+import 'package:shake/models/shake_report_configuration.dart';
 import 'package:shake/shake.dart';
 
 void main() {
@@ -46,21 +48,28 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Column(
-          children: [
-            Text('Running on: $_platformVersion\n'),
-            FlatButton(
-              onPressed: () {
-                Shake.start();
-              },
-              child: Text("Start"),
-            )
-          ],
-        )
-      ),
+          appBar: AppBar(
+            title: const Text('Plugin example app'),
+          ),
+          body: Column(
+            children: [
+              Text('Running on: $_platformVersion\n'),
+              FlatButton(
+                onPressed: () {
+                  List<ShakeFile> shakeFiles = List();
+                  shakeFiles.add(ShakeFile.create("data/image1.jpg"));
+                  shakeFiles.add(ShakeFile.create("data/image2.jpg"));
+
+                  ShakeReportConfiguration configuration =
+                      ShakeReportConfiguration();
+
+                  Shake.silentReport(
+                      "Description", shakeFiles, "Qucik facts", configuration);
+                },
+                child: Text("Start"),
+              )
+            ],
+          )),
     );
   }
 }

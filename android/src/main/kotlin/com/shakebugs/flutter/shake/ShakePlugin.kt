@@ -54,55 +54,69 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
                 Shake.show()
             }
             "setEnabled" -> {
-                val enabled = call.argument("enabled");
-                Shake.setEnabled(enabled)
+                val enabled: Boolean? = call.argument("enabled")
+                enabled?.let {
+                    Shake.setEnabled(enabled)
+                }
             }
             "setEnableBlackBox" -> {
-                val enabled = call.argument("enabled");
-                Shake.getReportConfiguration().enableBlackBox = enabled
+                val enabled: Boolean? = call.argument("enabled")
+                enabled?.let {
+                    Shake.getReportConfiguration().enableBlackBox = it
+                }
             }
             "isEnableBlackBox" -> {
-                val enabled = Shake.getReportConfiguration().isEnableBlackBox
+                val enabled: Boolean = Shake.getReportConfiguration().isEnableBlackBox
                 result.success(enabled)
             }
             "setEnableActivityHistory" -> {
-                val enabled = call.argument("enabled");
-                Shake.getReportConfiguration().enableActivityHistory = enabled
+                val enabled: Boolean? = call.argument("enabled")
+                enabled?.let {
+                    Shake.getReportConfiguration().enableActivityHistory = it
+                }
             }
             "isEnableActivityHistory" -> {
-                val enabled = Shake.getReportConfiguration().isEnableActivityHistory
+                val enabled: Boolean = Shake.getReportConfiguration().isEnableActivityHistory
                 result.success(enabled)
             }
             "setEnableInspectScreen" -> {
-                val enabled = call.argument("enabled");
-                Shake.getReportConfiguration().enableInspectScreen = enabled
+                val enabled: Boolean? = call.argument("enabled")
+                enabled?.let {
+                    Shake.getReportConfiguration().enableInspectScreen = it
+                }
             }
             "isEnableInspectScreen" -> {
-                val enabled = Shake.getReportConfiguration().isEnableInspectScreen
+                val enabled: Boolean = Shake.getReportConfiguration().isEnableInspectScreen
                 result.success(enabled)
             }
             "setShowFloatingReportButton" -> {
-                val enabled = call.argument("enabled");
-                Shake.getReportConfiguration().showFloatingReportButton = enabled
+                val enabled: Boolean? = call.argument("enabled")
+                enabled?.let {
+                    Shake.getReportConfiguration().showFloatingReportButton = it
+                }
             }
             "isShowFloatingReportButton" -> {
-                val enabled = Shake.getReportConfiguration().isShowFloatingReportButton
+                val enabled: Boolean = Shake.getReportConfiguration().isShowFloatingReportButton
                 result.success(enabled)
             }
             "setInvokeShakeOnShaking" -> {
-                val enabled = call.argument("enabled");
-                Shake.getReportConfiguration().invokeShakeOnShakeDeviceEvent = enabled
+                val enabled: Boolean? = call.argument("enabled")
+                enabled?.let {
+                    Shake.getReportConfiguration().invokeShakeOnShakeDeviceEvent = it
+                }
             }
             "isInvokeShakeOnShaking" -> {
-                val enabled = Shake.getReportConfiguration().isInvokeShakeOnShakeDeviceEvent
+                val enabled: Boolean = Shake.getReportConfiguration().isInvokeShakeOnShakeDeviceEvent
                 result.success(enabled)
             }
             "setInvokeShakeOnScreenshot" -> {
-                val enabled = call.argument("enabled");
-                Shake.getReportConfiguration().invokeShakeOnScreenshot = enabled
+                val enabled: Boolean? = call.argument("enabled")
+                enabled?.let {
+                    Shake.getReportConfiguration().invokeShakeOnScreenshot = it
+                }
             }
             "isInvokeShakeOnScreenshot" -> {
-                val enabled = Shake.getReportConfiguration().isInvokeShakeOnScreenshot
+                val enabled: Boolean = Shake.getReportConfiguration().isInvokeShakeOnScreenshot
                 result.success(enabled)
             }
             "setShakeReportData" -> {

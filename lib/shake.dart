@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:shake/models/shake_file.dart';
+import 'package:shake/models/shake_report_configuration.dart';
 
 class Shake {
   static const MethodChannel _channel = const MethodChannel('shake');
@@ -10,21 +12,21 @@ class Shake {
     return version;
   }
 
-  static Future<void> start() async {
+  static start() async {
     await _channel.invokeMethod('start');
   }
 
-  static Future<void> show() async {
+  static show() async {
     await _channel.invokeMethod('show');
   }
 
-  static Future<void> setEnabled(bool enabled) async {
+  static setEnabled(bool enabled) async {
     await _channel.invokeMethod('setEnabled', {
       'enabled': enabled,
     });
   }
 
-  static Future<void> setEnableBlackBox(bool enabled) async {
+  static setEnableBlackBox(bool enabled) async {
     await _channel.invokeMethod('setEnableBlackBox', {
       'enabled': enabled,
     });
@@ -34,7 +36,7 @@ class Shake {
     return await _channel.invokeMethod('show');
   }
 
-  static Future<void> setEnableActivityHistory(bool enabled) async {
+  static setEnableActivityHistory(bool enabled) async {
     await _channel.invokeMethod('setEnableActivityHistory', {
       'enabled': enabled,
     });
@@ -44,7 +46,7 @@ class Shake {
     return await _channel.invokeMethod('show');
   }
 
-  static Future<void> setEnableInspectScreen(bool enabled) async {
+  static setEnableInspectScreen(bool enabled) async {
     await _channel.invokeMethod('setEnableInspectScreen', {
       'enabled': enabled,
     });
@@ -54,7 +56,7 @@ class Shake {
     return await _channel.invokeMethod('show');
   }
 
-  static Future<void> setShowFloatingReportButton(bool enabled) async {
+  static setShowFloatingReportButton(bool enabled) async {
     await _channel.invokeMethod('setShowFloatingReportButton', {
       'enabled': enabled,
     });
@@ -64,7 +66,7 @@ class Shake {
     return await _channel.invokeMethod('show');
   }
 
-  static Future<void> setInvokeShakeOnShaking(bool enabled) async {
+  static setInvokeShakeOnShaking(bool enabled) async {
     await _channel.invokeMethod('setInvokeShakeOnShaking', {
       'enabled': enabled,
     });
@@ -74,7 +76,7 @@ class Shake {
     return await _channel.invokeMethod('show');
   }
 
-  static Future<void> setInvokeShakeOnScreenshot(bool enabled) async {
+  static setInvokeShakeOnScreenshot(bool enabled) async {
     await _channel.invokeMethod('setInvokeShakeOnScreenshot', {
       'enabled': enabled,
     });
@@ -84,17 +86,39 @@ class Shake {
     return await _channel.invokeMethod('show');
   }
 
-  static Future<void> setShakeReportData(bool enabled) async {
+  static setShakeReportData(
+    List<ShakeFile> shakeFiles,
+    String quickFacts,
+  ) async {
+    final shakeFilesMap = shakeFiles.map((shakeFile) {
+      return shakeFile.toMap();
+    }).toList();
+
     await _channel.invokeMethod('setShakeReportData', {
-      'enabled': enabled,
+      'shakeFiles': shakeFilesMap,
+      'quickFacts': quickFacts,
     });
   }
 
-  static Future<void> silentReport() async {
-    await _channel.invokeMethod('silentReport');
+  static silentReport(
+    String description,
+    List<ShakeFile> shakeFiles,
+    String quickFacts,
+    ShakeReportConfiguration configuration,
+  ) async {
+    final shakeFilesMap = shakeFiles.map((shakeFile) {
+      return shakeFile.toMap();
+    }).toList();
+
+    await _channel.invokeMethod('silentReport', {
+      'description': description,
+      'shakeFiles': shakeFilesMap,
+      'quickFacts': quickFacts,
+      'configuration': configuration.toMap()
+    });
   }
 
-  static Future<void> insertNetworkRequest() async {
+  static insertNetworkRequest() async {
     await _channel.invokeMethod('insertNetworkRequest');
   }
 }
