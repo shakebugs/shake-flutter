@@ -1,12 +1,12 @@
 package com.shakebugs.flutter.shake
 
-import android.app.Activity
 import android.app.Application
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.annotation.NonNull
+import com.shakebugs.flutter.shake.utils.mapToShakeFiles
 import com.shakebugs.shake.Shake
+import com.shakebugs.shake.report.ShakeFile
+import com.shakebugs.shake.report.ShakeReportData
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -94,11 +94,9 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
                 result.success(enabled)
             }
             "setShowFloatingReportButton" -> {
-                Handler(Looper.getMainLooper()).post {
-                    val enabled: Boolean? = call.argument("enabled")
-                    enabled?.let {
-                        Shake.getReportConfiguration().showFloatingReportButton = it
-                    }
+                val enabled: Boolean? = call.argument("enabled")
+                enabled?.let {
+                    Shake.getReportConfiguration().isShowFloatingReportButton = it
                 }
             }
             "isShowFloatingReportButton" -> {
@@ -126,6 +124,18 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
                 result.success(enabled)
             }
             "setShakeReportData" -> {
+                val quickFacts: String? = call.argument("quickFacts")
+                val filesData: List<HashMap<String, Any>>? = call.argument("shakeFiles")
+
+                Shake.onPrepareData(object : ShakeReportData {
+                    override fun quickFacts(): String? {
+                        return quickFacts
+                    }
+
+                    override fun attachedFiles(): List<ShakeFile>? {
+                        return mapToShakeFiles(filesData)
+                    }
+                });
             }
             "silentReport" -> {
                 Log.i("Shake", "silentReport() is not supported in Flutter 10 SDK.");

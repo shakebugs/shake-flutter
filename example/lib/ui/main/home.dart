@@ -30,18 +30,29 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
 
-
+    _initialize();
   }
 
   _initialize() async {
-    shakeInvokingEnabled = await Shake.isInvokeShakeOnShaking();
-    buttonInvokingEnabled = await Shake.isShowFloatingReportButton();
-    screenshotInvokingEnabled = await Shake.isInvokeShakeOnScreenshot();
-    blackboxEnabled = await Shake.isEnableBlackBox();
-    activityHistoryEnabled = await Shake.isEnableActivityHistory();
-    inspectScreenEnabled = await Shake.isEnableInspectScreen();
-    networkTrackerEnabled = false; // Network tracker not implemented yet
-    shakeEnabled = true; // Not provided by native SDK
+    final shakeInvokingEnabled = await Shake.isInvokeShakeOnShaking();
+    final buttonInvokingEnabled = await Shake.isShowFloatingReportButton();
+    final screenshotInvokingEnabled = await Shake.isInvokeShakeOnScreenshot();
+    final blackboxEnabled = await Shake.isEnableBlackBox();
+    final activityHistoryEnabled = await Shake.isEnableActivityHistory();
+    final inspectScreenEnabled = await Shake.isEnableInspectScreen();
+    final networkTrackerEnabled = false; // Network tracker not implemented yet
+    final shakeEnabled = true; // Not provided by native SDK
+
+    setState(() {
+      this.shakeInvokingEnabled = shakeInvokingEnabled;
+      this.buttonInvokingEnabled = buttonInvokingEnabled;
+      this.screenshotInvokingEnabled = screenshotInvokingEnabled;
+      this.blackboxEnabled = blackboxEnabled;
+      this.activityHistoryEnabled = activityHistoryEnabled;
+      this.inspectScreenEnabled = inspectScreenEnabled;
+      this.networkTrackerEnabled = networkTrackerEnabled;
+      this.shakeEnabled = shakeEnabled;
+    });
   }
 
   @override
