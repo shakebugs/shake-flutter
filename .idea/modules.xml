@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/shake.iml" filepath="$PROJECT_DIR$/shake.iml" />
-      <module fileurl="file://$PROJECT_DIR$/android/shake_android.iml" filepath="$PROJECT_DIR$/android/shake_android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/example/android/shake_example_android.iml" filepath="$PROJECT_DIR$/example/android/shake_example_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/shake-flutter.iml" filepath="$PROJECT_DIR$/.idea/shake-flutter.iml" />
     </modules>
   </component>
 </project>
