@@ -1,6 +1,7 @@
 name: shake
-description: Shake SDK wrapper
 version: 0.0.1
+build: 1
+description: Shake SDK wrapper
 author:
 homepage:
 

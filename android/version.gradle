@@ -1,0 +1,21 @@
+ext {
+    sdkPlatformName = {
+        return "Flutter"
+    }()
+
+    sdkVersionName = {
+        def pubspec = new File('../../pubspec.yaml').text
+        def versionLine = pubspec.find(/version: \d+\.\d+\.\d+/)
+        def versionValue = versionLine.find(/\d+\.\d+\.\d+/)
+
+        return versionValue
+    }()
+
+    sdkVersionCode = {
+        def pubspec = new File('../../pubspec.yaml').text
+        def buildLine = pubspec.find(/build: \d+/)
+        def buildValue = buildLine.find(/\d+/)
+
+        return buildValue
+    }()
+}
