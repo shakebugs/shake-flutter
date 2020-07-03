@@ -1,4 +1,4 @@
-group 'com.shakebugs.flutter.shake'
+group 'com.shakebugs.flutter'
 version '1.0-SNAPSHOT'
 
 buildscript {

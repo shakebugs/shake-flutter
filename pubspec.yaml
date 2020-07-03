@@ -31,7 +31,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.shakebugs.flutter.shake
+        package: com.shakebugs.flutter
         pluginClass: ShakePlugin
       ios:
         pluginClass: ShakePlugin

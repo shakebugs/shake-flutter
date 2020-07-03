@@ -1,9 +1,9 @@
-package com.shakebugs.flutter.shake
+package com.shakebugs.flutter
 
 import android.app.Application
 import android.util.Log
 import androidx.annotation.NonNull
-import com.shakebugs.flutter.shake.utils.mapToShakeFiles
+import com.shakebugs.flutter.utils.mapToShakeFiles
 import com.shakebugs.shake.Shake
 import com.shakebugs.shake.report.ShakeFile
 import com.shakebugs.shake.report.ShakeReportData
@@ -66,7 +66,6 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
             "setEnableBlackBox" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().enableBlackBox = it
                 }
             }
             "isEnableBlackBox" -> {
@@ -76,7 +75,6 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
             "setEnableActivityHistory" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().enableActivityHistory = it
                 }
             }
             "isEnableActivityHistory" -> {
@@ -86,7 +84,6 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
             "setEnableInspectScreen" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().enableInspectScreen = it
                 }
             }
             "isEnableInspectScreen" -> {
@@ -96,7 +93,6 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
             "setShowFloatingReportButton" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().isShowFloatingReportButton = it
                 }
             }
             "isShowFloatingReportButton" -> {
@@ -106,7 +102,6 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
             "setInvokeShakeOnShaking" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().invokeShakeOnShakeDeviceEvent = it
                 }
             }
             "isInvokeShakeOnShaking" -> {
@@ -116,7 +111,6 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
             "setInvokeShakeOnScreenshot" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().invokeShakeOnScreenshot = it
                 }
             }
             "isInvokeShakeOnScreenshot" -> {
