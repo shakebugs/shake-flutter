@@ -1,9 +1,9 @@
 package com.shakebugs.flutter
 
 import android.app.Application
-import android.util.Log
 import androidx.annotation.NonNull
 import com.shakebugs.flutter.utils.mapToShakeFiles
+import com.shakebugs.flutter.utils.mapToShakeReportConfiguration
 import com.shakebugs.shake.Shake
 import com.shakebugs.shake.report.ShakeFile
 import com.shakebugs.shake.report.ShakeReportData
@@ -125,7 +125,7 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
             }
             "setShakeReportData" -> {
                 val quickFacts: String? = call.argument("quickFacts")
-                val filesData: List<HashMap<String, Any>>? = call.argument("shakeFiles")
+                val shakeFiles: List<HashMap<String, Any>>? = call.argument("shakeFiles")
 
                 Shake.onPrepareData(object : ShakeReportData {
                     override fun quickFacts(): String? {
@@ -133,12 +133,27 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
                     }
 
                     override fun attachedFiles(): List<ShakeFile>? {
-                        return mapToShakeFiles(filesData)
+                        return mapToShakeFiles(shakeFiles)
                     }
                 });
             }
             "silentReport" -> {
-                Log.i("Shake", "silentReport() is not supported in Flutter 10 SDK.");
+                val description: String? = call.argument("description")
+                val quickFacts: String? = call.argument("quickFacts")
+                val shakeFiles: List<HashMap<String, Any>>? = call.argument("shakeFiles")
+                val config: HashMap<String, Any>? = call.argument("configuration")
+
+                Shake.silentReport(description, object : ShakeReportData {
+                    override fun quickFacts(): String? {
+                        return quickFacts
+                    }
+
+                    override fun attachedFiles(): List<ShakeFile>? {
+                        return mapToShakeFiles(shakeFiles)
+                    }
+
+                }, mapToShakeReportConfiguration(config))
+
             }
             "insertNetworkRequest" -> {
             }
