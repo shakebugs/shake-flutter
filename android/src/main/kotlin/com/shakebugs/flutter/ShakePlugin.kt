@@ -1,9 +1,9 @@
-package com.shakebugs.flutter.shake
+package com.shakebugs.flutter
 
 import android.app.Application
 import android.util.Log
 import androidx.annotation.NonNull
-import com.shakebugs.flutter.shake.utils.mapToShakeFiles
+import com.shakebugs.flutter.utils.mapToShakeFiles
 import com.shakebugs.shake.Shake
 import com.shakebugs.shake.report.ShakeFile
 import com.shakebugs.shake.report.ShakeReportData

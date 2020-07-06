@@ -1,4 +1,4 @@
-package com.shakebugs.flutter.shake.utils
+package com.shakebugs.flutter.utils
 
 import com.shakebugs.shake.report.ShakeFile
 
