@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shake/models/shake_file.dart';
-import 'package:shake/models/shake_report_configuration.dart';
-import 'package:shake/shake.dart';
+import 'package:shake_flutter/models/shake_file.dart';
+import 'package:shake_flutter/models/shake_report_configuration.dart';
+import 'package:shake_flutter/shake_flutter.dart';
 import 'package:shake_example/constants/colors.dart';
 import 'package:shake_example/ui/base/button.dart';
 import 'package:shake_example/ui/base/header.dart';

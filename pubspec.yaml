@@ -1,4 +1,4 @@
-name: shake
+name: shake_flutter
 version: 0.0.1
 build: 1
 description: Shake SDK wrapper
