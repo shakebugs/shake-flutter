@@ -1,6 +1,6 @@
 package com.shakebugs.flutter
 
-import android.app.Application
+import android.app.Activity
 import androidx.annotation.NonNull
 import com.shakebugs.flutter.utils.mapToShakeFiles
 import com.shakebugs.flutter.utils.mapToShakeReportConfiguration
@@ -8,6 +8,8 @@ import com.shakebugs.shake.Shake
 import com.shakebugs.shake.report.ShakeFile
 import com.shakebugs.shake.report.ShakeReportData
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -16,8 +18,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 
 
 /** ShakePlugin */
-public class ShakePlugin : FlutterPlugin, MethodCallHandler {
-    private var application: Application? = null
+public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+    private var activity: Activity? = null
 
     /// The MethodChannel that will the communication between Flutter and native Android
     ///
@@ -26,10 +28,24 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var channel: MethodChannel
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        application = flutterPluginBinding.applicationContext as Application
-
         channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "shake")
         channel.setMethodCallHandler(this);
+    }
+
+    override fun onAttachedToActivity(activityPluginBinding: ActivityPluginBinding) {
+        activity = activityPluginBinding.activity
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        activity = null
+    }
+
+    override fun onReattachedToActivityForConfigChanges(activityPluginBinding: ActivityPluginBinding) {
+        activity = activityPluginBinding.activity
+    }
+
+    override fun onDetachedFromActivity() {
+        activity = null
     }
 
     // This static function is optional and equivalent to onAttachedToEngine. It supports the old
@@ -52,7 +68,10 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "start" -> {
-                Shake.start(application)
+                activity?.let {
+                    Shake.start(it.application)
+                    Shake.setFirstCreatedActivity(it)
+                }
             }
             "show" -> {
                 Shake.show()
@@ -153,7 +172,6 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler {
                     }
 
                 }, mapToShakeReportConfiguration(config))
-
             }
             "insertNetworkRequest" -> {
             }

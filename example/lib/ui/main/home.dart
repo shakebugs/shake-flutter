@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shake/models/shake_file.dart';
@@ -10,6 +12,7 @@ import 'package:shake_example/ui/base/link.dart';
 import 'package:shake_example/ui/base/logo.dart';
 import 'package:shake_example/ui/base/toggle.dart';
 import 'package:shake_example/ui/base/version.dart';
+import 'package:shake_example/utils/files.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -25,6 +28,9 @@ class _HomeState extends State<Home> {
   bool networkTrackerEnabled = false;
   bool activityHistoryEnabled = false;
   bool inspectScreenEnabled = false;
+
+  File file1;
+  File file2;
 
   @override
   void initState() {
@@ -53,6 +59,9 @@ class _HomeState extends State<Home> {
       this.networkTrackerEnabled = networkTrackerEnabled;
       this.shakeEnabled = shakeEnabled;
     });
+
+    file1 = await Files.createDummyFile("file1.txt");
+    file2 = await Files.createDummyFile("file2.txt");
   }
 
   @override
@@ -269,16 +278,16 @@ class _HomeState extends State<Home> {
 
   _onAttachDataPress() {
     List<ShakeFile> shakeFiles = List();
-    shakeFiles.add(ShakeFile.create("data/image1.jpg"));
-    shakeFiles.add(ShakeFile.create("data/image2.jpg"));
+    shakeFiles.add(ShakeFile.create(file1.path));
+    shakeFiles.add(ShakeFile.create(file2.path, "customName") );
 
     Shake.setShakeReportData(shakeFiles, "Quick facts");
   }
 
   _onSilentReportPress() {
     List<ShakeFile> shakeFiles = List();
-    shakeFiles.add(ShakeFile.create("data/image1.jpg"));
-    shakeFiles.add(ShakeFile.create("data/image2.jpg"));
+    shakeFiles.add(ShakeFile.create(file1.path));
+    shakeFiles.add(ShakeFile.create(file2.path, "customName"));
 
     ShakeReportConfiguration configuration = ShakeReportConfiguration();
 
