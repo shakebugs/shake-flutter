@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter/services.dart';
+import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
 
@@ -106,7 +108,8 @@ class Shake {
     });
   }
 
-  static insertNetworkRequest() async {
-    await _channel.invokeMethod('insertNetworkRequest');
+  static insertNetworkRequest(NetworkRequest networkRequest) async {
+    await _channel.invokeMethod(
+        'insertNetworkRequest', {'networkRequest': networkRequest.toMap()});
   }
 }

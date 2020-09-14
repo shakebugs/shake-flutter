@@ -30,6 +30,10 @@ dependencies:
 
   path_provider: ^1.6.11
 
+  dio: ^3.0.9
+
+  http: ^0.12.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

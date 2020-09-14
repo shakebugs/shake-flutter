@@ -2,6 +2,7 @@ package com.shakebugs.flutter
 
 import android.app.Activity
 import androidx.annotation.NonNull
+import com.shakebugs.flutter.utils.mapToNetworkRequest
 import com.shakebugs.flutter.utils.mapToShakeFiles
 import com.shakebugs.flutter.utils.mapToShakeReportConfiguration
 import com.shakebugs.shake.Shake
@@ -174,6 +175,8 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 }, mapToShakeReportConfiguration(config))
             }
             "insertNetworkRequest" -> {
+                val networkRequest: HashMap<String, Any>? = call.argument("networkRequest")
+                Shake.insertNetworkRequest(mapToNetworkRequest(networkRequest))
             }
             else -> {
                 result.notImplemented()

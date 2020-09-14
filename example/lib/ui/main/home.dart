@@ -2,9 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shake_flutter/models/shake_file.dart';
-import 'package:shake_flutter/models/shake_report_configuration.dart';
-import 'package:shake_flutter/shake_flutter.dart';
 import 'package:shake_example/constants/colors.dart';
 import 'package:shake_example/ui/base/button.dart';
 import 'package:shake_example/ui/base/header.dart';
@@ -13,6 +10,10 @@ import 'package:shake_example/ui/base/logo.dart';
 import 'package:shake_example/ui/base/toggle.dart';
 import 'package:shake_example/ui/base/version.dart';
 import 'package:shake_example/utils/files.dart';
+import 'package:shake_flutter/models/shake_file.dart';
+import 'package:shake_flutter/models/shake_report_configuration.dart';
+import 'package:shake_flutter/network/shake_http_client.dart';
+import 'package:shake_flutter/shake_flutter.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -279,7 +280,7 @@ class _HomeState extends State<Home> {
   _onAttachDataPress() {
     List<ShakeFile> shakeFiles = List();
     shakeFiles.add(ShakeFile.create(file1.path));
-    shakeFiles.add(ShakeFile.create(file2.path, "customName") );
+    shakeFiles.add(ShakeFile.create(file2.path, "customName"));
 
     Shake.setShakeReportData(shakeFiles, "Quick facts");
   }
@@ -294,5 +295,9 @@ class _HomeState extends State<Home> {
     Shake.silentReport("Description", shakeFiles, "Quick facts", configuration);
   }
 
-  _onSendNetworkRequestPress() {}
+  _onSendNetworkRequestPress() async {
+    ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    await shakeHttpClient
+        .get("http://dummy.restapiexample.com/api/v1/employees");
+  }
 }
