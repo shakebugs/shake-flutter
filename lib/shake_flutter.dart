@@ -51,7 +51,6 @@ class Shake {
   }
 
   static setShowFloatingReportButton(bool enabled) async {
-    print(enabled.toString());
     await _channel.invokeMethod('setShowFloatingReportButton', {
       'enabled': enabled,
     });

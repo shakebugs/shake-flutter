@@ -68,6 +68,8 @@
         [self setShakeReportData:call result:result];
     } else if ([@"silentReport" isEqualToString:call.method]) {
         [self silentReport:call result:result];
+    } else if ([@"insertNetworkRequest" isEqualToString:call.method]) {
+        [self insertNetworkRequest:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -202,8 +204,28 @@
     reportData.bugDescription = description;
     reportData.quickFacts = quickFacts;
     reportData.attachedFiles = [NSArray arrayWithArray:shakeFiles];
-    
+
     [SHKShake silentReportWithReportData:reportData reportConfiguration:reportConfiguration];
+
+    result(nil);
+}
+-(void)insertNetworkRequest:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSDictionary *dict = [[NSDictionary alloc] init];
+    NSData *data = [request[@"requestBody"] dataUsingEncoding:NSUTF8StringEncoding];
+    dict = @{
+        @"url": call.arguments[@"url"],
+        @"method": call.arguments[@"method"],
+        @"responseBody": call.arguments[@"description"],
+        @"statusCode": call.arguments[@"description"],
+        @"start": call.arguments[@"description"],
+        @"contentType": call.arguments[@"description"],
+        @"requestBody": data,
+        @"requestHeaders": call.arguments[@"description"],
+        @"duration": call.arguments[@"description"],
+        @"responseHeaders": call.arguments[@"description"],
+        @"timestamp": call.arguments[@"description"]
+    };
+    [SHKShake performSelector:sel_getUid(@"_reportRequestCompleted:".UTF8String) withObject:dict];
 
     result(nil);
 }
