@@ -2,7 +2,13 @@ PODS:
   - Flutter (1.0.0)
   - package_info (0.0.1):
     - Flutter
-  - Shake-UAT (10.0.0.3)
+  - path_provider (0.0.1):
+    - Flutter
+  - path_provider_linux (0.0.1):
+    - Flutter
+  - path_provider_macos (0.0.1):
+    - Flutter
+  - Shake-UAT (10.0.6001)
   - shake_flutter (0.0.1):
     - Flutter
     - Shake-UAT (~> 10.0.0)
@@ -16,6 +22,9 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
+  - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - path_provider_linux (from `.symlinks/plugins/path_provider_linux/ios`)
+  - path_provider_macos (from `.symlinks/plugins/path_provider_macos/ios`)
   - shake_flutter (from `.symlinks/plugins/shake_flutter/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
@@ -30,6 +39,12 @@ EXTERNAL SOURCES:
     :path: Flutter
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
+  path_provider:
+    :path: ".symlinks/plugins/path_provider/ios"
+  path_provider_linux:
+    :path: ".symlinks/plugins/path_provider_linux/ios"
+  path_provider_macos:
+    :path: ".symlinks/plugins/path_provider_macos/ios"
   shake_flutter:
     :path: ".symlinks/plugins/shake_flutter/ios"
   url_launcher:
@@ -42,7 +57,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
-  Shake-UAT: 5d11208c2e1c2d786c36138881049bc9b7d0fc4f
+  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
+  path_provider_linux: 4d630dc393e1f20364f3e3b4a2ff41d9674a84e4
+  path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
+  Shake-UAT: 994e4b082c871c8630577e0429fece14df3fa095
   shake_flutter: 1c39919d3f2300ad906202860dd5c1e220dc38af
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313

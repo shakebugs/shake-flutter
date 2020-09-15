@@ -41,7 +41,7 @@ class _HomeState extends State<Home> {
   }
 
   _initialize() async {
-    final shakeInvokingEnabled = await Shake.isInvokeShakeOnShaking();
+    final shakeInvokingEnabled = await Shake.isInvokeShakeOnShakeDeviceEvent();
     final buttonInvokingEnabled = await Shake.isShowFloatingReportButton();
     final screenshotInvokingEnabled = await Shake.isInvokeShakeOnScreenshot();
     final blackboxEnabled = await Shake.isEnableBlackBox();
@@ -232,7 +232,7 @@ class _HomeState extends State<Home> {
     setState(() {
       shakeInvokingEnabled = enabled;
     });
-    Shake.setInvokeShakeOnShaking(enabled);
+    Shake.setInvokeShakeOnShakeDeviceEvent(enabled);
   }
 
   _onButtonInvokingToggle(enabled) {
@@ -291,6 +291,10 @@ class _HomeState extends State<Home> {
     shakeFiles.add(ShakeFile.create(file2.path, "customName"));
 
     ShakeReportConfiguration configuration = ShakeReportConfiguration();
+    configuration.activityHistoryData = false;
+    configuration.blackBoxData = false;
+    configuration.screenshot = false;
+    configuration.showReportSentMessage = true;
 
     Shake.silentReport("Description", shakeFiles, "Quick facts", configuration);
   }
