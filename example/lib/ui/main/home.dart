@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
   }
 
   _initialize() async {
-    final shakeInvokingEnabled = await Shake.isInvokeShakeOnShaking();
+    final shakeInvokingEnabled = await Shake.isInvokeShakeOnShakeDeviceEvent();
     final buttonInvokingEnabled = await Shake.isShowFloatingReportButton();
     final screenshotInvokingEnabled = await Shake.isInvokeShakeOnScreenshot();
     final blackboxEnabled = await Shake.isEnableBlackBox();
@@ -231,7 +231,7 @@ class _HomeState extends State<Home> {
     setState(() {
       shakeInvokingEnabled = enabled;
     });
-    Shake.setInvokeShakeOnShaking(enabled);
+    Shake.setInvokeShakeOnShakeDeviceEvent(enabled);
   }
 
   _onButtonInvokingToggle(enabled) {

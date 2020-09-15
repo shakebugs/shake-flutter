@@ -51,6 +51,7 @@ class Shake {
   }
 
   static setShowFloatingReportButton(bool enabled) async {
+    print(enabled.toString());
     await _channel.invokeMethod('setShowFloatingReportButton', {
       'enabled': enabled,
     });
@@ -60,14 +61,14 @@ class Shake {
     return await _channel.invokeMethod('isShowFloatingReportButton');
   }
 
-  static setInvokeShakeOnShaking(bool enabled) async {
-    await _channel.invokeMethod('setInvokeShakeOnShaking', {
+  static setInvokeShakeOnShakeDeviceEvent(bool enabled) async {
+    await _channel.invokeMethod('setInvokeShakeOnShakeDeviceEvent', {
       'enabled': enabled,
     });
   }
 
-  static Future<bool> isInvokeShakeOnShaking() async {
-    return await _channel.invokeMethod('isInvokeShakeOnShaking');
+  static Future<bool> isInvokeShakeOnShakeDeviceEvent() async {
+    return await _channel.invokeMethod('isInvokeShakeOnShakeDeviceEvent');
   }
 
   static setInvokeShakeOnScreenshot(bool enabled) async {
