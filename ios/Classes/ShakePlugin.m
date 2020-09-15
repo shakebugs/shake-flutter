@@ -210,21 +210,34 @@
     result(nil);
 }
 -(void)insertNetworkRequest:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSDictionary *networkRequest = call.arguments[@"networkRequest"];
+
+    NSString* url = [networkRequest objectForKey:@"url"];
+    NSString* method = [networkRequest objectForKey:@"method"];
+    NSString* responseBody = [networkRequest objectForKey:@"responseBody"];
+    NSString* requestBody = [networkRequest objectForKey:@"requestBody"];
+    NSDictionary* responseHeaders = [networkRequest objectForKey:@"responseHeaders"];
+    NSDictionary* requestHeaders = [networkRequest objectForKey:@"requestHeaders"];
+    NSNumber* status = [networkRequest objectForKey:@"status"];
+    NSNumber* duration = [networkRequest objectForKey:@"duration"];
+    NSString* contentType = [networkRequest objectForKey:@"contentType"];
+    NSString* timestamp = [networkRequest objectForKey:@"timestamp"];
+
     NSDictionary *dict = [[NSDictionary alloc] init];
-    NSData *data = [request[@"requestBody"] dataUsingEncoding:NSUTF8StringEncoding];
     dict = @{
-        @"url": call.arguments[@"url"],
-        @"method": call.arguments[@"method"],
-        @"responseBody": call.arguments[@"description"],
-        @"statusCode": call.arguments[@"description"],
-        @"start": call.arguments[@"description"],
-        @"contentType": call.arguments[@"description"],
-        @"requestBody": data,
-        @"requestHeaders": call.arguments[@"description"],
-        @"duration": call.arguments[@"description"],
-        @"responseHeaders": call.arguments[@"description"],
-        @"timestamp": call.arguments[@"description"]
+        @"url": url,
+        @"method": method,
+        @"responseBody": responseBody,
+        @"statusCode": status,
+        @"start": start,
+        @"contentType": contentType,
+        @"requestBody": requestBody,
+        @"requestHeaders": requestHeaders,
+        @"duration": duration,
+        @"responseHeaders": responseHeaders,
+        @"timestamp": timestamp
     };
+
     [SHKShake performSelector:sel_getUid(@"_reportRequestCompleted:".UTF8String) withObject:dict];
 
     result(nil);
