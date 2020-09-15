@@ -290,6 +290,10 @@ class _HomeState extends State<Home> {
     shakeFiles.add(ShakeFile.create(file2.path, "customName"));
 
     ShakeReportConfiguration configuration = ShakeReportConfiguration();
+    configuration.activityHistoryData = false;
+    configuration.blackBoxData = false;
+    configuration.screenshot = false;
+    configuration.showReportSentMessage = true;
 
     Shake.silentReport("Description", shakeFiles, "Quick facts", configuration);
   }

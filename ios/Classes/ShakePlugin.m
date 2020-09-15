@@ -9,6 +9,19 @@
 #endif
 
 @implementation ShakePlugin
+
++(void) initialize {
+    if(self == [ShakePlugin class]) {
+        NSDictionary *platformAndSdkVersionDict = @{
+            @"platform": @"Flutter",
+            @"sdkVersion": @"10.0.0"
+        };
+        NSNumber *disableDueToRN = @YES;
+        [SHKShake performSelector:sel_getUid(@"_setNetworkRequestReporterDisabledDueToRN:".UTF8String) withObject:disableDueToRN];
+        [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:platformAndSdkVersionDict];
+    }
+
+}
 -(instancetype)initWithMessenger:(nonnull NSObject<FlutterBinaryMessenger> *)messenger {
     self = [super init];
     return self;
@@ -135,57 +148,63 @@
 -(void)setShakeReportData:(FlutterMethodCall*) call result:(FlutterResult) result {
     NSArray* files = call.arguments[@"shakeFiles"];
     NSString* quickFacts = call.arguments[@"quickFacts"];
-    SHKShakeReportData *reportData = [[SHKShakeReportData alloc] init];
-    NSUInteger count  = [files count];
+
     NSMutableArray <SHKShakeFile *> *shakeFiles = [NSMutableArray array];
-    reportData.quickFacts = quickFacts;
-    for(int i = 0; i < count; i++)
-    {
-        NSArray *splitPath = [[files objectAtIndex:i] componentsSeparatedByString:@"/"];
-        NSUInteger splitPathCount = [splitPath count];
-        NSString *filename = [splitPath objectAtIndex:splitPathCount-1];
-        SHKShakeFile *attachedFile = [[SHKShakeFile alloc] initWithName:filename
-                                                                andData:[NSData dataWithContentsOfFile:[files objectAtIndex:i]]];
+    for(int i = 0; i < [files count]; i++) {
+        NSDictionary *file = [files objectAtIndex:i];
+        NSString *path = [file objectForKey:@"path"];
+        NSArray *name = [file objectForKey:@"name"];
+
+        NSURL *url = [[NSURL alloc] initFileURLWithPath: path];
+        SHKShakeFile *attachedFile = [[SHKShakeFile alloc] initWithName:name andFileURL:url];
+
         [shakeFiles addObject:attachedFile];
     }
-    reportData.attachedFiles = [NSArray arrayWithArray:shakeFiles];
-    [SHKShake showWithReportData:reportData];
+
+    SHKShake.onPrepareReportData = ^SHKShakeReportData *_Nonnull(SHKShakeReportData *_Nonnull reportData) {
+      reportData.quickFacts = quickFacts;
+      reportData.attachedFiles = [NSArray arrayWithArray:shakeFiles];
+      return reportData;
+    };
+
     result(nil);
 }
 -(void)silentReport:(FlutterMethodCall*) call result:(FlutterResult) result {
     NSString * description = call.arguments[@"description"];
-    NSArray * filesArray = call.arguments[@"shakeFiles"];
+    NSArray * files = call.arguments[@"shakeFiles"];
     NSString * quickFacts = call.arguments[@"quickFacts"];
     NSDictionary * configurationMap = call.arguments[@"configuration"];
-    SHKShakeReportData *reportData = [[SHKShakeReportData alloc] init];
+
+    BOOL includesBlackBoxData = [[configurationMap objectForKey:@"blackBoxData"] boolValue];
+    BOOL includesActivityHistoryData = [[configurationMap objectForKey:@"activityHistoryData"] boolValue];
+    BOOL includesScreenshotImage = [[configurationMap objectForKey:@"screenshot"] boolValue];
+    BOOL showsToastMessageOnSend = [[configurationMap objectForKey:@"showReportSentMessage"] boolValue];
+
     SHKShakeReportConfiguration *reportConfiguration = [[SHKShakeReportConfiguration alloc] init];
-    for(NSString *key in configurationMap)
-    {
-        if([key isEqualToString:@"blackBoxData"])
-            reportConfiguration.includesBlackBoxData = [configurationMap objectForKey:key];
-        else if([key isEqualToString:@"activityHistoryData"])
-            reportConfiguration.includesActivityHistoryData = [configurationMap objectForKey:key];
-        else if([key isEqualToString:@"screenshot"])
-            reportConfiguration.includesScreenshotImage = [configurationMap objectForKey:key];
-        else if([key isEqualToString:@"showReportSentMessage"])
-            reportConfiguration.showsToastMessageOnSend = [configurationMap objectForKey:key];
-    }
+    reportConfiguration.includesBlackBoxData = includesBlackBoxData;
+    reportConfiguration.includesActivityHistoryData = includesActivityHistoryData;
+    reportConfiguration.includesScreenshotImage = includesScreenshotImage;
+    reportConfiguration.showsToastMessageOnSend = showsToastMessageOnSend;
+
+    NSMutableArray <SHKShakeFile *> *shakeFiles = [NSMutableArray array];
+    for(int i = 0; i < [files count]; i++) {
+        NSDictionary *file = [files objectAtIndex:i];
+        NSString *path = [file objectForKey:@"path"];
+        NSArray *name = [file objectForKey:@"name"];
+
+        NSURL *url = [[NSURL alloc] initFileURLWithPath: path];
+        SHKShakeFile *attachedFile = [[SHKShakeFile alloc] initWithName:name andFileURL:url];
+
+        [shakeFiles addObject:attachedFile];
+      }
+
+    SHKShakeReportData *reportData = [[SHKShakeReportData alloc] init];
     reportData.bugDescription = description;
     reportData.quickFacts = quickFacts;
-    NSUInteger count  = [filesArray count];
-    NSMutableArray <SHKShakeFile *> *shakeFiles = [NSMutableArray array];
-    for(int i = 0; i < count; i++)
-      {
-          NSArray *splitPath = [[filesArray objectAtIndex:i] componentsSeparatedByString:@"/"];
-          NSUInteger splitPathCount = [splitPath count];
-          NSString *filename = [splitPath objectAtIndex:splitPathCount-1];
-          SHKShakeFile *attachedFile = [[SHKShakeFile alloc] initWithName:filename
-                                                                  andData:[NSData dataWithContentsOfFile:[filesArray objectAtIndex:i]]];
-          [shakeFiles addObject:attachedFile];
-      }
-      reportData.attachedFiles = [NSArray arrayWithArray:shakeFiles];
+    reportData.attachedFiles = [NSArray arrayWithArray:shakeFiles];
     
     [SHKShake silentReportWithReportData:reportData reportConfiguration:reportConfiguration];
+
     result(nil);
 }
 @end
