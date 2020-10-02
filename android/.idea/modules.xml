@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.shakebugs.flutter-shake.iml" filepath="$PROJECT_DIR$/.idea/modules/com.shakebugs.flutter-shake.iml" group="shake" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/shake.iml" filepath="$PROJECT_DIR$/.idea/modules/shake.iml" group="shake" />
     </modules>
   </component>

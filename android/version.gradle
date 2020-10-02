@@ -4,10 +4,10 @@ ext {
     }()
 
     sdkVersionName = {
-        return "1.0.0"
+        return "10.0.0"
     }()
 
     sdkVersionCode = {
-        return 1
+        return 10
     }()
 }

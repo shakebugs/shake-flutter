@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:shake_flutter/network/shake_http_logger.dart';
+import 'package:shake_flutter/network/http/shake_http_logger.dart';
 
 class ShakeHttpClient implements http.Client {
   http.Client client;

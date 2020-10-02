@@ -1,14 +1,19 @@
 import 'package:dio/dio.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/shake_flutter.dart';
+import 'package:shake_flutter/utils/dates.dart';
 
 class ShakeDioInterceptor extends Interceptor {
   static final Map<int, NetworkRequest> _requests = <int, NetworkRequest>{};
 
   @override
   Future<dynamic> onRequest(RequestOptions options) {
+    DateTime startTime = DateTime.now();
+    String startTimeString = Dates.formatISOTime(startTime);
+
     final NetworkRequest data = NetworkRequest();
-    data.startTime = DateTime.now();
+    data.startTime = startTime;
+    data.timestamp = startTimeString;
     _requests[options.hashCode] = data;
   }
 

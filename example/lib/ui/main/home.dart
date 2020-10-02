@@ -12,7 +12,7 @@ import 'package:shake_example/ui/base/version.dart';
 import 'package:shake_example/utils/files.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
-import 'package:shake_flutter/network/shake_http_client.dart';
+import 'package:shake_flutter/network/dartio/shake_http_client.dart';
 import 'package:shake_flutter/shake_flutter.dart';
 
 class Home extends StatefulWidget {
@@ -302,6 +302,6 @@ class _HomeState extends State<Home> {
   _onSendNetworkRequestPress() async {
     ShakeHttpClient shakeHttpClient = ShakeHttpClient();
     await shakeHttpClient
-        .get("http://dummy.restapiexample.com/api/v1/employees");
+        .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
   }
 }

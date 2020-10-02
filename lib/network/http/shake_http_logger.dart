@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/shake_flutter.dart';
+import 'package:shake_flutter/utils/dates.dart';
 
 class ShakeHttpLogger {
   void logHttpResponse(http.Response response, {DateTime startTime}) {
@@ -39,7 +40,8 @@ class ShakeHttpLogger {
       networkRequest.contentType = response.headers['content-type'];
     }
 
-    networkRequest.timestamp = startTime.toIso8601String();
+    networkRequest.startTime = startTime;
+    networkRequest.timestamp = Dates.formatISOTime(startTime);
     networkRequest.duration =
         DateTime.now().difference(startTime).inMilliseconds;
 
