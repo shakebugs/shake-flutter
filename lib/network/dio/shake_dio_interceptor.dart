@@ -1,31 +1,35 @@
 import 'package:dio/dio.dart';
-import 'package:path/path.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/shake_flutter.dart';
-import 'package:shake_flutter/utils/dates.dart';
+import 'package:shake_flutter/utils/extensions.dart';
 
 class ShakeDioInterceptor extends Interceptor {
   static final Map<int, NetworkRequest> _requests = <int, NetworkRequest>{};
 
   @override
   Future onRequest(RequestOptions options) async {
-    DateTime startTime = DateTime.now();
+    options.responseType = ResponseType.plain;
 
     final NetworkRequest data = NetworkRequest();
-    data.startTime = startTime;
-    data.timestamp = Dates.formatISOTime(startTime);
+    data.startTime = DateTime.now();
 
     _requests[options.hashCode] = data;
   }
 
   @override
   Future onResponse(Response response) async {
-    Shake.insertNetworkRequest(_map(response));
+    NetworkRequest networkRequest = _generateNetworkRequest(response);
+    if (networkRequest != null) {
+      Shake.insertNetworkRequest(networkRequest);
+    }
   }
 
   @override
-  Future onError(DioError err) async {
-    Shake.insertNetworkRequest(_map(err.response));
+  Future onError(DioError e) async {
+    NetworkRequest networkRequest = _generateNetworkRequest(e.response);
+    if (networkRequest != null) {
+      Shake.insertNetworkRequest(networkRequest);
+    }
   }
 
   static NetworkRequest _getRequestData(int requestHashCode) {
@@ -35,31 +39,51 @@ class ShakeDioInterceptor extends Interceptor {
     return null;
   }
 
-  NetworkRequest _map(Response response) {
-    int hashCode = response.request.hashCode;
-    final NetworkRequest networkRequest = _getRequestData(hashCode);
+  NetworkRequest _generateNetworkRequest(Response response) {
+    if (response == null) {
+      return null;
+    }
+
+    final RequestOptions request = response.request;
+    if (request == null) {
+      return null;
+    }
+
+    final NetworkRequest networkRequest = _getRequestData(request.hashCode);
+    if (networkRequest == null) {
+      return null;
+    }
 
     networkRequest.endTime = DateTime.now();
-    networkRequest.duration = networkRequest.endTime.millisecondsSinceEpoch -
-        networkRequest.startTime.millisecondsSinceEpoch;
-    networkRequest.url = response.request.uri.toString();
-    networkRequest.method = response.request.method;
-    networkRequest.contentType = response.request.contentType.toString();
+    networkRequest.url = request.uri.toString();
+    networkRequest.method = request.method;
     networkRequest.status = response.statusCode;
 
-    String requestBody = response.request.data;
-    String responseBody = response.data.toString();
+    if (request.data != null) {
+      String requestBody = request.data.toString();
+      if (requestBody.isBinary()) {
+        networkRequest.requestBody = "Binary data";
+      } else {
+        networkRequest.requestBody = requestBody;
+      }
+    }
 
-    networkRequest.requestBody = requestBody == null ? '' : requestBody;
-    networkRequest.responseBody = responseBody == null ? '' : responseBody;
+    if (response.data != null) {
+      String responseBody = response.data.toString();
+      if (responseBody.isBinary()) {
+        networkRequest.responseBody = "Binary data";
+      } else {
+        networkRequest.responseBody = responseBody;
+      }
+    }
 
-    networkRequest.requestHeaders = response.request.headers;
-    networkRequest.responseHeaders = _parseHeaders(response.headers);
+    networkRequest.requestHeaders = Map<String, String>.from(request.headers);
+    networkRequest.responseHeaders = _parseResponseHeaders(response.headers);
 
     return networkRequest;
   }
 
-  Map<String, String> _parseHeaders(Headers headers) {
+  Map<String, String> _parseResponseHeaders(Headers headers) {
     final Map<String, String> headersMap = <String, String>{};
     headers.forEach((name, value) {
       String joinedHeaders = value.join(";");

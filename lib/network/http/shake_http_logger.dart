@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/shake_flutter.dart';
-import 'package:shake_flutter/utils/dates.dart';
+import 'package:shake_flutter/utils/extensions.dart';
 
 class ShakeHttpLogger {
   void logHttpResponse(http.Response response, {DateTime startTime}) {
@@ -15,36 +15,37 @@ class ShakeHttpLogger {
     }
 
     NetworkRequest networkRequest = NetworkRequest();
-
-    // Request
+    networkRequest.startTime = startTime;
+    networkRequest.endTime = DateTime.now();
     networkRequest.url = request.url.toString();
     networkRequest.method = request.method;
+    networkRequest.status = response.statusCode;
+
     if (request.body != null) {
-      networkRequest.requestBody = request.body;
+      if (request.body.isBinary()) {
+        networkRequest.requestBody = "Binary data";
+      } else {
+        networkRequest.requestBody = request.body;
+      }
+    }
+
+    if (response.body != null) {
+      if (response.body.isBinary()) {
+        networkRequest.responseBody = "Binary data";
+      } else {
+        networkRequest.responseBody = response.body;
+      }
     }
 
     request.headers.forEach((header, value) {
       networkRequest.requestHeaders[header] = value;
     });
 
-    // Response
-    networkRequest.status = response.statusCode;
     response.headers.forEach((header, value) {
       networkRequest.responseHeaders[header] = value;
     });
 
-    if (response.body != null) {
-      networkRequest.responseBody = response.body;
-    }
-    if (response.headers.containsKey('content-type')) {
-      networkRequest.contentType = response.headers['content-type'];
-    }
-
-    networkRequest.startTime = startTime;
-    networkRequest.timestamp = Dates.formatISOTime(startTime);
-    networkRequest.duration =
-        DateTime.now().difference(startTime).inMilliseconds;
-
+    // Save network request
     Shake.insertNetworkRequest(networkRequest);
   }
 }
