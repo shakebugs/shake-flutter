@@ -122,23 +122,23 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 val enabled: Boolean = Shake.getReportConfiguration().isShowFloatingReportButton
                 result.success(enabled)
             }
-            "setInvokeShakeOnShaking" -> {
+            "setInvokeShakeOnShakeDeviceEvent" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
                     Shake.getReportConfiguration().invokeShakeOnShakeDeviceEvent = it
                 }
             }
-            "isInvokeShakeOnShaking" -> {
+            "isInvokeShakeOnShakeDeviceEvent" -> {
                 val enabled: Boolean = Shake.getReportConfiguration().isInvokeShakeOnShakeDeviceEvent
                 result.success(enabled)
             }
-            "setInvokeShakeOnShakeDeviceEvent" -> {
+            "setInvokeShakeOnScreenshot" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
                     Shake.getReportConfiguration().invokeShakeOnScreenshot = it
                 }
             }
-            "isInvokeShakeOnShakeDeviceEvent" -> {
+            "isInvokeShakeOnScreenshot" -> {
                 val enabled: Boolean = Shake.getReportConfiguration().isInvokeShakeOnScreenshot
                 result.success(enabled)
             }
