@@ -12,6 +12,7 @@ import 'package:shake_example/ui/base/logo.dart';
 import 'package:shake_example/ui/base/toggle.dart';
 import 'package:shake_example/ui/base/version.dart';
 import 'package:shake_example/utils/files.dart';
+import 'package:shake_example/utils/messages.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
 import 'package:shake_flutter/shake_flutter.dart';
@@ -308,8 +309,7 @@ class _HomeState extends State<Home> {
     // Dio
     Dio dio = Dio();
     dio.interceptors.add(ShakeDioInterceptor());
-
-    //dio.get("https://dummy.restapiexample.com/api/v1/employees");
+    await dio.get("https://dummy.restapiexample.com/api/v1/employees");
 
     // Dartio
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
@@ -320,14 +320,15 @@ class _HomeState extends State<Home> {
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
     //await shakeHttpClient
     //    .get("http://dummy.restapiexample.com/api/v1/employees");
+
+    Messages.show("Request succeeded.");
   }
 
   _onGetImageRequestPress() async {
     // Dio
     Dio dio = Dio();
     dio.interceptors.add(ShakeDioInterceptor());
-
-    //dio.get("https://asia.olympus-imaging.com/content/000107506.jpg");
+    await dio.get("https://asia.olympus-imaging.com/content/000107506.jpg");
 
     // Dartio
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
@@ -338,5 +339,7 @@ class _HomeState extends State<Home> {
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
     //await shakeHttpClient
     //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
+
+    Messages.show("Request succeeded.");
   }
 }
