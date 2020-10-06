@@ -25,7 +25,7 @@ class ShakeHttpLogger {
     }
 
     request.headers.forEach((String header, dynamic value) {
-      networkRequest.requestHeaders[header] = value[0];
+      networkRequest.requestHeaders[header] = value[0].toString();
     });
 
     requests[request.hashCode] = networkRequest;
@@ -53,7 +53,7 @@ class ShakeHttpLogger {
     }
 
     response.headers.forEach((String header, dynamic value) {
-      networkRequest.responseHeaders[header] = value[0];
+      networkRequest.responseHeaders[header] = value[0].toString();
     });
 
     Shake.insertNetworkRequest(networkRequest);

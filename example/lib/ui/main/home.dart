@@ -13,8 +13,8 @@ import 'package:shake_example/ui/base/version.dart';
 import 'package:shake_example/utils/files.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
-import 'package:shake_flutter/network/dartio/shake_http_client.dart';
 import 'package:shake_flutter/network/dio/shake_dio_interceptor.dart';
+import 'package:shake_flutter/network/dartio/shake_http_client.dart';
 import 'package:shake_flutter/shake_flutter.dart';
 
 class Home extends StatefulWidget {
@@ -306,30 +306,36 @@ class _HomeState extends State<Home> {
   }
 
   _onSendNetworkRequestPress() async {
+    // Dio
     //Dio dio = Dio();
     //dio.interceptors.add(ShakeDioInterceptor());
 
     //dio.get("https://dummy.restapiexample.com/api/v1/employees");
 
-    ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    await shakeHttpClient
-        .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
+    // Dartio
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient
+    //    .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
 
+    // Http
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
     //await shakeHttpClient
     //    .get("http://dummy.restapiexample.com/api/v1/employees");
   }
 
   _onGetImageRequestPress() async {
+    // Dio
     //Dio dio = Dio();
     //dio.interceptors.add(ShakeDioInterceptor());
 
     //dio.get("https://asia.olympus-imaging.com/content/000107506.jpg");
 
-    ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    await shakeHttpClient
-        .getUrl(Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
+    // Dartio
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient.getUrl(
+    //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
 
+    // Http
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
     //await shakeHttpClient
     //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");

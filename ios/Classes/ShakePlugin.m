@@ -155,7 +155,7 @@
     for(int i = 0; i < [files count]; i++) {
         NSDictionary *file = [files objectAtIndex:i];
         NSString *path = [file objectForKey:@"path"];
-        NSArray *name = [file objectForKey:@"name"];
+        NSString *name = [file objectForKey:@"name"];
 
         NSURL *url = [[NSURL alloc] initFileURLWithPath: path];
         SHKShakeFile *attachedFile = [[SHKShakeFile alloc] initWithName:name andFileURL:url];
@@ -192,7 +192,7 @@
     for(int i = 0; i < [files count]; i++) {
         NSDictionary *file = [files objectAtIndex:i];
         NSString *path = [file objectForKey:@"path"];
-        NSArray *name = [file objectForKey:@"name"];
+        NSString *name = [file objectForKey:@"name"];
 
         NSURL *url = [[NSURL alloc] initFileURLWithPath: path];
         SHKShakeFile *attachedFile = [[SHKShakeFile alloc] initWithName:name andFileURL:url];
@@ -220,21 +220,19 @@
     NSDictionary* requestHeaders = [networkRequest objectForKey:@"requestHeaders"];
     NSNumber* status = [networkRequest objectForKey:@"status"];
     NSNumber* duration = [networkRequest objectForKey:@"duration"];
-    NSString* contentType = [networkRequest objectForKey:@"contentType"];
     NSString* timestamp = [networkRequest objectForKey:@"timestamp"];
 
+    NSData* data = [networkRequest[@"requestBody"] dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *dict = [[NSDictionary alloc] init];
     dict = @{
         @"url": url,
         @"method": method,
+        @"requestBody": data,
         @"responseBody": responseBody,
         @"statusCode": status,
-        @"start": start,
-        @"contentType": contentType,
-        @"requestBody": requestBody,
         @"requestHeaders": requestHeaders,
-        @"duration": duration,
         @"responseHeaders": responseHeaders,
+        @"duration": duration,
         @"timestamp": timestamp
     };
 
