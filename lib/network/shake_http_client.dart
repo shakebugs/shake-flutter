@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:shake_flutter/network/dartio/shake_http_logger.dart';
+import 'package:shake_flutter/network/shake_http_logger.dart';
 
 class ShakeHttpClient implements HttpClient {
   HttpClient client;

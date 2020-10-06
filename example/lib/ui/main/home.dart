@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shake_dio_interceptor/shake_dio_interceptor.dart';
 import 'package:shake_example/constants/colors.dart';
 import 'package:shake_example/ui/base/button.dart';
 import 'package:shake_example/ui/base/header.dart';
@@ -13,8 +14,6 @@ import 'package:shake_example/ui/base/version.dart';
 import 'package:shake_example/utils/files.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
-import 'package:shake_flutter/network/dio/shake_dio_interceptor.dart';
-import 'package:shake_flutter/network/dartio/shake_http_client.dart';
 import 'package:shake_flutter/shake_flutter.dart';
 
 class Home extends StatefulWidget {
@@ -307,8 +306,8 @@ class _HomeState extends State<Home> {
 
   _onSendNetworkRequestPress() async {
     // Dio
-    //Dio dio = Dio();
-    //dio.interceptors.add(ShakeDioInterceptor());
+    Dio dio = Dio();
+    dio.interceptors.add(ShakeDioInterceptor());
 
     //dio.get("https://dummy.restapiexample.com/api/v1/employees");
 
@@ -325,8 +324,8 @@ class _HomeState extends State<Home> {
 
   _onGetImageRequestPress() async {
     // Dio
-    //Dio dio = Dio();
-    //dio.interceptors.add(ShakeDioInterceptor());
+    Dio dio = Dio();
+    dio.interceptors.add(ShakeDioInterceptor());
 
     //dio.get("https://asia.olympus-imaging.com/content/000107506.jpg");
 

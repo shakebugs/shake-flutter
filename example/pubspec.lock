@@ -205,6 +205,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.4"
+  shake_dio_interceptor:
+    dependency: transitive
+    description:
+      path: "../../shake-dio-interceptor"
+      relative: true
+    source: path
+    version: "0.0.1"
   shake_flutter:
     dependency: "direct main"
     description:
@@ -212,6 +219,13 @@ packages:
       relative: true
     source: path
     version: "10.0.0"
+  shake_http_client:
+    dependency: transitive
+    description:
+      path: "../../shake-http-client"
+      relative: true
+    source: path
+    version: "0.0.1"
   sky_engine:
     dependency: transitive
     description: flutter
