@@ -15,6 +15,7 @@ import 'package:shake_example/utils/files.dart';
 import 'package:shake_example/utils/messages.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
+import 'package:shake_flutter/network/shake_http_client.dart';
 import 'package:shake_flutter/shake_flutter.dart';
 
 class Home extends StatefulWidget {
@@ -28,7 +29,6 @@ class _HomeState extends State<Home> {
   bool screenshotInvokingEnabled = false;
   bool shakeEnabled = false;
   bool blackboxEnabled = false;
-  bool networkTrackerEnabled = false;
   bool activityHistoryEnabled = false;
   bool inspectScreenEnabled = false;
 
@@ -49,7 +49,6 @@ class _HomeState extends State<Home> {
     final blackboxEnabled = await Shake.isEnableBlackBox();
     final activityHistoryEnabled = await Shake.isEnableActivityHistory();
     final inspectScreenEnabled = await Shake.isEnableInspectScreen();
-    final networkTrackerEnabled = false; // Network tracker not implemented yet
     final shakeEnabled = true; // Not provided by native SDK
 
     setState(() {
@@ -59,7 +58,6 @@ class _HomeState extends State<Home> {
       this.blackboxEnabled = blackboxEnabled;
       this.activityHistoryEnabled = activityHistoryEnabled;
       this.inspectScreenEnabled = inspectScreenEnabled;
-      this.networkTrackerEnabled = networkTrackerEnabled;
       this.shakeEnabled = shakeEnabled;
     });
 
@@ -151,11 +149,6 @@ class _HomeState extends State<Home> {
                           'Blackbox',
                           blackboxEnabled,
                           _onEnableBlackboxToggle,
-                        ),
-                        Toggle(
-                          'Network tracker',
-                          networkTrackerEnabled,
-                          _onEnableNetworkTrackerToggle,
                         ),
                         Toggle(
                           'Activity history',
@@ -276,13 +269,6 @@ class _HomeState extends State<Home> {
     Shake.setEnableInspectScreen(enabled);
   }
 
-  _onEnableNetworkTrackerToggle(enabled) {
-    setState(() {
-      networkTrackerEnabled = enabled;
-    });
-    Shake.setEnableInspectScreen(enabled);
-  }
-
   _onAttachDataPress() {
     List<ShakeFile> shakeFiles = List();
     shakeFiles.add(ShakeFile.create(file1.path));
@@ -336,9 +322,9 @@ class _HomeState extends State<Home> {
     //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
 
     // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
+    ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    await shakeHttpClient
+        .get("https://asia.olympus-imaging.com/content/000107506.jpg");
 
     Messages.show("Request succeeded.");
   }
