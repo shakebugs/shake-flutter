@@ -54,20 +54,20 @@ class ShakeHttpClient implements HttpClient {
   }
 
   @override
-  void set authenticate(
+  set authenticate(
       Future<bool> Function(Uri url, String scheme, String realm) f) {
     client.authenticate = f;
   }
 
   @override
-  void set authenticateProxy(
+  set authenticateProxy(
       Future<bool> Function(String host, int port, String scheme, String realm)
           f) {
     client.authenticateProxy = f;
   }
 
   @override
-  void set badCertificateCallback(
+  set badCertificateCallback(
       bool Function(X509Certificate cert, String host, int port) callback) {
     client.badCertificateCallback = callback;
   }
@@ -100,7 +100,7 @@ class ShakeHttpClient implements HttpClient {
   }
 
   @override
-  void set findProxy(String Function(Uri url) f) {
+  set findProxy(String Function(Uri url) f) {
     client.findProxy = f;
   }
 
@@ -109,7 +109,7 @@ class ShakeHttpClient implements HttpClient {
     return client.get(host, port, path).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      await logger.onResponse(response, request);
+      logger.onResponse(response, request);
       return request;
     });
   }

@@ -15,7 +15,6 @@ import 'package:shake_example/utils/files.dart';
 import 'package:shake_example/utils/messages.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
-import 'package:shake_flutter/network/shake_http_client.dart';
 import 'package:shake_flutter/shake_flutter.dart';
 
 class Home extends StatefulWidget {
