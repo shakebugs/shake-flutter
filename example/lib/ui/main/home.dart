@@ -322,9 +322,9 @@ class _HomeState extends State<Home> {
     //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
 
     // Http
-    ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    await shakeHttpClient
-        .get("https://asia.olympus-imaging.com/content/000107506.jpg");
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient
+    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
 
     Messages.show("Request succeeded.");
   }
