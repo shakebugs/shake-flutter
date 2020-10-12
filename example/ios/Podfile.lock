@@ -11,10 +11,10 @@ PODS:
     - Flutter
   - path_provider_macos (0.0.1):
     - Flutter
-  - Shake-UAT (10.0.6001)
+  - Shake-Staging (10.0.6001)
   - shake_flutter (0.0.1):
     - Flutter
-    - Shake-UAT (~> 10.0.0)
+    - Shake-Staging (~> 10.0.0)
   - Toast (4.0.0)
   - url_launcher (0.0.1):
     - Flutter
@@ -37,7 +37,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Shake-UAT
+    - Shake-Staging
     - Toast
 
 EXTERNAL SOURCES:
@@ -69,8 +69,8 @@ SPEC CHECKSUMS:
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   path_provider_linux: 4d630dc393e1f20364f3e3b4a2ff41d9674a84e4
   path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
-  Shake-UAT: 994e4b082c871c8630577e0429fece14df3fa095
-  shake_flutter: 1c39919d3f2300ad906202860dd5c1e220dc38af
+  Shake-Staging: 755c099d7613245160bb755b464953d617733438
+  shake_flutter: d10af1212b0437fdb30cafb6450bba5b25fa2322
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313

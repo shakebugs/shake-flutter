@@ -22,6 +22,13 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>Shake</key>
+	<dict>
+		<key>APIClientID</key>
+		<string>HtTFUmUziF5Qjk1XLraAJXtVB1cL62yHWWqsDnrG</string>
+		<key>APIClientSecret</key>
+		<string>IPRqEI2iSQhmUP6NGQcPNKCs7JQCJrpFUG0qDmLx4Yx2spd3caXnC3o</string>
+	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -41,12 +48,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>Shake</key>
-    <dict>
-        <key>APIClientID</key>
-        <string>QGjkaGuR8QVUA7ZIIYX5AjpYkN6LfQRyFulwDX71</string>
-        <key>APIClientSecret</key>
-        <string>et1T78wj0AfiwGUj1Cz3CN4YqrSNQ7ydWVMUFj7vZr0BSgnQ24Nrl2S</string>
-    </dict>
 </dict>
 </plist>

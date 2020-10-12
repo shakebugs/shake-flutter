@@ -6,8 +6,9 @@ import com.shakebugs.shake.report.ShakeFile
 
 fun mapToShakeFiles(data: List<HashMap<String, Any>>?): List<ShakeFile>? {
     return data?.mapNotNull {
-        val name: String? = it["name"] as String
         val path: String? = it["path"] as String
+        var name: String? = it["name"] as String
+        name = removeExtension(name)
 
         if (name != null && path != null) {
             return@mapNotNull ShakeFile(name, path)

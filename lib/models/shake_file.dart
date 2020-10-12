@@ -6,11 +6,10 @@ class ShakeFile {
 
   ShakeFile.create(String path, [String name]) {
     this.path = path;
-
     if (name != null) {
-      this.name = name;
+      this.name = name + extension(path);
     } else {
-      this.name = basenameWithoutExtension(path);
+      this.name = basename(path);
     }
   }
 
