@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -169,8 +170,12 @@ class _HomeState extends State<Home> {
                       children: [
                         Header('Tools'),
                         Button(
-                          'Send network request',
-                          _onSendNetworkRequestPress,
+                          'Send GET request',
+                          _onSendGetRequestPressed,
+                        ),
+                        Button(
+                          'Send POST request',
+                          _onSendPostRequestPressed,
                         ),
                         Button(
                           'Get image request',
@@ -290,11 +295,35 @@ class _HomeState extends State<Home> {
     Shake.silentReport("Description", shakeFiles, "Quick facts", configuration);
   }
 
-  _onSendNetworkRequestPress() async {
+  _onSendGetRequestPressed() async {
     // Dio
     Dio dio = Dio();
     dio.interceptors.add(ShakeDioInterceptor());
     await dio.get("https://dummy.restapiexample.com/api/v1/employees");
+
+    // Dartio
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient
+    //    .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
+
+    // Http
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient
+    //    .get("http://dummy.restapiexample.com/api/v1/employees");
+
+    Messages.show("Request succeeded.");
+  }
+
+  _onSendPostRequestPressed() async {
+    var body = {"name": "test", "salary": "123", "age": "23"};
+
+    // Dio
+    Dio dio = Dio();
+    dio.interceptors.add(ShakeDioInterceptor());
+    await dio.post(
+      "http://dummy.restapiexample.com/api/v1/create",
+      data: jsonEncode(body),
+    );
 
     // Dartio
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
