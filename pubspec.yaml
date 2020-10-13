@@ -12,12 +12,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  path: ^1.6.4
-  shake_http_client:
-    path: ../shake-http-client
-  shake_dio_interceptor:
-    path: ../shake-dio-interceptor
-  fluttertoast: ^7.1.1
 
 dev_dependencies:
   flutter_test:
