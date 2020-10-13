@@ -8,6 +8,6 @@ ext {
     }()
 
     sdkVersionCode = {
-        return 10
+        return 1
     }()
 }

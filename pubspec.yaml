@@ -1,8 +1,7 @@
 name: shake_flutter
-version: 0.0.1
+version: 10.0.0-dev.1
 build: 1
 description: Shake SDK wrapper
-author: friends@shakebugs.com
 homepage: https://www.shakebugs.com
 
 environment:
