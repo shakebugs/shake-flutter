@@ -155,7 +155,7 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     override fun attachedFiles(): List<ShakeFile>? {
                         return mapToShakeFiles(shakeFiles)
                     }
-                });
+                })
             }
             "silentReport" -> {
                 val description: String? = call.argument("description")
