@@ -1,4 +1,5 @@
 extension DateUtils on DateTime {
+  /// Returns Iso8601 string with timezone.
   String toIsoString() {
     if (timeZoneOffset.isNegative)
       return (toIso8601String() +
@@ -10,6 +11,7 @@ extension DateUtils on DateTime {
 }
 
 extension TextUtils on String {
+  /// Checks if contains binary characters.
   bool isBinary() {
     RegExp multibyte = RegExp(r'[^\x00-\x7F]');
     return multibyte.hasMatch(this);

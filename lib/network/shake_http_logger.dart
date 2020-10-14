@@ -4,8 +4,9 @@ import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/shake_flutter.dart';
 import 'package:shake_flutter/utils/extensions.dart';
 
+/// Parser and logger for dart:io network requests.
 class ShakeHttpLogger {
-  Map<int, NetworkRequest> requests = <int, NetworkRequest>{};
+  Map<int, NetworkRequest> _requests = <int, NetworkRequest>{};
 
   void onRequest(
     HttpClientRequest request, {
@@ -28,7 +29,7 @@ class ShakeHttpLogger {
       networkRequest.requestHeaders[header] = value[0].toString();
     });
 
-    requests[request.hashCode] = networkRequest;
+    _requests[request.hashCode] = networkRequest;
   }
 
   void onResponse(
@@ -60,8 +61,8 @@ class ShakeHttpLogger {
   }
 
   NetworkRequest _getRequestData(int requestHashCode) {
-    if (requests[requestHashCode] != null) {
-      return requests.remove(requestHashCode);
+    if (_requests[requestHashCode] != null) {
+      return _requests.remove(requestHashCode);
     }
     return null;
   }

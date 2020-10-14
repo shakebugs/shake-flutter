@@ -1,5 +1,6 @@
 import 'package:shake_flutter/utils/extensions.dart';
 
+/// Bug report network request.
 class NetworkRequest {
   String url;
   String method;
