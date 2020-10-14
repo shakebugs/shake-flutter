@@ -1,25 +1,26 @@
 # Shake for Flutter
 
-This package is a wrapper for [Shake](https://www.shakebugs.com) bug reporting tool.
+Flutter plugin for [Shake](https://www.shakebugs.com).
 
 ## How to use
 
 ### Install Shake
 
-Add a Shake to your project.
+Add Shake to your `pubspec.yaml` file.
 ```yaml
 dependencies:
       shake_flutter:
 ```
 
-Install package by running command.
+Install package by running command in terminal.
 ```bash
 flutter packages get
 ```
 
-## Add API Client and Secret keys
+## Add Client ID and Secret
+Client ID and Secret are visible in [your workspace settings](https://app.shakebugs.com/settings/workspace#general).
 
-Add keys to the *AndroidManifest.xml* file.
+Add Client ID and Secret to the `AndroidManifest.xml` file.
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
@@ -38,7 +39,7 @@ Add keys to the *AndroidManifest.xml* file.
 </manifest>
 ```
 
-Add keys to the *Info.plist* file.
+Add Client ID and Secret to the `Info.plist` file.
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <plist version="1.0">
@@ -62,7 +63,7 @@ Add Shake import.
 import 'package:shake_flutter/shake_flutter.dart';
 ```
 
-Call *Shake.start()* method.
+Call `Shake.start()` method.
 ```dart
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -79,4 +80,4 @@ void main() {
 
 ## Documentation
 
-Visit [documentation](https://www.shakebugs.com/docs) web page for more details.
+Visit [documentation](https://www.shakebugs.com/docs) for more details.
