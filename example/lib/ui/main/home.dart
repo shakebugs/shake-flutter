@@ -270,7 +270,10 @@ class _HomeState extends State<Home> {
     shakeFiles.add(ShakeFile.create(file1.path));
     shakeFiles.add(ShakeFile.create(file2.path, "customName"));
 
-    Shake.setShakeReportData(shakeFiles, "Quick facts");
+    Shake.setShakeReportData(
+      quickFacts: "Quick facts",
+      shakeFiles: shakeFiles,
+    );
   }
 
   _onSilentReportPress() {
@@ -284,7 +287,12 @@ class _HomeState extends State<Home> {
     configuration.screenshot = false;
     configuration.showReportSentMessage = true;
 
-    Shake.silentReport("Description", shakeFiles, "Quick facts", configuration);
+    Shake.silentReport(
+      configuration,
+      description: "Description",
+      quickFacts: "Quick facts",
+      shakeFiles: shakeFiles,
+    );
   }
 
   _onSendGetRequestPressed() async {

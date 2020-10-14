@@ -108,34 +108,40 @@ class Shake {
 
   /// Sets files and quick facts which will be attached with bug report.
   static setShakeReportData(
+{
     List<ShakeFile> shakeFiles,
     String quickFacts,
+  }
   ) async {
-    final files = shakeFiles.map((shakeFile) => shakeFile.toMap()).toList();
     await _channel.invokeMethod('setShakeReportData', {
-      'shakeFiles': files,
+      'shakeFiles': _toShakeFileMap(shakeFiles),
       'quickFacts': quickFacts,
     });
   }
 
   /// Reports a bug without calling a Shake screen.
   ///
-  /// Bug will be reported to the dashboard with defined description.
-  /// Pass [ShakeFile] or quick facts to attach additional bug details.
-  /// Use [ShakeReportConfiguration] to define data attached to the report.
+  /// [ShakeReportConfiguration] is required.
   static silentReport(
+    ShakeReportConfiguration configuration, {
     String description,
     List<ShakeFile> shakeFiles,
     String quickFacts,
-    ShakeReportConfiguration configuration,
-  ) async {
-    final files = shakeFiles.map((shakeFile) => shakeFile.toMap()).toList();
+  }) async {
     await _channel.invokeMethod('silentReport', {
       'description': description,
-      'shakeFiles': files,
+      'shakeFiles': _toShakeFileMap(shakeFiles),
       'quickFacts': quickFacts,
       'configuration': configuration.toMap()
     });
+  }
+
+  static _toShakeFileMap(List<ShakeFile> shakeFiles) {
+    var filesMap;
+    if (shakeFiles != null) {
+      filesMap = shakeFiles.map((shakeFile) => shakeFile.toMap()).toList();
+    }
+    return filesMap;
   }
 
   /// Inserts network request to the activity history.
