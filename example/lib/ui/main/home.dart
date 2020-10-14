@@ -92,10 +92,6 @@ class _HomeState extends State<Home> {
                       children: [
                         Header('Actions'),
                         Button(
-                          'Start',
-                          _onStartPress,
-                        ),
-                        Button(
                           'Show',
                           _onShowPress,
                         ),
@@ -214,10 +210,6 @@ class _HomeState extends State<Home> {
             ),
           )),
     );
-  }
-
-  _onStartPress() {
-    Shake.start();
   }
 
   _onShowPress() {
