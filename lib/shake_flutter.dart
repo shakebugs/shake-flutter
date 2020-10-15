@@ -107,12 +107,10 @@ class Shake {
   }
 
   /// Sets files and quick facts which will be attached with bug report.
-  static setShakeReportData(
-{
+  static setShakeReportData({
     List<ShakeFile> shakeFiles,
     String quickFacts,
-  }
-  ) async {
+  }) async {
     await _channel.invokeMethod('setShakeReportData', {
       'shakeFiles': _toShakeFileMap(shakeFiles),
       'quickFacts': quickFacts,
