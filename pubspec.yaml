@@ -1,5 +1,5 @@
 name: shake_flutter
-version: 10.0.0-dev.2
+version: 10.0.0
 build: 1
 description:
   Shake is a tool for receiving better bug reports automatically.

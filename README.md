@@ -9,7 +9,7 @@ Flutter plugin for [Shake](https://www.shakebugs.com).
 Add Shake to your `pubspec.yaml` file.
 ```yaml
 dependencies:
-      shake_flutter:
+      shake_flutter: ^10.0.0
 ```
 
 Install package by running command in terminal.
