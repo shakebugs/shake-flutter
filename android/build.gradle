@@ -39,6 +39,11 @@ android {
         buildConfigField "String", "SHAKE_SDK_VERSION_NAME", "\"" + sdkVersionName + "\""
         buildConfigField "String", "SHAKE_SDK_VERSION_CODE", "\"" + sdkVersionCode + "\""
     }
+    buildTypes {
+        release {
+            consumerProguardFiles 'consumer-rules.pro'
+        }
+    }
     lintOptions {
         disable 'InvalidPackage'
     }
