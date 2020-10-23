@@ -12,7 +12,7 @@ abstract class NetworkTester {
 
   Future<void> sendGetFileRequest();
 
-  Future<void> sendPostFileRequest();
+  Future<void> sendMultipartFileRequest();
 
   Future<void> send404Request();
 

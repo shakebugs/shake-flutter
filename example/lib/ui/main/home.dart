@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shake_example/constants/colors.dart';
-import 'package:shake_example/helpers/dio_tester.dart';
+import 'package:shake_example/helpers/dart_tester.dart';
 import 'package:shake_example/helpers/network_tester.dart';
 import 'package:shake_example/ui/base/button.dart';
 import 'package:shake_example/ui/base/header.dart';
@@ -23,7 +23,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  NetworkTester networkTester = DioTester();
+  NetworkTester networkTester = DartTester();
 
   bool shakeInvokingEnabled = false;
   bool buttonInvokingEnabled = false;
@@ -168,19 +168,19 @@ class _HomeState extends State<Home> {
                         Header('Tools'),
                         Button(
                           'Send GET request',
-                          _onSendGetRequestPressed,
+                          _onSendGetRequest,
                         ),
                         Button(
                           'Send POST request',
-                          _onSendPostRequestPressed,
+                          _onSendPostRequest,
                         ),
                         Button(
-                          'Send GET image request',
-                          _onGetImageRequestPress,
+                          'Send GET file request',
+                          _onGetFileRequest,
                         ),
                         Button(
-                          'Send POST file request',
-                          _onSendPostFileRequest,
+                          'Send Multipart file request',
+                          _onSendMultipartFileRequest,
                         ),
                         Button(
                           'Send 404 request',
@@ -308,7 +308,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  _onSendGetRequestPressed() async {
+  _onSendGetRequest() async {
     try {
       await networkTester.sendGetRequest();
 
@@ -317,18 +317,9 @@ class _HomeState extends State<Home> {
       print(e);
       Messages.show(e.toString());
     }
-    // Dartio
-    // ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    // await shakeHttpClient
-    //     .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
-
-    // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("http://dummy.restapiexample.com/api/v1/employees");
   }
 
-  _onSendPostRequestPressed() async {
+  _onSendPostRequest() async {
     try {
       await networkTester.sendPostRequest();
 
@@ -337,19 +328,9 @@ class _HomeState extends State<Home> {
       print(e);
       Messages.show(e.toString());
     }
-
-    // Dartio
-    // ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    // await shakeHttpClient.post(
-    //     "http://dummy.restapiexample.com", 443, "/api/v1/employees");
-
-    // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("http://dummy.restapiexample.com/api/v1/employees");
   }
 
-  _onGetImageRequestPress() async {
+  _onGetFileRequest() async {
     try {
       await networkTester.sendGetFileRequest();
 
@@ -358,37 +339,17 @@ class _HomeState extends State<Home> {
       print(e);
       Messages.show(e.toString());
     }
-
-    // Dartio
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient.getUrl(
-    //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
-
-    // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
   }
 
-  _onSendPostFileRequest() async {
+  _onSendMultipartFileRequest() async {
     try {
-      await networkTester.sendPostFileRequest();
+      await networkTester.sendMultipartFileRequest();
 
       Messages.show("Request succeeded.");
     } catch (e) {
       print(e);
       Messages.show(e.toString());
     }
-
-    // Dartio
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient.getUrl(
-    //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
-
-    // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
   }
 
   _onSend404Request() async {
@@ -400,15 +361,6 @@ class _HomeState extends State<Home> {
       print(e);
       Messages.show(e.toString());
     }
-    // Dartio
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient.getUrl(
-    //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
-
-    // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
   }
 
   _onSendTimeoutRequest() async {
@@ -420,14 +372,5 @@ class _HomeState extends State<Home> {
       print(e);
       Messages.show(e.toString());
     }
-    // Dartio
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient.getUrl(
-    //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
-
-    // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
   }
 }

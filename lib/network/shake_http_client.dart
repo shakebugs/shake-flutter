@@ -85,7 +85,7 @@ class ShakeHttpClient implements HttpClient {
         .then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -95,7 +95,7 @@ class ShakeHttpClient implements HttpClient {
     return client.deleteUrl(url).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -110,7 +110,7 @@ class ShakeHttpClient implements HttpClient {
     return client.get(host, port, path).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -120,7 +120,7 @@ class ShakeHttpClient implements HttpClient {
     return client.getUrl(url).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -132,7 +132,7 @@ class ShakeHttpClient implements HttpClient {
         .then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -142,7 +142,7 @@ class ShakeHttpClient implements HttpClient {
     return client.headUrl(url).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -155,7 +155,7 @@ class ShakeHttpClient implements HttpClient {
         .then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -165,7 +165,7 @@ class ShakeHttpClient implements HttpClient {
     return client.openUrl(method, url).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -177,7 +177,7 @@ class ShakeHttpClient implements HttpClient {
         .then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -187,7 +187,7 @@ class ShakeHttpClient implements HttpClient {
     return client.patchUrl(url).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -199,7 +199,7 @@ class ShakeHttpClient implements HttpClient {
         .then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -209,7 +209,7 @@ class ShakeHttpClient implements HttpClient {
     return client.postUrl(url).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -219,7 +219,7 @@ class ShakeHttpClient implements HttpClient {
     return client.put(host, port, path).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }
@@ -229,7 +229,7 @@ class ShakeHttpClient implements HttpClient {
     return client.putUrl(url).then((HttpClientRequest request) async {
       logger.onRequest(request);
       final HttpClientResponse response = await request.close();
-      logger.onResponse(response, request);
+      logger.onResponse(request, response);
       return request;
     });
   }

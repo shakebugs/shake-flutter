@@ -26,13 +26,13 @@ class DioTester implements NetworkTester {
   }
 
   @override
-  Future<void> sendPostFileRequest() async {
+  Future<void> sendMultipartFileRequest() async {
     File file = await Files.createDummyFile("tmp.txt");
 
     Options options = Options();
     options.headers["Content-Type"] = "multipart/form-data";
 
-    FormData formData = new FormData.fromMap({
+    FormData formData = FormData.fromMap({
       'file': MultipartFile.fromBytes(
         await file.readAsBytes(),
         filename: "tmp.txt",
