@@ -224,7 +224,7 @@
     NSString* requestBody = [networkRequest objectForKey:@"requestBody"];
     NSDictionary* responseHeaders = [networkRequest objectForKey:@"responseHeaders"];
     NSDictionary* requestHeaders = [networkRequest objectForKey:@"requestHeaders"];
-    NSNumber* status = [networkRequest objectForKey:@"status"];
+    NSString* status = [networkRequest objectForKey:@"status"];
     NSNumber* duration = [networkRequest objectForKey:@"duration"];
     NSString* timestamp = [networkRequest objectForKey:@"timestamp"];
 

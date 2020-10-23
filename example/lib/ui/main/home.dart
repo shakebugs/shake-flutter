@@ -1,11 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shake_dio_interceptor/shake_dio_interceptor.dart';
 import 'package:shake_example/constants/colors.dart';
+import 'package:shake_example/helpers/dio_tester.dart';
+import 'package:shake_example/helpers/network_tester.dart';
 import 'package:shake_example/ui/base/button.dart';
 import 'package:shake_example/ui/base/header.dart';
 import 'package:shake_example/ui/base/link.dart';
@@ -24,6 +23,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  NetworkTester networkTester = DioTester();
+
   bool shakeInvokingEnabled = false;
   bool buttonInvokingEnabled = false;
   bool screenshotInvokingEnabled = false;
@@ -174,8 +175,20 @@ class _HomeState extends State<Home> {
                           _onSendPostRequestPressed,
                         ),
                         Button(
-                          'Get image request',
+                          'Send GET image request',
                           _onGetImageRequestPress,
+                        ),
+                        Button(
+                          'Send POST file request',
+                          _onSendPostFileRequest,
+                        ),
+                        Button(
+                          'Send 404 request',
+                          _onSend404Request,
+                        ),
+                        Button(
+                          'Send timeout request',
+                          _onSendTimeoutRequest,
                         ),
                       ],
                     ),
@@ -296,53 +309,55 @@ class _HomeState extends State<Home> {
   }
 
   _onSendGetRequestPressed() async {
-    // Dio
-    Dio dio = Dio();
-    dio.interceptors.add(ShakeDioInterceptor());
-    await dio.get("https://dummy.restapiexample.com/api/v1/employees");
+    try {
+      await networkTester.sendGetRequest();
 
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      print(e);
+      Messages.show(e.toString());
+    }
     // Dartio
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
+    // ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    // await shakeHttpClient
+    //     .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
 
     // Http
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
     //await shakeHttpClient
     //    .get("http://dummy.restapiexample.com/api/v1/employees");
-
-    Messages.show("Request succeeded.");
   }
 
   _onSendPostRequestPressed() async {
-    var body = {"name": "test", "salary": "123", "age": "23"};
+    try {
+      await networkTester.sendPostRequest();
 
-    // Dio
-    Dio dio = Dio();
-    dio.interceptors.add(ShakeDioInterceptor());
-    await dio.post(
-      "http://dummy.restapiexample.com/api/v1/create",
-      data: jsonEncode(body),
-    );
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      print(e);
+      Messages.show(e.toString());
+    }
 
     // Dartio
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
+    // ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    // await shakeHttpClient.post(
+    //     "http://dummy.restapiexample.com", 443, "/api/v1/employees");
 
     // Http
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
     //await shakeHttpClient
     //    .get("http://dummy.restapiexample.com/api/v1/employees");
-
-    Messages.show("Request succeeded.");
   }
 
   _onGetImageRequestPress() async {
-    // Dio
-    Dio dio = Dio();
-    dio.interceptors.add(ShakeDioInterceptor());
-    await dio.get("https://asia.olympus-imaging.com/content/000107506.jpg");
+    try {
+      await networkTester.sendGetFileRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      print(e);
+      Messages.show(e.toString());
+    }
 
     // Dartio
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
@@ -353,7 +368,66 @@ class _HomeState extends State<Home> {
     //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
     //await shakeHttpClient
     //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
+  }
 
-    Messages.show("Request succeeded.");
+  _onSendPostFileRequest() async {
+    try {
+      await networkTester.sendPostFileRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      print(e);
+      Messages.show(e.toString());
+    }
+
+    // Dartio
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient.getUrl(
+    //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
+
+    // Http
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient
+    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
+  }
+
+  _onSend404Request() async {
+    try {
+      await networkTester.send404Request();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      print(e);
+      Messages.show(e.toString());
+    }
+    // Dartio
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient.getUrl(
+    //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
+
+    // Http
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient
+    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
+  }
+
+  _onSendTimeoutRequest() async {
+    try {
+      await networkTester.sendTimeoutRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      print(e);
+      Messages.show(e.toString());
+    }
+    // Dartio
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient.getUrl(
+    //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
+
+    // Http
+    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
+    //await shakeHttpClient
+    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
   }
 }

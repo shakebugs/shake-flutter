@@ -4,7 +4,7 @@ import 'package:shake_flutter/utils/extensions.dart';
 class NetworkRequest {
   String url;
   String method;
-  int status;
+  String status;
   String requestBody = '';
   String responseBody = '';
   Map<String, String> requestHeaders = <String, String>{};

@@ -35,7 +35,7 @@ fun mapToNetworkRequest(data: HashMap<String, Any>?): NetworkRequest? {
         networkRequest = NetworkRequest()
         networkRequest.method = data["method"] as String
         networkRequest.url = data["url"] as String
-        networkRequest.statusCode = (data["status"] as Int).toString()
+        networkRequest.statusCode = data["status"] as String
         networkRequest.requestBody = data["requestBody"] as String
         networkRequest.responseBody = data["responseBody"] as String
         networkRequest.requestHeaders = data["requestHeaders"] as Map<String, String>

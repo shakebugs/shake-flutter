@@ -43,7 +43,7 @@ class ShakeHttpLogger {
     }
 
     networkRequest.endTime = DateTime.now();
-    networkRequest.status = response.statusCode;
+    networkRequest.status = response.statusCode.toString();
 
     if (responseBody != null) {
       if (responseBody.isBinary()) {

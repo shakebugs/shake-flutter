@@ -38,6 +38,8 @@ dependencies:
   shake_dio_interceptor:
     path: ../../shake-dio-interceptor
 
+  http_parser: ^3.1.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
