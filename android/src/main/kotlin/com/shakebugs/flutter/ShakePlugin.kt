@@ -1,13 +1,17 @@
 package com.shakebugs.flutter
 
 import android.app.Activity
+import android.util.Log
 import androidx.annotation.NonNull
+import com.shakebugs.flutter.constants.PLATFORM
+import com.shakebugs.flutter.constants.VERSION_CODE
+import com.shakebugs.flutter.constants.VERSION_NAME
+import com.shakebugs.flutter.utils.getMethod
 import com.shakebugs.flutter.utils.mapToNetworkRequest
 import com.shakebugs.flutter.utils.mapToShakeFiles
 import com.shakebugs.flutter.utils.mapToShakeReportConfiguration
 import com.shakebugs.shake.Shake
-import com.shakebugs.shake.report.ShakeFile
-import com.shakebugs.shake.report.ShakeReportData
+import com.shakebugs.shake.ShakeInfo
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -69,9 +73,35 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "start" -> {
-                activity?.let {
-                    Shake.start(it.application)
-                    Shake.setFirstCreatedActivity(it)
+                try {
+                    if (activity == null) {
+                        Log.i("Shake", "Activity not initialized.")
+                        return
+                    }
+
+                    val setShakeInfo = getMethod(Class.forName("com.shakebugs.shake.Shake"),
+                            "setShakeInfo", ShakeInfo::class.java)
+                    val startFromActivity = getMethod(Class.forName("com.shakebugs.shake.Shake"),
+                            "startFromActivity", Activity::class.java)
+
+                    if (setShakeInfo == null) {
+                        Log.i("Shake", "setShakeInfo() method not found.")
+                        return
+                    }
+                    if (startFromActivity == null) {
+                        Log.i("Shake", "startFromActivity() method not found.")
+                        return
+                    }
+
+                    val shakeInfo = ShakeInfo()
+                    shakeInfo.platform = PLATFORM
+                    shakeInfo.versionName = VERSION_NAME
+                    shakeInfo.versionCode = VERSION_CODE
+
+                    setShakeInfo.invoke(null, shakeInfo)
+                    startFromActivity.invoke(null, activity)
+                } catch (e: Exception) {
+                    Log.i("Shake", "Failed to call start: " + e.message)
                 }
             }
             "show" -> {
@@ -86,7 +116,7 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setEnableBlackBox" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().enableBlackBox = it
+                    Shake.getReportConfiguration().isEnableBlackBox = it
                 }
             }
             "isEnableBlackBox" -> {
@@ -96,7 +126,7 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setEnableActivityHistory" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().enableActivityHistory = it
+                    Shake.getReportConfiguration().isEnableActivityHistory = it
                 }
             }
             "isEnableActivityHistory" -> {
@@ -106,7 +136,7 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setEnableInspectScreen" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().enableInspectScreen = it
+                    Shake.getReportConfiguration().isEnableInspectScreen = it
                 }
             }
             "isEnableInspectScreen" -> {
@@ -126,7 +156,7 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setInvokeShakeOnShakeDeviceEvent" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().invokeShakeOnShakeDeviceEvent = it
+                    Shake.getReportConfiguration().isInvokeShakeOnShakeDeviceEvent = it
                 }
             }
             "isInvokeShakeOnShakeDeviceEvent" -> {
@@ -136,7 +166,7 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setInvokeShakeOnScreenshot" -> {
                 val enabled: Boolean? = call.argument("enabled")
                 enabled?.let {
-                    Shake.getReportConfiguration().invokeShakeOnScreenshot = it
+                    Shake.getReportConfiguration().isInvokeShakeOnScreenshot = it
                 }
             }
             "isInvokeShakeOnScreenshot" -> {
@@ -147,32 +177,14 @@ public class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 val quickFacts: String? = call.argument("quickFacts")
                 val shakeFiles: List<HashMap<String, Any>>? = call.argument("shakeFiles")
 
-                Shake.onPrepareData(object : ShakeReportData {
-                    override fun quickFacts(): String? {
-                        return quickFacts
-                    }
-
-                    override fun attachedFiles(): List<ShakeFile>? {
-                        return mapToShakeFiles(shakeFiles)
-                    }
-                })
+                Shake.onPrepareData { mapToShakeFiles(shakeFiles) }
             }
             "silentReport" -> {
                 val description: String? = call.argument("description")
-                val quickFacts: String? = call.argument("quickFacts")
                 val shakeFiles: List<HashMap<String, Any>>? = call.argument("shakeFiles")
                 val config: HashMap<String, Any>? = call.argument("configuration")
 
-                Shake.silentReport(description, object : ShakeReportData {
-                    override fun quickFacts(): String? {
-                        return quickFacts
-                    }
-
-                    override fun attachedFiles(): List<ShakeFile>? {
-                        return mapToShakeFiles(shakeFiles)
-                    }
-
-                }, mapToShakeReportConfiguration(config))
+                Shake.silentReport(description, { mapToShakeFiles(shakeFiles) }, mapToShakeReportConfiguration(config))
             }
             "insertNetworkRequest" -> {
                 val networkRequest: HashMap<String, Any>? = call.argument("networkRequest")

@@ -25,8 +25,6 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-apply from: './version.gradle'
-
 android {
     compileSdkVersion 28
 
@@ -35,14 +33,6 @@ android {
     }
     defaultConfig {
         minSdkVersion 17
-        buildConfigField "String", "SHAKE_SDK_PLATFORM", "\"" + sdkPlatformName + "\""
-        buildConfigField "String", "SHAKE_SDK_VERSION_NAME", "\"" + sdkVersionName + "\""
-        buildConfigField "String", "SHAKE_SDK_VERSION_CODE", "\"" + sdkVersionCode + "\""
-    }
-    buildTypes {
-        release {
-            consumerProguardFiles 'consumer-rules.pro'
-        }
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -51,5 +41,9 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    api 'com.shakebugs.android:shake:10.0.+'
+    api files('libs/shake.aar')
+    implementation 'com.squareup.retrofit2:retrofit:2.6.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+    //api 'com.shakebugs.android:shake-staging:10.0.+'
 }

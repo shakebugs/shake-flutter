@@ -6,8 +6,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   Shake.setShowFloatingReportButton(true);
-  Shake.setInvokeShakeOnScreenshot(false);
-  Shake.setInvokeShakeOnShakeDeviceEvent(false);
+  Shake.setInvokeShakeOnShakeDeviceEvent(true);
+  Shake.setInvokeShakeOnScreenshot(true);
   Shake.start();
 
   runApp(Home());

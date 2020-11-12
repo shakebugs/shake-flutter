@@ -218,21 +218,21 @@ packages:
       path: "../../shake-dio-interceptor"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "10.0.0"
   shake_flutter:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "10.0.0-dev.2"
+    version: "10.0.0"
   shake_http_client:
     dependency: "direct main"
     description:
       path: "../../shake-http-client"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "10.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
