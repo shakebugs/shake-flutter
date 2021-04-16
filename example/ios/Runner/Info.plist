@@ -22,13 +22,6 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>Shake</key>
-	<dict>
-		<key>APIClientID</key>
-		<string>HtTFUmUziF5Qjk1XLraAJXtVB1cL62yHWWqsDnrG</string>
-		<key>APIClientSecret</key>
-		<string>IPRqEI2iSQhmUP6NGQcPNKCs7JQCJrpFUG0qDmLx4Yx2spd3caXnC3o</string>
-	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

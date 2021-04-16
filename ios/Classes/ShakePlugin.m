@@ -8,34 +8,36 @@
 #import "shake_flutter-Swift.h"
 #endif
 
+static FlutterMethodChannel *channel = nil;
+
 @implementation ShakePlugin
 
-+(void) initialize {
-    if(self == [ShakePlugin class]) {
-        NSDictionary *platformAndSdkVersionDict = @{
-            @"platform": @"Flutter",
-            @"sdkVersion": @"10.0.0"
-        };
-        NSNumber *disableDueToRN = @YES;
-        [SHKShake performSelector:sel_getUid(@"_setNetworkRequestReporterDisabledDueToRN:".UTF8String) withObject:disableDueToRN];
-        [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:platformAndSdkVersionDict];
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [self setPlatformInfo];
+        [self disableNetworkRequests];
     }
-
+    return self;
 }
--(instancetype)initWithMessenger:(nonnull NSObject<FlutterBinaryMessenger> *)messenger {
+
+- (instancetype)initWithMessenger:(nonnull NSObject<FlutterBinaryMessenger> *)messenger {
     self = [super init];
     return self;
 }
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     id<FlutterBinaryMessenger> messenger = [registrar messenger];
-    FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"shake" binaryMessenger:messenger];
+    channel = [FlutterMethodChannel methodChannelWithName:@"shake" binaryMessenger:messenger];
     ShakePlugin *instance = [[ShakePlugin alloc] initWithMessenger:messenger];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
--(void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-    
+
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+
     if([@"start" isEqualToString:call.method]) {
-        [self start:result];
+        [self start:call result:result];
     } else if([@"show" isEqualToString:call.method]) {
         [self show:result];
     } else if([@"setEnabled" isEqualToString:call.method]) {
@@ -64,126 +66,385 @@
         [self setInvokeShakeOnScreenshot:call result:result];
     } else if([@"isInvokeShakeOnScreenshot" isEqualToString:call.method]) {
         [self isInvokeShakeOnScreenshot:call result:result];
+    } else if([@"setInvokeShakeOnRightEdgePan" isEqualToString:call.method]) {
+        [self setInvokeShakeOnRightEdgePan:call result:result];
+    } else if([@"isInvokeShakeOnRightEdgePan" isEqualToString:call.method]) {
+        [self isInvokeShakeOnRightEdgePan:call result:result];
     } else if ([@"setShakeReportData" isEqualToString:call.method]) {
         [self setShakeReportData:call result:result];
     } else if ([@"silentReport" isEqualToString:call.method]) {
         [self silentReport:call result:result];
     } else if ([@"insertNetworkRequest" isEqualToString:call.method]) {
         [self insertNetworkRequest:call result:result];
+    } else if ([@"insertNotificationEvent" isEqualToString:call.method]) {
+        [self insertNotificationEvent:call result:result];
+    } else if ([@"setMetadata" isEqualToString:call.method]) {
+        [self setMetadata:call result:result];
+    } else if ([@"log" isEqualToString:call.method]) {
+        [self log:call result:result];
+    } else if([@"setShowIntroMessage" isEqualToString:call.method]) {
+        [self setShowIntroMessage:call result:result];
+    } else if([@"isShowIntroMessage" isEqualToString:call.method]) {
+        [self isShowIntroMessage:call result:result];
+    } else if([@"setEnableEmailField" isEqualToString:call.method]) {
+        [self setEnableEmailField:call result:result];
+    } else if([@"isEnableEmailField" isEqualToString:call.method]) {
+        [self isEnableEmailField:call result:result];
+    } else if([@"setEmailField" isEqualToString:call.method]) {
+        [self setEmailField:call result:result];
+    } else if([@"getEmailField" isEqualToString:call.method]) {
+        [self getEmailField:call result:result];
+    } else if([@"setAutoVideoRecording" isEqualToString:call.method]) {
+        [self setAutoVideoRecording:call result:result];
+    } else if([@"isAutoVideoRecording" isEqualToString:call.method]) {
+        [self isAutoVideoRecording:call result:result];
+    } else if([@"setEnableMultipleFeedbackTypes" isEqualToString:call.method]) {
+        [self setEnableMultipleFeedbackTypes:call result:result];
+    } else if([@"isEnableMultipleFeedbackTypes" isEqualToString:call.method]) {
+        [self isEnableMultipleFeedbackTypes:call result:result];
+    } else if([@"setConsoleLogsEnabled" isEqualToString:call.method]) {
+        [self setConsoleLogsEnabled:call result:result];
+    } else if([@"isConsoleLogsEnabled" isEqualToString:call.method]) {
+        [self isConsoleLogsEnabled:call result:result];
+    } else if([@"setSensitiveDataRedactionEnabled" isEqualToString:call.method]) {
+        [self setSensitiveDataRedactionEnabled:call result:result];
+    } else if([@"isSensitiveDataRedactionEnabled" isEqualToString:call.method]) {
+        [self isSensitiveDataRedactionEnabled:call result:result];
+    } else if([@"showNotificationsSettings" isEqualToString:call.method]) {
+        [self showNotificationsSettings:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
 }
-- (void)start:(FlutterResult)result {
-    [SHKShake start];
+
+- (void)start:(FlutterMethodCall*) call result:(FlutterResult)result {
+    NSString* clientId = call.arguments[@"clientId"];
+    NSString* clientSecret = call.arguments[@"clientSecret"];
+
+    [SHKShake startWithClientId:clientId clientSecret:clientSecret];
+    [self startNotificationsEmitter];
+
     result(nil);
 }
+
 - (void)show:(FlutterResult)result {
     [SHKShake show];
+
     result(nil);
 }
--(void)setEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)setEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL shakeEnabled = [call.arguments[@"enabled"] boolValue];
     SHKShake.isPaused = !shakeEnabled;
+    
     result(nil);
 }
--(void)setEnableActivityHistory:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)setEnableActivityHistory:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL enableActivityHistory = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isActivityHistoryEnabled = enableActivityHistory;
+    
     result(nil);
 }
--(void)isEnableActivityHistory:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)isEnableActivityHistory:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL isEnableActivityHistory = SHKShake.configuration.isActivityHistoryEnabled;
     NSNumber *isActivityHistoryEnabledObj = [NSNumber numberWithBool:isEnableActivityHistory];
+    
     result(isActivityHistoryEnabledObj);
 }
--(void)setEnableInspectScreen:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)setEnableInspectScreen:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL enableInspectScreen = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isInspectScreenEnabled = enableInspectScreen;
+    
     result(nil);
 }
--(void)isEnableInspectScreen:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)isEnableInspectScreen:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL isEnableInspectScreen = SHKShake.configuration.isInspectScreenEnabled;
     NSNumber *isEnableInspectScreenObj = [NSNumber numberWithBool:isEnableInspectScreen];
+    
     result(isEnableInspectScreenObj);
 }
--(void)setEnableBlackBox:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)setEnableBlackBox:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL enableBlackBox = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isBlackBoxEnabled = enableBlackBox;
+    
     result(nil);
 }
--(void)isEnableBlackBox:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)isEnableBlackBox:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL isEnableBlackBox = SHKShake.configuration.isBlackBoxEnabled;
     NSNumber *isEnableBlackBoxObj = [NSNumber numberWithBool:isEnableBlackBox];
+    
     result(isEnableBlackBoxObj);
 }
--(void)setShowFloatingReportButton:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)setShowFloatingReportButton:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL showFloatingReportButton = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isFloatingReportButtonShown = showFloatingReportButton;
+    
     result(nil);
 }
--(void)isShowFloatingReportButton:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)isShowFloatingReportButton:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL isShowFloatingReportButton = SHKShake.configuration.isFloatingReportButtonShown;
     NSNumber *isShowFloatingReportButtonObj = [NSNumber numberWithBool:isShowFloatingReportButton];
+    
     result(isShowFloatingReportButtonObj);
 }
+
 -(void)setInvokeShakeOnShakeDeviceEvent:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL invokeShakeOnShakeDeviceEvent = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isInvokedByShakeDeviceEvent = invokeShakeOnShakeDeviceEvent;
+   
     result(nil);
 }
--(void)isInvokeShakeOnShakeDeviceEvent:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)isInvokeShakeOnShakeDeviceEvent:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL isInvokeShakeOnShakeDeviceEvent = SHKShake.configuration.isInvokedByShakeDeviceEvent;
     NSNumber *isInvokeShakeOnShakeDeviceEventObj = [NSNumber numberWithBool:isInvokeShakeOnShakeDeviceEvent];
+   
     result(isInvokeShakeOnShakeDeviceEventObj);
 }
+
 -(void)setInvokeShakeOnScreenshot:(FlutterMethodCall*) call result:(FlutterResult) result {
     BOOL invokeShakeOnScreenshot = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isInvokedByScreenshot = invokeShakeOnScreenshot;
+   
     result(nil);
 }
--(void)isInvokeShakeOnScreenshot:(FlutterMethodCall*) call result:(FlutterResult)result {
+
+- (void)isInvokeShakeOnScreenshot:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL isInvokeShakeOnScreenshot = SHKShake.configuration.isInvokedByScreenshot;
     NSNumber *isInvokeShakeOnScreenshotObj = [NSNumber numberWithBool:isInvokeShakeOnScreenshot];
+   
     result(isInvokeShakeOnScreenshotObj);
 }
--(void)setShakeReportData:(FlutterMethodCall*) call result:(FlutterResult) result {
+
+- (void)setInvokeShakeOnRightEdgePan:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL invokeShakeOnRightEdgePan = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isInvokedByRightEdgePan = invokeShakeOnRightEdgePan;
+   
+    result(nil);
+}
+
+- (void)isInvokeShakeOnRightEdgePan:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isInvokeShakeOnRightEdgePan = SHKShake.configuration.isInvokedByRightEdgePan;
+    NSNumber *isInvokeShakeOnRightEdgePanObj = [NSNumber numberWithBool:isInvokeShakeOnRightEdgePan];
+   
+    result(isInvokeShakeOnRightEdgePanObj);
+}
+
+- (void)setShakeReportData:(FlutterMethodCall*) call result:(FlutterResult) result {
     NSArray* files = call.arguments[@"shakeFiles"];
-    NSString* quickFacts = call.arguments[@"quickFacts"];
 
-    NSMutableArray <SHKShakeFile *> *shakeFiles;
-    if (files != (id)[NSNull null]) {
-        shakeFiles = [NSMutableArray array];
-        for (int i = 0; i < [files count]; i++) {
-            NSDictionary *file = [files objectAtIndex:i];
-            NSString *path = [file objectForKey:@"path"];
-            NSString *name = [file objectForKey:@"name"];
-
-            NSURL *url = [[NSURL alloc] initFileURLWithPath: path];
-            SHKShakeFile *attachedFile = [[SHKShakeFile alloc] initWithName:name andFileURL:url];
-
-            [shakeFiles addObject:attachedFile];
-        }
-    }
-
-    SHKShake.onPrepareReportData = ^SHKShakeReportData *_Nonnull(SHKShakeReportData *_Nonnull reportData) {
-      reportData.quickFacts = quickFacts;
-      reportData.attachedFiles = [NSArray arrayWithArray:shakeFiles];
-      return reportData;
+    SHKShake.onPrepareReportData = ^NSArray<SHKShakeFile *> * _Nonnull {
+        NSMutableArray<SHKShakeFile*> *shakeFiles = [self mapToShakeFiles:files];
+        return shakeFiles;
     };
 
     result(nil);
 }
--(void)silentReport:(FlutterMethodCall*) call result:(FlutterResult) result {
+
+- (void)silentReport:(FlutterMethodCall*) call result:(FlutterResult) result {
     NSString *description = call.arguments[@"description"];
     NSArray *files = call.arguments[@"shakeFiles"];
-    NSString *quickFacts = call.arguments[@"quickFacts"];
     NSDictionary *configurationMap = call.arguments[@"configuration"];
 
-    BOOL includesBlackBoxData = [[configurationMap objectForKey:@"blackBoxData"] boolValue];
-    BOOL includesActivityHistoryData = [[configurationMap objectForKey:@"activityHistoryData"] boolValue];
-    BOOL includesScreenshotImage = [[configurationMap objectForKey:@"screenshot"] boolValue];
-    BOOL showsToastMessageOnSend = [[configurationMap objectForKey:@"showReportSentMessage"] boolValue];
+    NSMutableArray <SHKShakeFile*> *shakeFiles = [self mapToShakeFiles:files];
+    SHKShakeReportConfiguration* reportConfiguration = [self mapToConfiguration:configurationMap];
+
+    SHKShakeReportData *reportData = [[SHKShakeReportData alloc] initWithBugDescription:description attachedFiles:[NSArray arrayWithArray:shakeFiles]];
+
+    [SHKShake silentReportWithReportData:reportData reportConfiguration:reportConfiguration];
+
+    result(nil);
+}
+
+- (void)insertNetworkRequest:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSDictionary *requestDict = call.arguments[@"networkRequest"];
+
+    NSDictionary* networkRequest = [self mapToNetworkRequest:requestDict];
+    [self insertRNNetworkRequest:networkRequest];
+
+    result(nil);
+}
+
+- (void)insertNotificationEvent:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSDictionary *notificationDict = call.arguments[@"notificationEvent"];
+
+    NSDictionary* notificationEvent = [self mapToNotificationEvent:notificationDict];
+    [self insertRNNotificationEvent:notificationEvent];
+
+    result(nil);
+}
+
+- (void)setMetadata:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSString* key = call.arguments[@"key"];
+    NSString* value = call.arguments[@"value"];
+
+    [SHKShake setMetadataWithKey: key value: value];
+
+    result(nil);
+}
+
+- (void)log:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSString* logLevelStr = call.arguments[@"level"];
+    NSString* message = call.arguments[@"message"];
+
+    LogLevel logLevel = [self mapToLogLevel:logLevelStr];
+    [SHKShake logWithLevel: logLevel message: message];
+
+    result(nil);
+}
+
+- (void)setShowIntroMessage:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL showIntroMessage = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.setShowIntroMessage = showIntroMessage;
+    result(nil);
+}
+
+-(void)isShowIntroMessage:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isShowIntroMessage = SHKShake.configuration.setShowIntroMessage;
+    NSNumber *isShowIntroMessageObj = [NSNumber numberWithBool:isShowIntroMessage];
+    result(isShowIntroMessageObj);
+}
+
+- (void)setEnableEmailField:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL enableEmailField = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isEmailFieldEnabled = enableEmailField;
+    result(nil);
+}
+
+- (void)isEnableEmailField:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isEnableEmailField = SHKShake.configuration.isEmailFieldEnabled;
+    NSNumber *isEnableEmailFieldObj = [NSNumber numberWithBool:isEnableEmailField];
+    result(isEnableEmailFieldObj);
+}
+
+- (void)setEmailField:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSString* email = call.arguments[@"email"];
+    SHKShake.configuration.emailField = email;
+    result(nil);
+}
+
+- (void)getEmailField:(FlutterMethodCall*) call result:(FlutterResult)result {
+    NSString* email = SHKShake.configuration.emailField;
+    result(email);
+}
+
+- (void)setAutoVideoRecording:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL autoVideoRecording = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isAutoVideoRecordingEnabled = autoVideoRecording;
+    result(nil);
+}
+
+- (void)isAutoVideoRecording:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isAutoVideoRecording = SHKShake.configuration.isAutoVideoRecordingEnabled;
+    NSNumber *isAutoVideoRecordingObj = [NSNumber numberWithBool:isAutoVideoRecording];
+    result(isAutoVideoRecordingObj);
+}
+
+- (void)setEnableMultipleFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL isFeedbackTypeEnabled = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isFeedbackTypeEnabled = isFeedbackTypeEnabled;
+
+    result(nil);
+}
+
+- (void)isEnableMultipleFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isFeedbackTypeEnabled = SHKShake.configuration.isFeedbackTypeEnabled;
+    NSNumber *isFeedbackTypeEnabledObj = [NSNumber numberWithBool:isFeedbackTypeEnabled];
+
+    result(isFeedbackTypeEnabledObj);
+}
+
+- (void)setConsoleLogsEnabled:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL isConsoleLogsEnabled = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isConsoleLogsEnabled = isConsoleLogsEnabled;
+
+    result(nil);
+}
+
+- (void)isConsoleLogsEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isConsoleLogsEnabled = SHKShake.configuration.isConsoleLogsEnabled;
+    NSNumber *isConsoleLogsEnabledObj = [NSNumber numberWithBool:isConsoleLogsEnabled];
+
+    result(isConsoleLogsEnabledObj);
+}
+
+- (void)setSensitiveDataRedactionEnabled:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL isSensitiveDataRedactionEnabled = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isSensitiveDataRedactionEnabled = isSensitiveDataRedactionEnabled;
+
+    result(nil);
+}
+
+- (void)isSensitiveDataRedactionEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isSensitiveDataRedactionEnabled = SHKShake.configuration.isSensitiveDataRedactionEnabled;
+    NSNumber *isSensitiveDataRedactionEnabledObj = [NSNumber numberWithBool:isSensitiveDataRedactionEnabled];
+
+    result(isSensitiveDataRedactionEnabledObj);
+}
+
+- (void)startNotificationsEmitter {
+    SHKShake.notificationEventsFilter = ^SHKNotificationEventEditor *(SHKNotificationEventEditor * notificationEvent) {
+        NSDictionary* notificationDict = [self notificationToMap:notificationEvent];
+        [channel invokeMethod:@"onNotificationReceived" arguments:notificationDict];
+
+        return nil;
+    };
+}
+
+- (void)showNotificationsSettings:(FlutterResult)result {
+    // Method used just on Android
+
+    result(nil);
+}
+
+// Mappers
+- (LogLevel)mapToLogLevel:(NSString*)logLevelStr {
+    LogLevel logLevel = LogLevelInfo;
+
+    if ([logLevelStr isEqualToString:@"verbose"])
+        logLevel = LogLevelVerbose;
+    if ([logLevelStr isEqualToString:@"debug"])
+        logLevel = LogLevelDebug;
+    if ([logLevelStr isEqualToString:@"info"])
+        logLevel = LogLevelInfo;
+    if ([logLevelStr isEqualToString:@"warn"])
+        logLevel = LogLevelWarn;
+    if ([logLevelStr isEqualToString:@"error"])
+        logLevel = LogLevelError;
+
+    return logLevel;
+}
+
+- (NSMutableArray<SHKShakeFile*>*)mapToShakeFiles:(nonnull NSArray*)files {
+    NSMutableArray<SHKShakeFile*>* shakeFiles = [NSMutableArray array];
+    for(int i = 0; i < [files count]; i++) {
+        NSDictionary* file = [files objectAtIndex:i];
+        NSString* path = [file objectForKey:@"path"];
+        NSString* name = [file objectForKey:@"name"];
+
+        NSURL* url = [[NSURL alloc] initFileURLWithPath: path];
+        SHKShakeFile* attachedFile = [[SHKShakeFile alloc] initWithName:name andFileURL:url];
+
+        if (attachedFile != nil) {
+            [shakeFiles addObject:attachedFile];
+        }
+    }
+    return shakeFiles;
+}
+
+- (SHKShakeReportConfiguration*)mapToConfiguration:(nonnull NSDictionary*)configurationDic {
+    BOOL includesBlackBoxData = [[configurationDic objectForKey:@"blackBoxData"] boolValue];
+    BOOL includesActivityHistoryData = [[configurationDic objectForKey:@"activityHistoryData"] boolValue];
+    BOOL includesScreenshotImage = [[configurationDic objectForKey:@"screenshot"] boolValue];
+    BOOL showsToastMessageOnSend = [[configurationDic objectForKey:@"showReportSentMessage"] boolValue];
 
     SHKShakeReportConfiguration *reportConfiguration = [[SHKShakeReportConfiguration alloc] init];
     reportConfiguration.includesBlackBoxData = includesBlackBoxData;
@@ -191,59 +452,61 @@
     reportConfiguration.includesScreenshotImage = includesScreenshotImage;
     reportConfiguration.showsToastMessageOnSend = showsToastMessageOnSend;
 
-    NSMutableArray <SHKShakeFile *> *shakeFiles;
-    if (files != (id)[NSNull null]) {
-        shakeFiles = [NSMutableArray array];
-        for (int i = 0; i < [files count]; i++) {
-            NSDictionary *file = [files objectAtIndex:i];
-            NSString *path = [file objectForKey:@"path"];
-            NSString *name = [file objectForKey:@"name"];
-
-            NSURL *url = [[NSURL alloc] initFileURLWithPath: path];
-            SHKShakeFile *attachedFile = [[SHKShakeFile alloc] initWithName:name andFileURL:url];
-
-            [shakeFiles addObject:attachedFile];
-          }
-    }
-
-    SHKShakeReportData *reportData = [[SHKShakeReportData alloc] init];
-    reportData.bugDescription = description;
-    reportData.quickFacts = quickFacts;
-    reportData.attachedFiles = [NSArray arrayWithArray:shakeFiles];
-
-    [SHKShake silentReportWithReportData:reportData reportConfiguration:reportConfiguration];
-
-    result(nil);
+    return reportConfiguration;
 }
--(void)insertNetworkRequest:(FlutterMethodCall*) call result:(FlutterResult) result {
-    NSDictionary *networkRequest = call.arguments[@"networkRequest"];
 
-    NSString* url = [networkRequest objectForKey:@"url"];
-    NSString* method = [networkRequest objectForKey:@"method"];
-    NSString* responseBody = [networkRequest objectForKey:@"responseBody"];
-    NSString* requestBody = [networkRequest objectForKey:@"requestBody"];
-    NSDictionary* responseHeaders = [networkRequest objectForKey:@"responseHeaders"];
-    NSDictionary* requestHeaders = [networkRequest objectForKey:@"requestHeaders"];
-    NSNumber* status = [networkRequest objectForKey:@"status"];
-    NSNumber* duration = [networkRequest objectForKey:@"duration"];
-    NSString* timestamp = [networkRequest objectForKey:@"timestamp"];
-
-    NSData* data = [networkRequest[@"requestBody"] dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *dict = [[NSDictionary alloc] init];
-    dict = @{
-        @"url": url,
-        @"method": method,
+- (NSDictionary*)mapToNetworkRequest:(nonnull NSDictionary*)requestDict {
+    NSDictionary *networkRequest = [[NSDictionary alloc] init];
+    NSData *data = [requestDict[@"requestBody"] dataUsingEncoding:NSUTF8StringEncoding];
+    networkRequest = @{
+        @"url": requestDict[@"url"],
+        @"method": requestDict[@"method"],
+        @"responseBody": requestDict[@"responseBody"],
+        @"statusCode": requestDict[@"status"],
         @"requestBody": data,
-        @"responseBody": responseBody,
-        @"statusCode": status,
-        @"requestHeaders": requestHeaders,
-        @"responseHeaders": responseHeaders,
-        @"duration": duration,
-        @"timestamp": timestamp
+        @"requestHeaders": requestDict[@"requestHeaders"],
+        @"duration": requestDict[@"duration"],
+        @"responseHeaders": requestDict[@"responseHeaders"],
+        @"timestamp": requestDict[@"timestamp"]
     };
+    return networkRequest;
+}
 
-    [SHKShake performSelector:sel_getUid(@"_reportRequestCompleted:".UTF8String) withObject:dict];
+- (NSDictionary*)mapToNotificationEvent:(nonnull NSDictionary*)notificationDict {
+    NSDictionary *notificationEvent = [[NSDictionary alloc] init];
+    notificationEvent = @{
+        @"id": notificationDict[@"id"],
+        @"title": notificationDict[@"title"],
+        @"description": notificationDict[@"description"]
+    };
+    return notificationEvent;
+}
 
-    result(nil);
+- (NSDictionary*)notificationToMap:(nonnull SHKNotificationEventEditor*)notification {
+    NSDictionary *notificationDict = [[NSDictionary alloc] init];
+    notificationDict = @{
+        @"id": notification.identifier,
+        @"title": notification.title,
+        @"description": notification.description,
+    };
+    return notificationDict;
+}
+
+// Private
+- (void)setPlatformInfo {
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"14.1.0" };
+    [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
+}
+
+- (void)disableNetworkRequests {
+    [SHKShake performSelector:sel_getUid(@"_setNetworkRequestReporterDisabledDueToRN:".UTF8String) withObject:@YES];
+}
+
+- (void)insertRNNotificationEvent:(nonnull NSDictionary*)notificationEvent {
+    [SHKShake performSelector:sel_getUid(@"_reportNotification:".UTF8String) withObject:notificationEvent];
+}
+
+- (void)insertRNNetworkRequest:(nonnull NSDictionary*)networkRequest{
+    [SHKShake performSelector:sel_getUid(@"_reportRequestCompleted:".UTF8String) withObject:networkRequest];
 }
 @end

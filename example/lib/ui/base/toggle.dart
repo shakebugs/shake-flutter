@@ -48,16 +48,14 @@ class Toggle extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Switch(
-                  activeColor: ThemeColors.primaryColor,
-                  value: enabled,
-                  onChanged: (bool value) {
-                    onChanged(value);
-                  },
-                ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Switch(
+                activeColor: ThemeColors.primaryColor,
+                value: enabled,
+                onChanged: (bool value) {
+                  onChanged(value);
+                },
               ),
             )
           ],

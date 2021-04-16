@@ -16,15 +16,7 @@ class ShakeHttpLogger {
     networkRequest.startTime = DateTime.now();
     networkRequest.method = request.method;
     networkRequest.url = request.uri.toString();
-
-    if (requestBody != null) {
-      if (requestBody.isBinary()) {
-        networkRequest.requestBody = "Binary data";
-      } else {
-        networkRequest.requestBody = requestBody;
-      }
-    }
-
+    networkRequest.requestBody = _removeBinaryData(requestBody);
     request.headers.forEach((String header, dynamic value) {
       networkRequest.requestHeaders[header] = value[0].toString();
     });
@@ -33,31 +25,33 @@ class ShakeHttpLogger {
   }
 
   void onResponse(
-    HttpClientResponse response,
-    HttpClientRequest request, {
+    HttpClientRequest request,
+    HttpClientResponse response, {
     String responseBody,
-  }) {
+  }) async {
     final NetworkRequest networkRequest = _getRequestData(request.hashCode);
     if (networkRequest == null) {
       return null;
     }
 
     networkRequest.endTime = DateTime.now();
-    networkRequest.status = response.statusCode;
-
-    if (responseBody != null) {
-      if (responseBody.isBinary()) {
-        networkRequest.responseBody = "Binary data";
-      } else {
-        networkRequest.responseBody = responseBody;
-      }
-    }
-
+    networkRequest.status = response.statusCode.toString();
+    networkRequest.responseBody = _removeBinaryData(responseBody);
     response.headers.forEach((String header, dynamic value) {
       networkRequest.responseHeaders[header] = value[0].toString();
     });
 
     Shake.insertNetworkRequest(networkRequest);
+  }
+
+  String _removeBinaryData(String text) {
+    if (text == null) return "";
+
+    if (text.isBinary()) {
+      return "Binary data";
+    }
+
+    return text;
   }
 
   NetworkRequest _getRequestData(int requestHashCode) {

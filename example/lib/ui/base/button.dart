@@ -25,12 +25,12 @@ class Button extends StatelessWidget {
                 offset: Offset(0, 1),
               )
             ]),
-        child: FlatButton(
-          padding: EdgeInsets.all(0),
+        child: TextButton(
           onPressed: onPress,
           child: Text(
             text,
             style: TextStyle(
+              color: Colors.black,
               fontSize: 18,
             ),
           ),

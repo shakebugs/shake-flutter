@@ -13,7 +13,7 @@ extension DateUtils on DateTime {
 extension TextUtils on String {
   /// Checks if contains binary characters.
   bool isBinary() {
-    RegExp multibyte = RegExp(r'[^\x00-\x7F]');
-    return multibyte.hasMatch(this);
+    RegExp regex = RegExp(r'\ufffd');
+    return regex.hasMatch(this);
   }
 }

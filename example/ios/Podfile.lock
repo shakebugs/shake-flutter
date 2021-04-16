@@ -1,5 +1,7 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_local_notifications (0.0.1):
+    - Flutter
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
@@ -7,75 +9,56 @@ PODS:
     - Flutter
   - path_provider (0.0.1):
     - Flutter
-  - path_provider_linux (0.0.1):
-    - Flutter
-  - path_provider_macos (0.0.1):
-    - Flutter
-  - Shake (10.0.7)
+  - Shake-Staging (14.1.4-rc.1212)
   - shake_flutter (0.0.1):
     - Flutter
-    - Shake (~> 10.0.0)
+    - Shake-Staging (~> 14.1.0-rc)
   - Toast (4.0.0)
   - url_launcher (0.0.1):
-    - Flutter
-  - url_launcher_macos (0.0.1):
-    - Flutter
-  - url_launcher_web (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
-  - path_provider_linux (from `.symlinks/plugins/path_provider_linux/ios`)
-  - path_provider_macos (from `.symlinks/plugins/path_provider_macos/ios`)
   - shake_flutter (from `.symlinks/plugins/shake_flutter/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
-  - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
-  - url_launcher_web (from `.symlinks/plugins/url_launcher_web/ios`)
 
 SPEC REPOS:
-  trunk:
-    - Shake
+  "git@github.com:shakebugs/Specs.git":
+    - Shake-Staging
+  https://github.com/CocoaPods/Specs.git:
     - Toast
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
-  path_provider_linux:
-    :path: ".symlinks/plugins/path_provider_linux/ios"
-  path_provider_macos:
-    :path: ".symlinks/plugins/path_provider_macos/ios"
   shake_flutter:
     :path: ".symlinks/plugins/shake_flutter/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
-  url_launcher_macos:
-    :path: ".symlinks/plugins/url_launcher_macos/ios"
-  url_launcher_web:
-    :path: ".symlinks/plugins/url_launcher_web/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   fluttertoast: 6122fa75143e992b1d3470f61000f591a798cc58
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
-  path_provider_linux: 4d630dc393e1f20364f3e3b4a2ff41d9674a84e4
-  path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
-  Shake: 5dbd59e3e3363cea29bef608cc14aa13b09f96fc
-  shake_flutter: bddcd0ab71caacd31c86c869448894a9c122c327
+  Shake-Staging: f45f9d0deef797a2bfaad90bb6e27a629de9f014
+  shake_flutter: b08d6a45318c0293eb4812acd09a1075e087310b
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
-  url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
-  url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c
 
-PODFILE CHECKSUM: c34e2287a9ccaa606aeceab922830efb9a6ff69a
+PODFILE CHECKSUM: 350b23a1ddb073e6f234cd77e085ec2d3d146984
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0

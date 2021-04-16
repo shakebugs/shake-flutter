@@ -1,11 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shake_dio_interceptor/shake_dio_interceptor.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shake_example/constants/colors.dart';
+import 'package:shake_example/helpers/dio_tester.dart';
+import 'package:shake_example/helpers/network_tester.dart';
 import 'package:shake_example/ui/base/button.dart';
 import 'package:shake_example/ui/base/header.dart';
 import 'package:shake_example/ui/base/link.dart';
@@ -14,6 +14,9 @@ import 'package:shake_example/ui/base/toggle.dart';
 import 'package:shake_example/ui/base/version.dart';
 import 'package:shake_example/utils/files.dart';
 import 'package:shake_example/utils/messages.dart';
+import 'package:shake_flutter/enums/log_level.dart';
+import 'package:shake_flutter/models/network_request.dart';
+import 'package:shake_flutter/models/notification_event.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
 import 'package:shake_flutter/shake_flutter.dart';
@@ -24,13 +27,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  NetworkTester networkTester = DioTester();
+
   bool shakeInvokingEnabled = false;
   bool buttonInvokingEnabled = false;
   bool screenshotInvokingEnabled = false;
   bool shakeEnabled = false;
   bool blackboxEnabled = false;
-  bool activityHistoryEnabled = false;
   bool inspectScreenEnabled = false;
+  bool activityHistoryEnabled = false;
+  bool consoleLogsEnabled = false;
+  bool emailFieldEnabled = false;
+  bool feedbackTypesEnabled = false;
+  bool screenRecordingEnabled = false;
+  bool sensitiveDataEnabled = false;
 
   File file1;
   File file2;
@@ -46,23 +56,33 @@ class _HomeState extends State<Home> {
     final shakeInvokingEnabled = await Shake.isInvokeShakeOnShakeDeviceEvent();
     final buttonInvokingEnabled = await Shake.isShowFloatingReportButton();
     final screenshotInvokingEnabled = await Shake.isInvokeShakeOnScreenshot();
-    final blackboxEnabled = await Shake.isEnableBlackBox();
-    final activityHistoryEnabled = await Shake.isEnableActivityHistory();
-    final inspectScreenEnabled = await Shake.isEnableInspectScreen();
     final shakeEnabled = true; // Not provided by native SDK
+    final blackboxEnabled = await Shake.isEnableBlackBox();
+    final inspectScreenEnabled = await Shake.isEnableInspectScreen();
+    final activityHistoryEnabled = await Shake.isEnableActivityHistory();
+    final consoleLogsEnabled = await Shake.isConsoleLogsEnabled();
+    final emailFieldEnabled = await Shake.isEnableEmailField();
+    final feedbackTypesEnabled = await Shake.isEnableMultipleFeedbackTypes();
+    final screenRecordingEnabled = await Shake.isAutoVideoRecording();
+    final sensitiveDataEnabled = await Shake.isSensitiveDataRedactionEnabled();
 
     setState(() {
       this.shakeInvokingEnabled = shakeInvokingEnabled;
       this.buttonInvokingEnabled = buttonInvokingEnabled;
       this.screenshotInvokingEnabled = screenshotInvokingEnabled;
-      this.blackboxEnabled = blackboxEnabled;
-      this.activityHistoryEnabled = activityHistoryEnabled;
-      this.inspectScreenEnabled = inspectScreenEnabled;
       this.shakeEnabled = shakeEnabled;
+      this.blackboxEnabled = blackboxEnabled;
+      this.inspectScreenEnabled = inspectScreenEnabled;
+      this.activityHistoryEnabled = activityHistoryEnabled;
+      this.consoleLogsEnabled = consoleLogsEnabled;
+      this.emailFieldEnabled = emailFieldEnabled;
+      this.feedbackTypesEnabled = feedbackTypesEnabled;
+      this.screenRecordingEnabled = screenRecordingEnabled;
+      this.sensitiveDataEnabled = sensitiveDataEnabled;
     });
 
-    file1 = await Files.createDummyFile("file1.txt");
-    file2 = await Files.createDummyFile("file2.txt");
+    file1 = await Files.createDummyFile('file1.txt');
+    file2 = await Files.createDummyFile('file2.txt');
   }
 
   @override
@@ -102,6 +122,14 @@ class _HomeState extends State<Home> {
                         Button(
                           'Silent report',
                           _onSilentReportPress,
+                        ),
+                        Button(
+                          'Custom log',
+                          _addCustomLog,
+                        ),
+                        Button(
+                          'Add metadata',
+                          _addMetadata,
                         ),
                       ],
                     ),
@@ -147,14 +175,60 @@ class _HomeState extends State<Home> {
                           _onEnableBlackboxToggle,
                         ),
                         Toggle(
+                          'Inspect screen',
+                          inspectScreenEnabled,
+                          _onEnableInspectScreenToggle,
+                        ),
+                        Toggle(
                           'Activity history',
                           activityHistoryEnabled,
                           _onEnableActivityHistoryToggle,
                         ),
                         Toggle(
-                          'Inspect screen',
-                          inspectScreenEnabled,
-                          _onEnableInspectScreenToggle,
+                          'Console logs',
+                          consoleLogsEnabled,
+                          _onConsoleLogsEnabledToggle,
+                        ),
+                        Toggle(
+                          'Email field',
+                          emailFieldEnabled,
+                          _onEmailFieldEnabledToggle,
+                        ),
+                        Toggle(
+                          'Feedback types',
+                          feedbackTypesEnabled,
+                          _onFeedbackTypesEnabledToggle,
+                        ),
+                        Toggle(
+                          'Screen recording',
+                          screenRecordingEnabled,
+                          _onScreenRecordingEnabledToggle,
+                        ),
+                        Toggle(
+                          'Sensitive data redaction',
+                          sensitiveDataEnabled,
+                          _onSensitiveDataEnabledToggle,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Header('Notifications'),
+                        Button('Show notification settings',
+                            _showNotificationSettings),
+                        Button(
+                            'Post notification event', _postNotificationEvent),
+                        Button(
+                          'Insert notification event',
+                          _insertNotificationEvent,
+                        ),
+                        Button(
+                          'Set notification events filter',
+                          _setNotificationEventsFilter,
                         ),
                       ],
                     ),
@@ -167,15 +241,35 @@ class _HomeState extends State<Home> {
                         Header('Tools'),
                         Button(
                           'Send GET request',
-                          _onSendGetRequestPressed,
+                          _onSendGetRequest,
                         ),
                         Button(
                           'Send POST request',
-                          _onSendPostRequestPressed,
+                          _onSendPostRequest,
                         ),
                         Button(
-                          'Get image request',
-                          _onGetImageRequestPress,
+                          'Send GET file request',
+                          _onGetFileRequest,
+                        ),
+                        Button(
+                          'Send POST file request',
+                          _onSendMultipartFileRequest,
+                        ),
+                        Button(
+                          'Send 404 request',
+                          _onSend404Request,
+                        ),
+                        Button(
+                          'Send timeout request',
+                          _onSendTimeoutRequest,
+                        ),
+                        Button(
+                          'Insert network request',
+                          _insertNetworkRequest,
+                        ),
+                        Button(
+                          'Set network requests filter',
+                          _setNetworkRequestsFilter,
                         ),
                       ],
                     ),
@@ -265,95 +359,196 @@ class _HomeState extends State<Home> {
     Shake.setEnableInspectScreen(enabled);
   }
 
-  _onAttachDataPress() {
-    List<ShakeFile> shakeFiles = List();
-    shakeFiles.add(ShakeFile.create(file1.path));
-    shakeFiles.add(ShakeFile.create(file2.path, "customName"));
+  _onConsoleLogsEnabledToggle(enabled) {
+    setState(() {
+      consoleLogsEnabled = enabled;
+    });
+    Shake.setConsoleLogsEnabled(enabled);
+  }
 
-    Shake.setShakeReportData(
-      quickFacts: "Quick facts",
-      shakeFiles: shakeFiles,
-    );
+  _onEmailFieldEnabledToggle(enabled) {
+    setState(() {
+      emailFieldEnabled = enabled;
+    });
+    Shake.setEnableEmailField(enabled);
+  }
+
+  _onFeedbackTypesEnabledToggle(enabled) {
+    setState(() {
+      feedbackTypesEnabled = enabled;
+    });
+    Shake.setEnableMultipleFeedbackTypes(feedbackTypesEnabled);
+  }
+
+  _onScreenRecordingEnabledToggle(enabled) {
+    setState(() {
+      screenRecordingEnabled = enabled;
+    });
+    Shake.setAutoVideoRecording(screenRecordingEnabled);
+  }
+
+  _onSensitiveDataEnabledToggle(enabled) {
+    setState(() {
+      sensitiveDataEnabled = enabled;
+    });
+    Shake.setSensitiveDataRedactionEnabled(sensitiveDataEnabled);
+  }
+
+  _onAttachDataPress() {
+    List<ShakeFile> shakeFiles = [];
+    shakeFiles.add(ShakeFile.create(file1.path));
+    shakeFiles.add(ShakeFile.create(file2.path, 'customName'));
+
+    Shake.setShakeReportData(shakeFiles);
   }
 
   _onSilentReportPress() {
-    List<ShakeFile> shakeFiles = List();
+    List<ShakeFile> shakeFiles = [];
     shakeFiles.add(ShakeFile.create(file1.path));
-    shakeFiles.add(ShakeFile.create(file2.path, "customName"));
+    shakeFiles.add(ShakeFile.create(file2.path, 'customName'));
 
     ShakeReportConfiguration configuration = ShakeReportConfiguration();
-    configuration.activityHistoryData = false;
-    configuration.blackBoxData = false;
-    configuration.screenshot = false;
+    configuration.activityHistoryData = true;
+    configuration.blackBoxData = true;
+    configuration.screenshot = true;
     configuration.showReportSentMessage = true;
 
     Shake.silentReport(
-      configuration,
-      description: "Description",
-      quickFacts: "Quick facts",
+      configuration: configuration,
+      description: 'Description',
       shakeFiles: shakeFiles,
     );
   }
 
-  _onSendGetRequestPressed() async {
-    // Dio
-    Dio dio = Dio();
-    dio.interceptors.add(ShakeDioInterceptor());
-    await dio.get("https://dummy.restapiexample.com/api/v1/employees");
-
-    // Dartio
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
-
-    // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("http://dummy.restapiexample.com/api/v1/employees");
-
-    Messages.show("Request succeeded.");
+  _addCustomLog() {
+    Shake.log(LogLevel.info, 'Custom log.');
   }
 
-  _onSendPostRequestPressed() async {
-    var body = {"name": "test", "salary": "123", "age": "23"};
-
-    // Dio
-    Dio dio = Dio();
-    dio.interceptors.add(ShakeDioInterceptor());
-    await dio.post(
-      "http://dummy.restapiexample.com/api/v1/create",
-      data: jsonEncode(body),
-    );
-
-    // Dartio
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .getUrl(Uri.parse("http://dummy.restapiexample.com/api/v1/employees"));
-
-    // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("http://dummy.restapiexample.com/api/v1/employees");
-
-    Messages.show("Request succeeded.");
+  _addMetadata() {
+    Shake.setMetadata('Shake', 'This is a Shake metadata.');
   }
 
-  _onGetImageRequestPress() async {
-    // Dio
-    Dio dio = Dio();
-    dio.interceptors.add(ShakeDioInterceptor());
-    await dio.get("https://asia.olympus-imaging.com/content/000107506.jpg");
+  _showNotificationSettings() {
+    Shake.showNotificationsSettings();
+  }
 
-    // Dartio
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient.getUrl(
-    //    Uri.parse("https://asia.olympus-imaging.com/content/000107506.jpg"));
+  _postNotificationEvent() async {
+    FlutterLocalNotificationsPlugin notificationsPlugin =
+        FlutterLocalNotificationsPlugin();
 
-    // Http
-    //ShakeHttpClient shakeHttpClient = ShakeHttpClient();
-    //await shakeHttpClient
-    //    .get("https://asia.olympus-imaging.com/content/000107506.jpg");
+    InitializationSettings initializationSettings = InitializationSettings(
+        android: AndroidInitializationSettings('@drawable/ic_bug_report'),
+        iOS: IOSInitializationSettings());
 
-    Messages.show("Request succeeded.");
+    await notificationsPlugin.initialize(initializationSettings);
+
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+            'shake-flutter', 'Shake Flutter', 'Shake Flutter channel');
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidDetails);
+    await notificationsPlugin.show(
+        0,
+        'This notification was generated by the app!',
+        'Notification message.',
+        platformChannelSpecifics);
+  }
+
+  _insertNotificationEvent() {
+    NotificationEvent notificationEvent = NotificationEvent()
+      ..id = 1
+      ..title = 'Title'
+      ..description = 'Description';
+    Shake.insertNotificationEvent(notificationEvent);
+  }
+
+  _insertNetworkRequest() {
+    NetworkRequest networkRequest = NetworkRequest()
+      ..method = 'POST'
+      ..status = '200'
+      ..url = 'https://www.shakebugs.com'
+      ..requestBody = 'Request body'
+      ..responseBody = 'Response body'
+      ..requestHeaders = {'testHeader1': 'value'}
+      ..responseHeaders = {'testHeader2': 'value'}
+      ..duration = 100
+      ..date = new DateTime.now();
+    Shake.insertNetworkRequest(networkRequest);
+  }
+
+  _setNotificationEventsFilter() {
+    Shake.setNotificationEventsFilter((notificationEvent) {
+      notificationEvent.title = "data_redacted";
+      notificationEvent.description = "data_redacted";
+      return notificationEvent;
+    });
+  }
+
+  _setNetworkRequestsFilter() {
+    Shake.setNetworkRequestsFilter((networkRequest) {
+      networkRequest.requestBody = "data_redacted";
+      networkRequest.responseBody = "data_redacted";
+      return networkRequest;
+    });
+  }
+
+  _onSendGetRequest() async {
+    try {
+      await networkTester.sendGetRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  _onSendPostRequest() async {
+    try {
+      await networkTester.sendPostRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  _onGetFileRequest() async {
+    try {
+      await networkTester.sendGetFileRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  _onSendMultipartFileRequest() async {
+    try {
+      await networkTester.sendMultipartFileRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  _onSend404Request() async {
+    try {
+      await networkTester.send404Request();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  _onSendTimeoutRequest() async {
+    try {
+      await networkTester.sendTimeoutRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
   }
 }
