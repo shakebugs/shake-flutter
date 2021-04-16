@@ -86,8 +86,6 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "isShowFloatingReportButton" -> isShowFloatingReportButton(result)
             "setInvokeShakeOnShakeDeviceEvent" -> setInvokeShakeOnShakeDeviceEvent(call)
             "isInvokeShakeOnShakeDeviceEvent" -> isInvokeShakeOnShakeDeviceEvent(result)
-            "setInvokeShakeOnRightEdgePan" -> setInvokeShakeOnRightEdgePan(call)
-            "isInvokeShakeOnRightEdgePan" -> isInvokeShakeOnRightEdgePan(result)
             "setInvokeShakeOnScreenshot" -> setInvokeShakeOnScreenshot(call)
             "isInvokeShakeOnScreenshot" -> isInvokeShakeOnScreenshot(result)
             "getEmailField" -> getEmailField(result)
@@ -216,18 +214,6 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun isInvokeShakeOnScreenshot(result: Result) {
         val enabled: Boolean = Shake.getReportConfiguration().isInvokeShakeOnScreenshot
-        result.success(enabled)
-    }
-
-    private fun setInvokeShakeOnRightEdgePan(call: MethodCall) {
-        val enabled: Boolean? = call.argument("enabled")
-        enabled?.let {
-            Shake.getReportConfiguration().isInvokeShakeOnRightEdgePan = it
-        }
-    }
-
-    private fun isInvokeShakeOnRightEdgePan(result: Result) {
-        val enabled: Boolean = Shake.getReportConfiguration().isInvokeShakeOnRightEdgePan
         result.success(enabled)
     }
 

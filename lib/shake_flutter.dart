@@ -116,18 +116,6 @@ class Shake {
     return await _channel.invokeMethod('isInvokeShakeOnScreenshot');
   }
 
-  /// Sets if right edge pan invoking is enabled.
-  static setInvokeShakeOnRightEdgePan(bool enabled) async {
-    await _channel.invokeMethod('setInvokeShakeOnRightEdgePan', {
-      'enabled': enabled,
-    });
-  }
-
-  /// Checks if right edge pan invoking is enabled.
-  static Future<bool> isInvokeShakeOnRightEdgePan() async {
-    return await _channel.invokeMethod('isInvokeShakeOnRightEdgePan');
-  }
-
   /// Sets files and quick facts which will be attached with bug report.
   static setShakeReportData(List<ShakeFile> shakeFiles) async {
     await _channel.invokeMethod('setShakeReportData', {

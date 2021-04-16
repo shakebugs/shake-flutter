@@ -66,10 +66,6 @@ static FlutterMethodChannel *channel = nil;
         [self setInvokeShakeOnScreenshot:call result:result];
     } else if([@"isInvokeShakeOnScreenshot" isEqualToString:call.method]) {
         [self isInvokeShakeOnScreenshot:call result:result];
-    } else if([@"setInvokeShakeOnRightEdgePan" isEqualToString:call.method]) {
-        [self setInvokeShakeOnRightEdgePan:call result:result];
-    } else if([@"isInvokeShakeOnRightEdgePan" isEqualToString:call.method]) {
-        [self isInvokeShakeOnRightEdgePan:call result:result];
     } else if ([@"setShakeReportData" isEqualToString:call.method]) {
         [self setShakeReportData:call result:result];
     } else if ([@"silentReport" isEqualToString:call.method]) {
@@ -222,20 +218,6 @@ static FlutterMethodChannel *channel = nil;
     NSNumber *isInvokeShakeOnScreenshotObj = [NSNumber numberWithBool:isInvokeShakeOnScreenshot];
    
     result(isInvokeShakeOnScreenshotObj);
-}
-
-- (void)setInvokeShakeOnRightEdgePan:(FlutterMethodCall*) call result:(FlutterResult) result {
-    BOOL invokeShakeOnRightEdgePan = [call.arguments[@"enabled"] boolValue];
-    SHKShake.configuration.isInvokedByRightEdgePan = invokeShakeOnRightEdgePan;
-   
-    result(nil);
-}
-
-- (void)isInvokeShakeOnRightEdgePan:(FlutterMethodCall*) call result:(FlutterResult)result {
-    BOOL isInvokeShakeOnRightEdgePan = SHKShake.configuration.isInvokedByRightEdgePan;
-    NSNumber *isInvokeShakeOnRightEdgePanObj = [NSNumber numberWithBool:isInvokeShakeOnRightEdgePan];
-   
-    result(isInvokeShakeOnRightEdgePanObj);
 }
 
 - (void)setShakeReportData:(FlutterMethodCall*) call result:(FlutterResult) result {
