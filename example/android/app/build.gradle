@@ -37,7 +37,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.shakebugs.flutter.android"
+        applicationId "com.shakebugs.flutter.example"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
@@ -49,6 +49,24 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+        }
+    }
+
+    flavorDimensions "environment"
+
+    productFlavors {
+        development {
+            dimension "environment"
+            applicationIdSuffix ".pr"
+        }
+
+        staging {
+            dimension "environment"
+            applicationIdSuffix ".rc"
+        }
+
+        production {
+            dimension "environment"
         }
     }
 }

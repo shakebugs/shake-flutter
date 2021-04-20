@@ -22,6 +22,6 @@ Shake SDK wrapper
   s.preserve_paths = 'Shake.framework'
   s.xcconfig = {'OTHER_LDFLAGS' => '-framework Shake'}
   s.vendored_frameworks = 'Shake.framework'
-  s.dependency "Shake-Staging", "~> 14.1.0-rc"
+  s.dependency "#{ENV['IOS_DEPENDENCY']}", "~> 14.1.0-rc"
   s.swift_version = '5.0'
 end

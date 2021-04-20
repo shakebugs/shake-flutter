@@ -8,6 +8,10 @@
         <string>enterprise</string>
         <key>provisioningProfiles</key>
         <dict>
+            <key>com.shakebugs.flutter.example.pr</key>
+            <string>Shake Flutter Example PR</string>
+            <key>com.shakebugs.flutter.example.rc</key>
+            <string>Shake Flutter Example RC</string>
             <key>com.shakebugs.flutter.example</key>
             <string>Shake Flutter Example</string>
         </dict>

@@ -1,5 +1,6 @@
 name: shake_example
 description: Demonstrates how to use the shake plugin.
+version: 14.1.0
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -13,32 +14,21 @@ dependencies:
     sdk: flutter
 
   shake_flutter:
-    # When depending on this package from a real application you should use:
-    #   shake: ^x.y.z
-    # See https://dart.dev/tools/pub/dependencies#version-constraints
-    # The example app is bundled with the plugin so we use a path dependency on
-    # the parent directory to use the current plugin's version. 
-    path: ../
+    path: ..
 
   url_launcher: ^6.0.3
-
   package_info: ^2.0.0
-
   path_provider: ^2.0.1
-
   fluttertoast: ^8.0.1
-
   flutter_local_notifications: ^5.0.0+1
 
-  shake_http_client:
-    path: ../../shake-http-client
-
-  shake_dio_interceptor:
-    path: ../../shake-dio-interceptor
-
-  http: ^0.13.1
-
-  http_parser: ^4.0.0
+  # Uncomment following lines to use interceptors from file system
+  #  shake_http_client:
+  #    path: ../../shake-http-client
+  #  shake_dio_interceptor:
+  #    path: ../../shake-dio-interceptor
+  #  http: ^0.13.1
+  #  http_parser: ^4.0.0
 
 dev_dependencies:
   flutter_test:

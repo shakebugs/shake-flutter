@@ -43,13 +43,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
-  dio:
-    dependency: transitive
-    description:
-      name: dio
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -107,20 +100,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "8.0.3"
-  http:
-    dependency: "direct main"
-    description:
-      name: http
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.13.1"
-  http_parser:
-    dependency: "direct main"
-    description:
-      name: http_parser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.0"
   js:
     dependency: transitive
     description:
@@ -191,13 +170,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  pedantic:
-    dependency: transitive
-    description:
-      name: pedantic
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.11.0"
   platform:
     dependency: transitive
     description:
@@ -219,24 +191,10 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.1"
-  shake_dio_interceptor:
-    dependency: "direct main"
-    description:
-      path: "../../shake-dio-interceptor"
-      relative: true
-    source: path
-    version: "14.1.0"
   shake_flutter:
     dependency: "direct main"
     description:
       path: ".."
-      relative: true
-    source: path
-    version: "14.1.0"
-  shake_http_client:
-    dependency: "direct main"
-    description:
-      path: "../../shake-http-client"
       relative: true
     source: path
     version: "14.1.0"

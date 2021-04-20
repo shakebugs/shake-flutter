@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shake_example/constants/colors.dart';
-import 'package:shake_example/helpers/dio_tester.dart';
+import 'package:shake_example/helpers/dart_tester.dart';
 import 'package:shake_example/helpers/network_tester.dart';
 import 'package:shake_example/ui/base/button.dart';
 import 'package:shake_example/ui/base/header.dart';
@@ -27,7 +27,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  NetworkTester networkTester = DioTester();
+  NetworkTester networkTester = DartTester();
 
   bool shakeInvokingEnabled = false;
   bool buttonInvokingEnabled = false;
