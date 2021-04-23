@@ -10,6 +10,7 @@ import java.lang.reflect.Method
 
 object ShakeReflection {
     private const val CLASS_NAME = "com.shakebugs.shake.Shake"
+    
     fun start(activity: Activity?, clientId: String?, clientSecret: String?) {
         try {
             val method: Method? = Reflection.getMethod(Class.forName(CLASS_NAME), "startFromActivity", Activity::class.java, String::class.java, String::class.java)

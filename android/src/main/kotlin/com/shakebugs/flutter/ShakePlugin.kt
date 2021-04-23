@@ -335,14 +335,18 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun insertNotificationEvent(call: MethodCall) {
         val notificationEventMap: HashMap<String, Any>? = call.argument("notificationEvent")
-        val notificationEvent: NotificationEvent? = Mappers.mapToNotificationEvent(notificationEventMap)
-        ShakeReflection.insertNotificationEvent(notificationEvent)
+        notificationEventMap?.let {
+            val notificationEvent: NotificationEvent = Mappers.mapToNotificationEvent(it)
+            ShakeReflection.insertNotificationEvent(notificationEvent)
+        }
     }
 
     private fun insertNetworkRequest(call: MethodCall) {
         val networkRequestMap: HashMap<String, Any>? = call.argument("networkRequest")
-        val networkRequest: NetworkRequest? = Mappers.mapToNetworkRequest(networkRequestMap)
-        ShakeReflection.insertNetworkRequest(networkRequest)
+        networkRequestMap?.let {
+            val networkRequest: NetworkRequest = Mappers.mapToNetworkRequest(it)
+            ShakeReflection.insertNetworkRequest(networkRequest)
+        }
     }
 
     private fun startNotificationsEmitter() {

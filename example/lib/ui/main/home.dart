@@ -456,7 +456,7 @@ class _HomeState extends State<Home> {
 
   _insertNotificationEvent() {
     NotificationEvent notificationEvent = NotificationEvent()
-      ..id = 1
+      ..id = '0'
       ..title = 'Title'
       ..description = 'Description';
     Shake.insertNotificationEvent(notificationEvent);

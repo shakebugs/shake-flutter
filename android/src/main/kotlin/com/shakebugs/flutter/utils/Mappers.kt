@@ -32,40 +32,39 @@ object Mappers {
         return config
     }
 
-    fun mapToNotificationEvent(data: HashMap<String, Any>?): NotificationEvent? {
-        var notificationEvent: NotificationEvent? = null
-        if (data != null) {
-            notificationEvent = NotificationEvent()
-            notificationEvent.id = data["id"] as Int
-            notificationEvent.title = data["title"] as String
-            notificationEvent.description = data["description"] as String
-        }
+    fun mapToNotificationEvent(data: HashMap<String, Any>): NotificationEvent {
+        val id = data["id"] as? String ?: ""
+        val title = data["title"] as? String ?: ""
+        val description = data["description"] as? String ?: ""
+
+        val notificationEvent = NotificationEvent()
+        notificationEvent.id = Converter.stringToInt(id)
+        notificationEvent.title = title
+        notificationEvent.description = description
 
         return notificationEvent
     }
 
     fun notificationEventToMap(notificationEvent: NotificationEvent): Map<String, String> {
-        return mapOf<String, String>(
-                "id" to notificationEvent.id.toString(),
-                "title" to notificationEvent.title,
-                "description" to notificationEvent.description
-        )
+        val id = notificationEvent.id.toString()
+        val title = notificationEvent.title ?: ""
+        val description = notificationEvent.description ?: ""
+
+        return mapOf("id" to id, "title" to title, "description" to description)
     }
 
-    fun mapToNetworkRequest(data: HashMap<String, Any>?): NetworkRequest? {
-        var networkRequest: NetworkRequest? = null
-        if (data != null) {
-            networkRequest = NetworkRequest()
-            networkRequest.method = data["method"] as String
-            networkRequest.url = data["url"] as String
-            networkRequest.statusCode = data["status"] as String
-            networkRequest.requestBody = data["requestBody"] as String
-            networkRequest.responseBody = data["responseBody"] as String
-            networkRequest.requestHeaders = data["requestHeaders"] as Map<String, String>
-            networkRequest.responseHeaders = data["responseHeaders"] as Map<String, String>
-            networkRequest.timestamp = data["timestamp"] as String
-            networkRequest.duration = (data["duration"] as Int).toFloat()
-        }
+    fun mapToNetworkRequest(data: HashMap<String, Any>): NetworkRequest {
+        val networkRequest = NetworkRequest()
+        networkRequest.method = data["method"] as String
+        networkRequest.url = data["url"] as String
+        networkRequest.statusCode = data["status"] as String
+        networkRequest.requestBody = data["requestBody"] as String
+        networkRequest.responseBody = data["responseBody"] as String
+        networkRequest.requestHeaders = data["requestHeaders"] as Map<String, String>
+        networkRequest.responseHeaders = data["responseHeaders"] as Map<String, String>
+        networkRequest.timestamp = data["timestamp"] as String
+        networkRequest.duration = (data["duration"] as Int).toFloat()
+
         return networkRequest
     }
 

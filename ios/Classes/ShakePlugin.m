@@ -457,9 +457,9 @@ static FlutterMethodChannel *channel = nil;
 - (NSDictionary*)mapToNotificationEvent:(nonnull NSDictionary*)notificationDict {
     NSDictionary *notificationEvent = [[NSDictionary alloc] init];
     notificationEvent = @{
-        @"id": notificationDict[@"id"],
-        @"title": notificationDict[@"title"],
-        @"description": notificationDict[@"description"]
+        @"id": (notificationDict[@"id"] ?: @""),
+        @"title": (notificationDict[@"title"] ?: @""),
+        @"description": (notificationDict[@"description"] ?: @"")
     };
     return notificationEvent;
 }
@@ -467,9 +467,9 @@ static FlutterMethodChannel *channel = nil;
 - (NSDictionary*)notificationToMap:(nonnull SHKNotificationEventEditor*)notification {
     NSDictionary *notificationDict = [[NSDictionary alloc] init];
     notificationDict = @{
-        @"id": notification.identifier,
-        @"title": notification.title,
-        @"description": notification.description,
+        @"id": (notification.identifier ?: @""),
+        @"title": (notification.title ?: @""),
+        @"description": (notification.description ?: @"")
     };
     return notificationDict;
 }
