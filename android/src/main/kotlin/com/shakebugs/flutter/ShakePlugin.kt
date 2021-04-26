@@ -127,7 +127,6 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         shakeInfo.versionCode = Constants.VERSION_CODE
         shakeInfo.versionName = Constants.VERSION_NAME
 
-        Shake.getReportConfiguration().isConsoleLogsEnabled = false
         ShakeReflection.setShakeInfo(shakeInfo)
         ShakeReflection.start(activity, clientId, clientSecret)
 
