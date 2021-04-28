@@ -1,2 +1,1 @@
-class DataTracker {
-}
+class DataTracker {}

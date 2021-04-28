@@ -140,10 +140,8 @@ class Shake {
   }
 
   /// Adds metadata to the bug report.
-  static setMetadata(
-    String key,
-    String value,
-  ) async {
+  static setMetadata(String key,
+      String value,) async {
     await _channel.invokeMethod('setMetadata', {
       'key': key,
       'value': value,
@@ -152,7 +150,10 @@ class Shake {
 
   /// Adds custom log to the Shake Report
   static log(LogLevel logLevel, String message) async {
-    String logLevelString = logLevel.toString().split('.').last;
+    String logLevelString = logLevel
+        .toString()
+        .split('.')
+        .last;
     await _channel.invokeMethod('log', {
       'level': logLevelString,
       'message': message,
@@ -249,7 +250,7 @@ class Shake {
   /// [NotificationEvent] should be filled properly.
   static insertNotificationEvent(NotificationEvent notificationEvent) async {
     NotificationEvent filteredEvent =
-        _notificationsTracker.filterNotificationEvent(notificationEvent);
+    _notificationsTracker.filterNotificationEvent(notificationEvent);
     if (filteredEvent != null) {
       await _channel.invokeMethod('insertNotificationEvent',
           {'notificationEvent': filteredEvent.toMap()});
@@ -262,7 +263,7 @@ class Shake {
   /// [NetworkRequest] should be filled properly.
   static insertNetworkRequest(NetworkRequest networkRequest) async {
     NetworkRequest filteredRequest =
-        _networkTracker.filterNetworkRequest(networkRequest);
+    _networkTracker.filterNetworkRequest(networkRequest);
     if (filteredRequest != null) {
       await _channel.invokeMethod(
           'insertNetworkRequest', {'networkRequest': filteredRequest.toMap()});
@@ -290,14 +291,16 @@ class Shake {
   static Future<void> _channelMethodHandler(MethodCall call) async {
     switch (call.method) {
       case 'onNotificationReceived':
-        NotificationEvent notificationEvent = NotificationEvent.fromMap(call.arguments);
+        NotificationEvent notificationEvent = NotificationEvent.fromMap(
+            call.arguments);
         insertNotificationEvent(notificationEvent);
         break;
     }
   }
 
   /// Converts list of ShakeFile to list of maps
-  static List<Map<String, dynamic>> _shakeFilesToMap(List<ShakeFile> shakeFiles) {
+  static List<Map<String, dynamic>> _shakeFilesToMap(
+      List<ShakeFile> shakeFiles) {
     var filesMap;
     if (shakeFiles != null) {
       filesMap = shakeFiles.map((shakeFile) => shakeFile.toMap()).toList();
