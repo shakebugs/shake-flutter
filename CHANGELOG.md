@@ -1,3 +1,7 @@
+# 14.1.1
+
+Fix platform metadata for iOS apps
+
 # 14.1.0
 
 Shake 14.1 release

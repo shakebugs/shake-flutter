@@ -12,16 +12,6 @@ static FlutterMethodChannel *channel = nil;
 
 @implementation ShakePlugin
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        [self setPlatformInfo];
-        [self disableNetworkRequests];
-    }
-    return self;
-}
-
 - (instancetype)initWithMessenger:(nonnull NSObject<FlutterBinaryMessenger> *)messenger {
     self = [super init];
     return self;
@@ -116,6 +106,9 @@ static FlutterMethodChannel *channel = nil;
 - (void)start:(FlutterMethodCall*) call result:(FlutterResult)result {
     NSString* clientId = call.arguments[@"clientId"];
     NSString* clientSecret = call.arguments[@"clientSecret"];
+
+    [self setPlatformInfo];
+    [self disableNetworkRequests];
 
     [SHKShake startWithClientId:clientId clientSecret:clientSecret];
     [self startNotificationsEmitter];
