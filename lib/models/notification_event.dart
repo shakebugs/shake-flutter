@@ -15,9 +15,9 @@ class NotificationEvent {
 
   static NotificationEvent fromMap(Map data) {
     NotificationEvent notificationEvent = NotificationEvent();
-    notificationEvent.id = data['id'];
-    notificationEvent.description = data['description'];
-    notificationEvent.title = data["title"];
+    notificationEvent.id = data['id'] ?? '';
+    notificationEvent.description = data['description'] ?? '';
+    notificationEvent.title = data["title"] ?? '';
 
     return notificationEvent;
   }

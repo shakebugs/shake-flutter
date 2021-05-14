@@ -5,12 +5,12 @@ typedef NotificationEvent NotificationEventFilter(
     NotificationEvent notificationEvent);
 
 class NotificationsTracker extends DataTracker {
-  NotificationEventFilter filter;
+  NotificationEventFilter? filter;
 
   NotificationEvent filterNotificationEvent(
       NotificationEvent notificationEvent) {
     if (filter != null) {
-      NotificationEvent filteredEvent = filter(notificationEvent);
+      NotificationEvent filteredEvent = filter!(notificationEvent);
       return filteredEvent;
     }
 
