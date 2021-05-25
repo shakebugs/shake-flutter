@@ -10,7 +10,7 @@ class ShakeHttpLogger {
 
   void onRequest(
     HttpClientRequest request, {
-    String requestBody,
+    String? requestBody,
   }) {
     final NetworkRequest networkRequest = NetworkRequest();
     networkRequest.startTime = DateTime.now();
@@ -27,9 +27,9 @@ class ShakeHttpLogger {
   void onResponse(
     HttpClientRequest request,
     HttpClientResponse response, {
-    String responseBody,
+    String? responseBody,
   }) async {
-    final NetworkRequest networkRequest = _getRequestData(request.hashCode);
+    final NetworkRequest? networkRequest = _getRequestData(request.hashCode);
     if (networkRequest == null) {
       return null;
     }
@@ -44,7 +44,7 @@ class ShakeHttpLogger {
     Shake.insertNetworkRequest(networkRequest);
   }
 
-  String _removeBinaryData(String text) {
+  String _removeBinaryData(String? text) {
     if (text == null) return "";
 
     if (text.isBinary()) {
@@ -54,7 +54,7 @@ class ShakeHttpLogger {
     return text;
   }
 
-  NetworkRequest _getRequestData(int requestHashCode) {
+  NetworkRequest? _getRequestData(int requestHashCode) {
     if (_requests[requestHashCode] != null) {
       return _requests.remove(requestHashCode);
     }

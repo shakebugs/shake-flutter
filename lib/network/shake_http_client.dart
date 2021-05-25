@@ -4,8 +4,8 @@ import 'package:shake_flutter/network/shake_http_logger.dart';
 
 /// Shake wrapper for dart:io HttpClient.
 class ShakeHttpClient implements HttpClient {
-  HttpClient client;
-  ShakeHttpLogger logger;
+  late HttpClient client;
+  late ShakeHttpLogger logger;
 
   ShakeHttpClient() {
     client = HttpClient();
@@ -16,31 +16,31 @@ class ShakeHttpClient implements HttpClient {
   set autoUncompress(bool au) => client.autoUncompress = au;
 
   @override
-  set connectionTimeout(Duration ct) => client.connectionTimeout = ct;
+  set connectionTimeout(Duration? ct) => client.connectionTimeout = ct;
 
   @override
   set idleTimeout(Duration it) => client.idleTimeout = it;
 
   @override
-  set maxConnectionsPerHost(int mcph) => client.maxConnectionsPerHost = mcph;
+  set maxConnectionsPerHost(int? mcph) => client.maxConnectionsPerHost = mcph;
 
   @override
-  set userAgent(String ua) => client.userAgent = ua;
+  set userAgent(String? ua) => client.userAgent = ua;
 
   @override
   bool get autoUncompress => client.autoUncompress;
 
   @override
-  Duration get connectionTimeout => client.connectionTimeout;
+  Duration? get connectionTimeout => client.connectionTimeout;
 
   @override
   Duration get idleTimeout => client.idleTimeout;
 
   @override
-  int get maxConnectionsPerHost => client.maxConnectionsPerHost;
+  int? get maxConnectionsPerHost => client.maxConnectionsPerHost;
 
   @override
-  String get userAgent => client.userAgent;
+  String? get userAgent => client.userAgent;
 
   @override
   void addCredentials(
@@ -56,20 +56,20 @@ class ShakeHttpClient implements HttpClient {
 
   @override
   set authenticate(
-      Future<bool> Function(Uri url, String scheme, String realm) f) {
+      Future<bool> Function(Uri url, String scheme, String realm)? f) {
     client.authenticate = f;
   }
 
   @override
   set authenticateProxy(
-      Future<bool> Function(String host, int port, String scheme, String realm)
+      Future<bool> Function(String host, int port, String scheme, String realm)?
           f) {
     client.authenticateProxy = f;
   }
 
   @override
   set badCertificateCallback(
-      bool Function(X509Certificate cert, String host, int port) callback) {
+      bool Function(X509Certificate cert, String host, int port)? callback) {
     client.badCertificateCallback = callback;
   }
 
@@ -101,7 +101,7 @@ class ShakeHttpClient implements HttpClient {
   }
 
   @override
-  set findProxy(String Function(Uri url) f) {
+  set findProxy(String Function(Uri url)? f) {
     client.findProxy = f;
   }
 

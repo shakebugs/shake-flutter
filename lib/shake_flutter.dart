@@ -52,7 +52,7 @@ class Shake {
   }
 
   /// Checks if black-box is enabled.
-  static Future<bool> isEnableBlackBox() async {
+  static Future<bool?> isEnableBlackBox() async {
     return await _channel.invokeMethod('isEnableBlackBox');
   }
 
@@ -64,7 +64,7 @@ class Shake {
   }
 
   /// Checks if activity history events are tracked.
-  static Future<bool> isEnableActivityHistory() async {
+  static Future<bool?> isEnableActivityHistory() async {
     return await _channel.invokeMethod('isEnableActivityHistory');
   }
 
@@ -76,7 +76,7 @@ class Shake {
   }
 
   /// Checks if inspect screen button is visible on wrap up screen.
-  static Future<bool> isEnableInspectScreen() async {
+  static Future<bool?> isEnableInspectScreen() async {
     return await _channel.invokeMethod('isEnableInspectScreen');
   }
 
@@ -88,7 +88,7 @@ class Shake {
   }
 
   /// Checks if floating report button is visible.
-  static Future<bool> isShowFloatingReportButton() async {
+  static Future<bool?> isShowFloatingReportButton() async {
     return await _channel.invokeMethod('isShowFloatingReportButton');
   }
 
@@ -100,7 +100,7 @@ class Shake {
   }
 
   /// Checks if shake gesture invoking is enabled.
-  static Future<bool> isInvokeShakeOnShakeDeviceEvent() async {
+  static Future<bool?> isInvokeShakeOnShakeDeviceEvent() async {
     return await _channel.invokeMethod('isInvokeShakeOnShakeDeviceEvent');
   }
 
@@ -112,7 +112,7 @@ class Shake {
   }
 
   /// Checks if screenshot invoking is enabled.
-  static Future<bool> isInvokeShakeOnScreenshot() async {
+  static Future<bool?> isInvokeShakeOnScreenshot() async {
     return await _channel.invokeMethod('isInvokeShakeOnScreenshot');
   }
 
@@ -127,21 +127,23 @@ class Shake {
   ///
   /// [ShakeReportConfiguration] is required.
   static silentReport({
-    ShakeReportConfiguration configuration,
-    String description,
-    List<ShakeFile> shakeFiles,
+    ShakeReportConfiguration? configuration,
+    String? description,
+    List<ShakeFile>? shakeFiles,
   }) async {
-    var c = configuration == null ? ShakeReportConfiguration() : configuration;
+    configuration ??= ShakeReportConfiguration();
+    description ??= '';
+    shakeFiles ??= [];
+
     await _channel.invokeMethod('silentReport', {
       'description': description,
       'shakeFiles': _shakeFilesToMap(shakeFiles),
-      'configuration': c.toMap()
+      'configuration': configuration.toMap()
     });
   }
 
   /// Adds metadata to the bug report.
-  static setMetadata(String key,
-      String value,) async {
+  static setMetadata(String key, String value) async {
     await _channel.invokeMethod('setMetadata', {
       'key': key,
       'value': value,
@@ -150,10 +152,7 @@ class Shake {
 
   /// Adds custom log to the Shake Report
   static log(LogLevel logLevel, String message) async {
-    String logLevelString = logLevel
-        .toString()
-        .split('.')
-        .last;
+    String logLevelString = logLevel.toString().split('.').last;
     await _channel.invokeMethod('log', {
       'level': logLevelString,
       'message': message,
@@ -161,7 +160,7 @@ class Shake {
   }
 
   /// Checks if automatic video recording is enabled.
-  static Future<bool> isAutoVideoRecording() async {
+  static Future<bool?> isAutoVideoRecording() async {
     return await _channel.invokeMethod('isAutoVideoRecording');
   }
 
@@ -173,7 +172,7 @@ class Shake {
   }
 
   /// Checks if email field is enabled.
-  static Future<bool> isEnableEmailField() async {
+  static Future<bool?> isEnableEmailField() async {
     return await _channel.invokeMethod('isEnableEmailField');
   }
 
@@ -185,7 +184,7 @@ class Shake {
   }
 
   /// Gets default email field.
-  static Future<String> getEmailField() async {
+  static Future<String?> getEmailField() async {
     return await _channel.invokeMethod('getEmailField');
   }
 
@@ -197,7 +196,7 @@ class Shake {
   }
 
   /// Checks if feedback type picker is enabled.
-  static Future<bool> isEnableMultipleFeedbackTypes() async {
+  static Future<bool?> isEnableMultipleFeedbackTypes() async {
     return await _channel.invokeMethod('isEnableMultipleFeedbackTypes');
   }
 
@@ -209,7 +208,7 @@ class Shake {
   }
 
   /// Checks if console logs are attached to the report.
-  static Future<bool> isConsoleLogsEnabled() async {
+  static Future<bool?> isConsoleLogsEnabled() async {
     return await _channel.invokeMethod('isConsoleLogsEnabled');
   }
 
@@ -221,7 +220,7 @@ class Shake {
   }
 
   /// Checks if intro message is enabled.
-  static Future<bool> getShowIntroMessage() async {
+  static Future<bool?> getShowIntroMessage() async {
     return await _channel.invokeMethod('getShowIntroMessage');
   }
 
@@ -233,7 +232,7 @@ class Shake {
   }
 
   /// Checks if automatic sensitive data redaction is enabled.
-  static Future<bool> isSensitiveDataRedactionEnabled() async {
+  static Future<bool?> isSensitiveDataRedactionEnabled() async {
     return await _channel.invokeMethod('isSensitiveDataRedactionEnabled');
   }
 
@@ -250,11 +249,9 @@ class Shake {
   /// [NotificationEvent] should be filled properly.
   static insertNotificationEvent(NotificationEvent notificationEvent) async {
     NotificationEvent filteredEvent =
-    _notificationsTracker.filterNotificationEvent(notificationEvent);
-    if (filteredEvent != null) {
-      await _channel.invokeMethod('insertNotificationEvent',
-          {'notificationEvent': filteredEvent.toMap()});
-    }
+        _notificationsTracker.filterNotificationEvent(notificationEvent);
+    await _channel.invokeMethod('insertNotificationEvent',
+        {'notificationEvent': filteredEvent.toMap()});
   }
 
   /// Inserts network request to the activity history.
@@ -263,20 +260,18 @@ class Shake {
   /// [NetworkRequest] should be filled properly.
   static insertNetworkRequest(NetworkRequest networkRequest) async {
     NetworkRequest filteredRequest =
-    _networkTracker.filterNetworkRequest(networkRequest);
-    if (filteredRequest != null) {
-      await _channel.invokeMethod(
-          'insertNetworkRequest', {'networkRequest': filteredRequest.toMap()});
-    }
+        _networkTracker.filterNetworkRequest(networkRequest);
+    await _channel.invokeMethod(
+        'insertNetworkRequest', {'networkRequest': filteredRequest.toMap()});
   }
 
   /// Sets filter for notification events.
-  static setNotificationEventsFilter(NotificationEventFilter filter) async {
+  static setNotificationEventsFilter(NotificationEventFilter? filter) async {
     _notificationsTracker.filter = filter;
   }
 
   /// Sets filter for network requests.
-  static setNetworkRequestsFilter(NetworkRequestFilter filter) async {
+  static setNetworkRequestsFilter(NetworkRequestFilter? filter) async {
     _networkTracker.filter = filter;
   }
 
@@ -291,8 +286,8 @@ class Shake {
   static Future<void> _channelMethodHandler(MethodCall call) async {
     switch (call.method) {
       case 'onNotificationReceived':
-        NotificationEvent notificationEvent = NotificationEvent.fromMap(
-            call.arguments);
+        NotificationEvent notificationEvent =
+            NotificationEvent.fromMap(call.arguments);
         insertNotificationEvent(notificationEvent);
         break;
     }
@@ -301,10 +296,6 @@ class Shake {
   /// Converts list of ShakeFile to list of maps
   static List<Map<String, dynamic>> _shakeFilesToMap(
       List<ShakeFile> shakeFiles) {
-    var filesMap;
-    if (shakeFiles != null) {
-      filesMap = shakeFiles.map((shakeFile) => shakeFile.toMap()).toList();
-    }
-    return filesMap;
+    return shakeFiles.map((shakeFile) => shakeFile.toMap()).toList();
   }
 }

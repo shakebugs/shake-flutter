@@ -302,6 +302,7 @@ static FlutterMethodChannel *channel = nil;
 
 - (void)setEmailField:(FlutterMethodCall*) call result:(FlutterResult) result {
     NSString* email = call.arguments[@"email"];
+    if (email == (id)[NSNull null]) email = nil;
     SHKShake.configuration.emailField = email;
     result(nil);
 }

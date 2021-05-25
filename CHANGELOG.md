@@ -1,3 +1,7 @@
+# 14.1.2
+
+Null safety support
+
 # 14.1.1
 
 Fix platform metadata for iOS apps

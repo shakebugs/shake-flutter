@@ -10,8 +10,8 @@ class NetworkRequest {
   Map<String, String> requestHeaders = <String, String>{};
   Map<String, String> responseHeaders = <String, String>{};
   int duration = 0;
-  DateTime startTime;
-  DateTime endTime;
+  DateTime? startTime;
+  DateTime? endTime;
   DateTime date = DateTime.now();
 
   Map<String, dynamic> toMap() {

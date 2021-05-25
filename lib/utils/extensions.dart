@@ -16,4 +16,11 @@ extension TextUtils on String {
     RegExp regex = RegExp(r'\ufffd');
     return regex.hasMatch(this);
   }
+
+  /// Checks if string is a http/https url.
+  bool isHttpUrl() {
+    if (this.startsWith("https://")) return true;
+    if (this.startsWith("http://")) return true;
+    return false;
+  }
 }
