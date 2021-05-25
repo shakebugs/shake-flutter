@@ -126,15 +126,19 @@ class Shake {
   /// Reports a bug without calling a Shake screen.
   ///
   /// [ShakeReportConfiguration] is required.
-  static silentReport(
-      {ShakeReportConfiguration? configuration,
-      String? description,
-      List<ShakeFile>? shakeFiles}) async {
-    var c = configuration == null ? ShakeReportConfiguration() : configuration;
+  static silentReport({
+    ShakeReportConfiguration? configuration,
+    String? description,
+    List<ShakeFile>? shakeFiles,
+  }) async {
+    configuration ??= ShakeReportConfiguration();
+    description ??= '';
+    shakeFiles ??= [];
+
     await _channel.invokeMethod('silentReport', {
       'description': description,
       'shakeFiles': _shakeFilesToMap(shakeFiles),
-      'configuration': c.toMap()
+      'configuration': configuration.toMap()
     });
   }
 
@@ -290,12 +294,8 @@ class Shake {
   }
 
   /// Converts list of ShakeFile to list of maps
-  static List<Map<String, dynamic>>? _shakeFilesToMap(
-      List<ShakeFile>? shakeFiles) {
-    var filesMap;
-    if (shakeFiles != null) {
-      filesMap = shakeFiles.map((shakeFile) => shakeFile.toMap()).toList();
-    }
-    return filesMap;
+  static List<Map<String, dynamic>> _shakeFilesToMap(
+      List<ShakeFile> shakeFiles) {
+    return shakeFiles.map((shakeFile) => shakeFile.toMap()).toList();
   }
 }

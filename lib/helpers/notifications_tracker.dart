@@ -10,8 +10,7 @@ class NotificationsTracker extends DataTracker {
   NotificationEvent filterNotificationEvent(
       NotificationEvent notificationEvent) {
     if (filter != null) {
-      NotificationEvent filteredEvent = filter!(notificationEvent);
-      return filteredEvent;
+      notificationEvent = filter!(notificationEvent);
     }
 
     return notificationEvent;
