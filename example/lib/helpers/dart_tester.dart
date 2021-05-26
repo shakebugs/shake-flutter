@@ -5,11 +5,7 @@ import 'package:shake_example/helpers/network_tester.dart';
 import 'package:shake_flutter/network/shake_http_logger.dart';
 
 class DartTester implements NetworkTester {
-  ShakeHttpLogger _httpLogger;
-
-  DartTester() {
-    _httpLogger = ShakeHttpLogger();
-  }
+  ShakeHttpLogger _httpLogger = ShakeHttpLogger();
 
   @override
   Future<void> sendGetRequest() async {

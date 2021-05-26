@@ -15,8 +15,8 @@ void main() {
   Shake.setEmailField('test@shakebugs.com');
   Shake.setShowIntroMessage(true);
   Shake.setSensitiveDataRedactionEnabled(true);
+  Shake.setConsoleLogsEnabled(false);
   Shake.start(clientId, clientSecret);
-  Shake.setConsoleLogsEnabled(true);
 
   runApp(Home());
 }

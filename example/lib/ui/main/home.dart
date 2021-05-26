@@ -29,21 +29,21 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   NetworkTester networkTester = DartTester();
 
-  bool shakeInvokingEnabled = false;
-  bool buttonInvokingEnabled = false;
-  bool screenshotInvokingEnabled = false;
-  bool shakeEnabled = false;
-  bool blackboxEnabled = false;
-  bool inspectScreenEnabled = false;
-  bool activityHistoryEnabled = false;
-  bool consoleLogsEnabled = false;
-  bool emailFieldEnabled = false;
-  bool feedbackTypesEnabled = false;
-  bool screenRecordingEnabled = false;
-  bool sensitiveDataEnabled = false;
+  bool? shakeInvokingEnabled = false;
+  bool? buttonInvokingEnabled = false;
+  bool? screenshotInvokingEnabled = false;
+  bool? shakeEnabled = false;
+  bool? blackboxEnabled = false;
+  bool? inspectScreenEnabled = false;
+  bool? activityHistoryEnabled = false;
+  bool? consoleLogsEnabled = false;
+  bool? emailFieldEnabled = false;
+  bool? feedbackTypesEnabled = false;
+  bool? screenRecordingEnabled = false;
+  bool? sensitiveDataEnabled = false;
 
-  File file1;
-  File file2;
+  File? file1;
+  File? file2;
 
   @override
   void initState() {
@@ -142,17 +142,17 @@ class _HomeState extends State<Home> {
                         Header('Invoking'),
                         Toggle(
                           'Shaking',
-                          shakeInvokingEnabled,
+                          shakeInvokingEnabled!,
                           _onShakeInvokingToggle,
                         ),
                         Toggle(
                           'Button',
-                          buttonInvokingEnabled,
+                          buttonInvokingEnabled!,
                           _onButtonInvokingToggle,
                         ),
                         Toggle(
                           'Screenshot',
-                          screenshotInvokingEnabled,
+                          screenshotInvokingEnabled!,
                           _onScreenshotInvokingToggle,
                         ),
                       ],
@@ -166,47 +166,47 @@ class _HomeState extends State<Home> {
                         Header('Options'),
                         Toggle(
                           'Enabled',
-                          shakeEnabled,
+                          shakeEnabled!,
                           _onEnableShakeToggle,
                         ),
                         Toggle(
                           'Blackbox',
-                          blackboxEnabled,
+                          blackboxEnabled!,
                           _onEnableBlackboxToggle,
                         ),
                         Toggle(
                           'Inspect screen',
-                          inspectScreenEnabled,
+                          inspectScreenEnabled!,
                           _onEnableInspectScreenToggle,
                         ),
                         Toggle(
                           'Activity history',
-                          activityHistoryEnabled,
+                          activityHistoryEnabled!,
                           _onEnableActivityHistoryToggle,
                         ),
                         Toggle(
                           'Console logs',
-                          consoleLogsEnabled,
+                          consoleLogsEnabled!,
                           _onConsoleLogsEnabledToggle,
                         ),
                         Toggle(
                           'Email field',
-                          emailFieldEnabled,
+                          emailFieldEnabled!,
                           _onEmailFieldEnabledToggle,
                         ),
                         Toggle(
                           'Feedback types',
-                          feedbackTypesEnabled,
+                          feedbackTypesEnabled!,
                           _onFeedbackTypesEnabledToggle,
                         ),
                         Toggle(
                           'Screen recording',
-                          screenRecordingEnabled,
+                          screenRecordingEnabled!,
                           _onScreenRecordingEnabledToggle,
                         ),
                         Toggle(
                           'Sensitive data redaction',
-                          sensitiveDataEnabled,
+                          sensitiveDataEnabled!,
                           _onSensitiveDataEnabledToggle,
                         ),
                       ],
@@ -377,35 +377,35 @@ class _HomeState extends State<Home> {
     setState(() {
       feedbackTypesEnabled = enabled;
     });
-    Shake.setEnableMultipleFeedbackTypes(feedbackTypesEnabled);
+    Shake.setEnableMultipleFeedbackTypes(feedbackTypesEnabled!);
   }
 
   _onScreenRecordingEnabledToggle(enabled) {
     setState(() {
       screenRecordingEnabled = enabled;
     });
-    Shake.setAutoVideoRecording(screenRecordingEnabled);
+    Shake.setAutoVideoRecording(screenRecordingEnabled!);
   }
 
   _onSensitiveDataEnabledToggle(enabled) {
     setState(() {
       sensitiveDataEnabled = enabled;
     });
-    Shake.setSensitiveDataRedactionEnabled(sensitiveDataEnabled);
+    Shake.setSensitiveDataRedactionEnabled(sensitiveDataEnabled!);
   }
 
   _onAttachDataPress() {
     List<ShakeFile> shakeFiles = [];
-    shakeFiles.add(ShakeFile.create(file1.path));
-    shakeFiles.add(ShakeFile.create(file2.path, 'customName'));
+    shakeFiles.add(ShakeFile.create(file1!.path));
+    shakeFiles.add(ShakeFile.create(file2!.path, 'customName'));
 
     Shake.setShakeReportData(shakeFiles);
   }
 
   _onSilentReportPress() {
     List<ShakeFile> shakeFiles = [];
-    shakeFiles.add(ShakeFile.create(file1.path));
-    shakeFiles.add(ShakeFile.create(file2.path, 'customName'));
+    shakeFiles.add(ShakeFile.create(file1!.path));
+    shakeFiles.add(ShakeFile.create(file2!.path, 'customName'));
 
     ShakeReportConfiguration configuration = ShakeReportConfiguration();
     configuration.activityHistoryData = true;
