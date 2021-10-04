@@ -228,14 +228,16 @@ static FlutterMethodChannel *channel = nil;
     NSString *description = call.arguments[@"description"];
     NSArray *files = call.arguments[@"shakeFiles"];
     NSDictionary *configurationMap = call.arguments[@"configuration"];
+    
+    NSArray<SHKShakeFile *> * (^fileAttachBlock)(void) = ^NSArray<SHKShakeFile *> *(void) {
+        NSMutableArray <SHKShakeFile*> *shakeFiles = [self mapToShakeFiles:files];
+        return shakeFiles;
+    };
 
-    NSMutableArray <SHKShakeFile*> *shakeFiles = [self mapToShakeFiles:files];
-    SHKShakeReportConfiguration* reportConfiguration = [self mapToConfiguration:configurationMap];
+    SHKShakeReportConfiguration* conf = [self mapToConfiguration:configurationMap];
 
-    SHKShakeReportData *reportData = [[SHKShakeReportData alloc] initWithBugDescription:description attachedFiles:[NSArray arrayWithArray:shakeFiles]];
-
-    [SHKShake silentReportWithReportData:reportData reportConfiguration:reportConfiguration];
-
+    [SHKShake silentReportWithDescription:description fileAttachBlock:fileAttachBlock reportConfiguration:conf];
+    
     result(nil);
 }
 
@@ -470,7 +472,7 @@ static FlutterMethodChannel *channel = nil;
 
 // Private
 - (void)setPlatformInfo {
-    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"14.1.0" };
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"15.0.0" };
     [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
 }
 

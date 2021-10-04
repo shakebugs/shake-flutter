@@ -285,14 +285,14 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun isEnableMultipleFeedbackTypes(result: Result) {
-        val enabled: Boolean = Shake.getReportConfiguration().isEnableMultipleFeedbackTypes
+        val enabled: Boolean = Shake.getReportConfiguration().isFeedbackTypeEnabled
         result.success(enabled)
     }
 
     private fun setEnableMultipleFeedbackTypes(call: MethodCall) {
         val enabled: Boolean? = call.argument("enabled")
         enabled?.let {
-            Shake.getReportConfiguration().isEnableMultipleFeedbackTypes = it
+            Shake.getReportConfiguration().isFeedbackTypeEnabled = it
         }
     }
 
