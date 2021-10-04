@@ -116,6 +116,18 @@ class Shake {
     return await _channel.invokeMethod('isInvokeShakeOnScreenshot');
   }
 
+  /// Checks if screenshot is included in report
+  static Future<bool?> isScreenshotIncluded() async {
+    return await _channel.invokeMethod('isScreenshotIncluded');
+  }
+
+  ///Sets screenshot included in report
+  static setScreenshotIncluded(bool enabled) async {
+    await _channel.invokeMethod('setScreenshotIncluded',{
+      'enabled': enabled,
+    });
+  }
+
   /// Sets files and quick facts which will be attached with bug report.
   static setShakeReportData(List<ShakeFile> shakeFiles) async {
     await _channel.invokeMethod('setShakeReportData', {

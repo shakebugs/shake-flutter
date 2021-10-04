@@ -88,6 +88,8 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "isInvokeShakeOnShakeDeviceEvent" -> isInvokeShakeOnShakeDeviceEvent(result)
             "setInvokeShakeOnScreenshot" -> setInvokeShakeOnScreenshot(call)
             "isInvokeShakeOnScreenshot" -> isInvokeShakeOnScreenshot(result)
+            "setScreenshotIncluded" -> setScreenshotIncluded(call)
+            "isScreenshotIncluded" -> isScreenshotIncluded(result)
             "getEmailField" -> getEmailField(result)
             "setEmailField" -> setEmailField(call)
             "isEnableEmailField" -> isEnableEmailField(result)
@@ -214,6 +216,18 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private fun isInvokeShakeOnScreenshot(result: Result) {
         val enabled: Boolean = Shake.getReportConfiguration().isInvokeShakeOnScreenshot
         result.success(enabled)
+    }
+
+    private fun isScreenshotIncluded(result: Result){
+        val enabled: Boolean = Shake.getReportConfiguration().isScreenshotIncluded
+        result.success(enabled)
+    }
+
+    private fun setScreenshotIncluded(call: MethodCall){
+        val enabled: Boolean? = call.argument("enabled")
+        enabled?.let {
+            Shake.getReportConfiguration().isScreenshotIncluded = it
+        }
     }
 
     private fun setShakeReportData(call: MethodCall) {

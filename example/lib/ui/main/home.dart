@@ -41,6 +41,7 @@ class _HomeState extends State<Home> {
   bool? feedbackTypesEnabled = false;
   bool? screenRecordingEnabled = false;
   bool? sensitiveDataEnabled = false;
+  bool? screenshotIncluded = false;
 
   File? file1;
   File? file2;
@@ -65,6 +66,7 @@ class _HomeState extends State<Home> {
     final feedbackTypesEnabled = await Shake.isEnableMultipleFeedbackTypes();
     final screenRecordingEnabled = await Shake.isAutoVideoRecording();
     final sensitiveDataEnabled = await Shake.isSensitiveDataRedactionEnabled();
+    final screenshotIncluded = await Shake.isScreenshotIncluded();
 
     setState(() {
       this.shakeInvokingEnabled = shakeInvokingEnabled;
@@ -79,6 +81,7 @@ class _HomeState extends State<Home> {
       this.feedbackTypesEnabled = feedbackTypesEnabled;
       this.screenRecordingEnabled = screenRecordingEnabled;
       this.sensitiveDataEnabled = sensitiveDataEnabled;
+      this.screenshotIncluded = screenshotIncluded;
     });
 
     file1 = await Files.createDummyFile('file1.txt');
@@ -209,6 +212,10 @@ class _HomeState extends State<Home> {
                           sensitiveDataEnabled!,
                           _onSensitiveDataEnabledToggle,
                         ),
+                        Toggle(
+                            'Screenshot included',
+                            screenshotIncluded!,
+                            _onScreenshotIncluded,)
                       ],
                     ),
                   ),
@@ -392,6 +399,13 @@ class _HomeState extends State<Home> {
       sensitiveDataEnabled = enabled;
     });
     Shake.setSensitiveDataRedactionEnabled(sensitiveDataEnabled!);
+  }
+
+  _onScreenshotIncluded(enabled){
+    setState(() {
+      screenshotIncluded = enabled;
+    });
+    Shake.setScreenshotIncluded(screenshotIncluded!);
   }
 
   _onAttachDataPress() {
