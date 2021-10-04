@@ -52,6 +52,10 @@ static FlutterMethodChannel *channel = nil;
         [self setInvokeShakeOnShakeDeviceEvent:call result:result];
     } else if([@"isInvokeShakeOnShakeDeviceEvent" isEqualToString:call.method]) {
         [self isInvokeShakeOnShakeDeviceEvent:call result:result];
+    } else if([@"setShakingThreshold" isEqualToString:call.method]){
+        [self setShakingThreshold:call result:result];
+    } else if([@"getShakingThreshold" isEqualToString:call.method]){
+        [self getShakingThreshold:call result:result];
     } else if([@"setInvokeShakeOnScreenshot" isEqualToString:call.method]) {
         [self setInvokeShakeOnScreenshot:call result:result];
     } else if([@"isInvokeShakeOnScreenshot" isEqualToString:call.method]) {
@@ -197,6 +201,20 @@ static FlutterMethodChannel *channel = nil;
     NSNumber *isInvokeShakeOnShakeDeviceEventObj = [NSNumber numberWithBool:isInvokeShakeOnShakeDeviceEvent];
    
     result(isInvokeShakeOnShakeDeviceEventObj);
+}
+
+-(void)getShakingThreshold:(FlutterMethodCall*) call result: (FlutterResult) result {
+    NSInteger shakingThreshold = SHKShake.configuration.shakingThreshold;
+    NSNumber *getShakingThresholdObj = [NSNumber numberWithBool:shakingThreshold];
+
+    result(getShakingThresholdObj);
+}
+
+-(void)setShakingThreshold:(FlutterMethodCall*) call result: (FlutterResult) result {
+    int shakingThreshold = [call.arguments[@"shakingThreshold"] intValue];
+    SHKShake.configuration.shakingThreshold = shakingThreshold;
+
+    result(nil);
 }
 
 -(void)setInvokeShakeOnScreenshot:(FlutterMethodCall*) call result:(FlutterResult) result {

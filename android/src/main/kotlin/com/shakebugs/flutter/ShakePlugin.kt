@@ -86,6 +86,8 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "isShowFloatingReportButton" -> isShowFloatingReportButton(result)
             "setInvokeShakeOnShakeDeviceEvent" -> setInvokeShakeOnShakeDeviceEvent(call)
             "isInvokeShakeOnShakeDeviceEvent" -> isInvokeShakeOnShakeDeviceEvent(result)
+            "setShakingThreshold" -> setShakingThreshold(call)
+            "getShakingThreshold" -> getShakingThreshold(result)
             "setInvokeShakeOnScreenshot" -> setInvokeShakeOnScreenshot(call)
             "isInvokeShakeOnScreenshot" -> isInvokeShakeOnScreenshot(result)
             "getEmailField" -> getEmailField(result)
@@ -202,6 +204,18 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private fun isInvokeShakeOnShakeDeviceEvent(result: Result) {
         val enabled: Boolean = Shake.getReportConfiguration().isInvokeShakeOnShakeDeviceEvent
         result.success(enabled)
+    }
+
+    private fun getShakingThreshold(result: Result){
+        val threshold: Int? = Shake.getReportConfiguration().getShakingThreshold()
+        result.success(threshold)
+    }
+
+    private fun setShakingThreshold(call: MethodCall) {
+        val threshold: Int? = call.argument("shakingThreshold")
+        threshold?.let {
+            Shake.getReportConfiguration().shakingThreshold = threshold
+        }
     }
 
     private fun setInvokeShakeOnScreenshot(call: MethodCall) {

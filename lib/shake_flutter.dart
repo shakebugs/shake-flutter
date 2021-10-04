@@ -104,6 +104,18 @@ class Shake {
     return await _channel.invokeMethod('isInvokeShakeOnShakeDeviceEvent');
   }
 
+  ///Checks what value shaking threshold is set on
+  static Future<int?> getShakingThreshold() async{
+    return await _channel.invokeMethod('getShakingThreshold');
+  }
+
+  ///Sets shaking threshold
+  static setShakingThreshold(int shakingThreshold) async {
+    await _channel.invokeMethod('setShakingThreshold', {
+      'shakingThreshold': shakingThreshold,
+    });
+  }
+
   /// Sets if screenshot invoking is enabled.
   static setInvokeShakeOnScreenshot(bool enabled) async {
     await _channel.invokeMethod('setInvokeShakeOnScreenshot', {

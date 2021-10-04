@@ -41,6 +41,7 @@ class _HomeState extends State<Home> {
   bool? feedbackTypesEnabled = false;
   bool? screenRecordingEnabled = false;
   bool? sensitiveDataEnabled = false;
+  int? shakingThreshold = 400;
 
   File? file1;
   File? file2;
@@ -65,6 +66,8 @@ class _HomeState extends State<Home> {
     final feedbackTypesEnabled = await Shake.isEnableMultipleFeedbackTypes();
     final screenRecordingEnabled = await Shake.isAutoVideoRecording();
     final sensitiveDataEnabled = await Shake.isSensitiveDataRedactionEnabled();
+    final shakingThreshold = await Shake.getShakingThreshold();
+
 
     setState(() {
       this.shakeInvokingEnabled = shakeInvokingEnabled;
@@ -79,6 +82,8 @@ class _HomeState extends State<Home> {
       this.feedbackTypesEnabled = feedbackTypesEnabled;
       this.screenRecordingEnabled = screenRecordingEnabled;
       this.sensitiveDataEnabled = sensitiveDataEnabled;
+      this.shakingThreshold = shakingThreshold;
+
     });
 
     file1 = await Files.createDummyFile('file1.txt');
@@ -208,6 +213,27 @@ class _HomeState extends State<Home> {
                           'Sensitive data redaction',
                           sensitiveDataEnabled!,
                           _onSensitiveDataEnabledToggle,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Header('Shaking threshold'),
+                              Button(
+                                '100 ',
+                                _onShakingThreshold100,
+                              ),
+                              Button(
+                                '600',
+                                _onShakingThreshold600,
+                              ),
+                              Button(
+                                '900',
+                                _onShakingThreshold900,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -418,6 +444,18 @@ class _HomeState extends State<Home> {
       description: 'Description',
       shakeFiles: shakeFiles,
     );
+  }
+
+  _onShakingThreshold100(){
+    Shake.setShakingThreshold(100);
+  }
+
+  _onShakingThreshold600(){
+    Shake.setShakingThreshold(600);
+  }
+
+  _onShakingThreshold900(){
+    Shake.setShakingThreshold(900);
   }
 
   _addCustomLog() {
