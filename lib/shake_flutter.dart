@@ -105,7 +105,7 @@ class Shake {
   }
 
   ///Checks what value shaking threshold is set on
-  static Future<int?> getShakingThreshold() async{
+  static Future<int?> getShakingThreshold() async {
     return await _channel.invokeMethod('getShakingThreshold');
   }
 
@@ -126,6 +126,18 @@ class Shake {
   /// Checks if screenshot invoking is enabled.
   static Future<bool?> isInvokeShakeOnScreenshot() async {
     return await _channel.invokeMethod('isInvokeShakeOnScreenshot');
+  }
+
+  /// Checks if screenshot is included in report
+  static Future<bool?> isScreenshotIncluded() async {
+    return await _channel.invokeMethod('isScreenshotIncluded');
+  }
+
+  ///Sets screenshot included in report
+  static setScreenshotIncluded(bool enabled) async {
+    await _channel.invokeMethod('setScreenshotIncluded', {
+      'enabled': enabled,
+    });
   }
 
   /// Sets files and quick facts which will be attached with bug report.
@@ -164,7 +176,10 @@ class Shake {
 
   /// Adds custom log to the Shake Report
   static log(LogLevel logLevel, String message) async {
-    String logLevelString = logLevel.toString().split('.').last;
+    String logLevelString = logLevel
+        .toString()
+        .split('.')
+        .last;
     await _channel.invokeMethod('log', {
       'level': logLevelString,
       'message': message,
@@ -261,7 +276,7 @@ class Shake {
   /// [NotificationEvent] should be filled properly.
   static insertNotificationEvent(NotificationEvent notificationEvent) async {
     NotificationEvent filteredEvent =
-        _notificationsTracker.filterNotificationEvent(notificationEvent);
+    _notificationsTracker.filterNotificationEvent(notificationEvent);
     await _channel.invokeMethod('insertNotificationEvent',
         {'notificationEvent': filteredEvent.toMap()});
   }
@@ -272,7 +287,7 @@ class Shake {
   /// [NetworkRequest] should be filled properly.
   static insertNetworkRequest(NetworkRequest networkRequest) async {
     NetworkRequest filteredRequest =
-        _networkTracker.filterNetworkRequest(networkRequest);
+    _networkTracker.filterNetworkRequest(networkRequest);
     await _channel.invokeMethod(
         'insertNetworkRequest', {'networkRequest': filteredRequest.toMap()});
   }
@@ -299,7 +314,7 @@ class Shake {
     switch (call.method) {
       case 'onNotificationReceived':
         NotificationEvent notificationEvent =
-            NotificationEvent.fromMap(call.arguments);
+        NotificationEvent.fromMap(call.arguments);
         insertNotificationEvent(notificationEvent);
         break;
     }

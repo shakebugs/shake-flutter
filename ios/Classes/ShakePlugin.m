@@ -60,6 +60,10 @@ static FlutterMethodChannel *channel = nil;
         [self setInvokeShakeOnScreenshot:call result:result];
     } else if([@"isInvokeShakeOnScreenshot" isEqualToString:call.method]) {
         [self isInvokeShakeOnScreenshot:call result:result];
+    } else if([@"setScreenshotIncluded" isEqualToString:call.method]){
+        [self setScreenshotIncluded:call result:result];
+    } else if([@"isScreenshotIncluded" isEqualToString:call.method]){
+        [self isScreenshotIncluded:call result:result];
     } else if ([@"setShakeReportData" isEqualToString:call.method]) {
         [self setShakeReportData:call result:result];
     } else if ([@"silentReport" isEqualToString:call.method]) {
@@ -229,6 +233,20 @@ static FlutterMethodChannel *channel = nil;
     NSNumber *isInvokeShakeOnScreenshotObj = [NSNumber numberWithBool:isInvokeShakeOnScreenshot];
    
     result(isInvokeShakeOnScreenshotObj);
+}
+
+-(void)isScreenshotIncluded:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL isScreenshotIncluded = SHKShake.configuration.isScreenshotIncluded;
+    NSNumber *isScreenshotIncludedObj = [NSNumber numberWithBool:isScreenshotIncluded];
+
+    result(isScreenshotIncludedObj);
+}
+
+- (void)setScreenshotIncluded:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL screenshotIncluded = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isScreenshotIncluded = screenshotIncluded;
+
+    result(nil);
 }
 
 - (void)setShakeReportData:(FlutterMethodCall*) call result:(FlutterResult) result {

@@ -41,6 +41,7 @@ class _HomeState extends State<Home> {
   bool? feedbackTypesEnabled = false;
   bool? screenRecordingEnabled = false;
   bool? sensitiveDataEnabled = false;
+  bool? screenshotIncluded = false;
   int? shakingThreshold = 400;
 
   File? file1;
@@ -67,7 +68,7 @@ class _HomeState extends State<Home> {
     final screenRecordingEnabled = await Shake.isAutoVideoRecording();
     final sensitiveDataEnabled = await Shake.isSensitiveDataRedactionEnabled();
     final shakingThreshold = await Shake.getShakingThreshold();
-
+    final screenshotIncluded = await Shake.isScreenshotIncluded();
 
     setState(() {
       this.shakeInvokingEnabled = shakeInvokingEnabled;
@@ -83,7 +84,7 @@ class _HomeState extends State<Home> {
       this.screenRecordingEnabled = screenRecordingEnabled;
       this.sensitiveDataEnabled = sensitiveDataEnabled;
       this.shakingThreshold = shakingThreshold;
-
+      this.screenshotIncluded = screenshotIncluded;
     });
 
     file1 = await Files.createDummyFile('file1.txt');
@@ -214,26 +215,30 @@ class _HomeState extends State<Home> {
                           sensitiveDataEnabled!,
                           _onSensitiveDataEnabledToggle,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Header('Shaking threshold'),
-                              Button(
-                                '100 ',
-                                _onShakingThreshold100,
-                              ),
-                              Button(
-                                '600',
-                                _onShakingThreshold600,
-                              ),
-                              Button(
-                                '900',
-                                _onShakingThreshold900,
-                              ),
-                            ],
-                          ),
+                        Toggle(
+                          'Screenshot included',
+                          screenshotIncluded!,
+                          _onScreenshotIncluded,)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Header('Shaking threshold'),
+                        Button(
+                          '100 ',
+                          _onShakingThreshold100,
+                        ),
+                        Button(
+                          '600',
+                          _onShakingThreshold600,
+                        ),
+                        Button(
+                          '900',
+                          _onShakingThreshold900,
                         ),
                       ],
                     ),
@@ -420,6 +425,13 @@ class _HomeState extends State<Home> {
     Shake.setSensitiveDataRedactionEnabled(sensitiveDataEnabled!);
   }
 
+  _onScreenshotIncluded(enabled) {
+    setState(() {
+      screenshotIncluded = enabled;
+    });
+    Shake.setScreenshotIncluded(screenshotIncluded!);
+  }
+
   _onAttachDataPress() {
     List<ShakeFile> shakeFiles = [];
     shakeFiles.add(ShakeFile.create(file1!.path));
@@ -446,15 +458,15 @@ class _HomeState extends State<Home> {
     );
   }
 
-  _onShakingThreshold100(){
+  _onShakingThreshold100() {
     Shake.setShakingThreshold(100);
   }
 
-  _onShakingThreshold600(){
+  _onShakingThreshold600() {
     Shake.setShakingThreshold(600);
   }
 
-  _onShakingThreshold900(){
+  _onShakingThreshold900() {
     Shake.setShakingThreshold(900);
   }
 
@@ -472,7 +484,7 @@ class _HomeState extends State<Home> {
 
   _postNotificationEvent() async {
     FlutterLocalNotificationsPlugin notificationsPlugin =
-        FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
     InitializationSettings initializationSettings = InitializationSettings(
         android: AndroidInitializationSettings('@drawable/ic_bug_report'),
@@ -481,10 +493,10 @@ class _HomeState extends State<Home> {
     await notificationsPlugin.initialize(initializationSettings);
 
     const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-            'shake-flutter', 'Shake Flutter', 'Shake Flutter channel');
+    AndroidNotificationDetails(
+        'shake-flutter', 'Shake Flutter', 'Shake Flutter channel');
     const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidDetails);
+    NotificationDetails(android: androidDetails);
     await notificationsPlugin.show(
         0,
         'This notification was generated by the app!',
