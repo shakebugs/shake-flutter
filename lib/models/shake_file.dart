@@ -17,10 +17,19 @@ class ShakeFile {
     }
   }
 
+  /// Converts object to map.
   Map<String, dynamic> toMap() {
     return {
-      "path": path,
-      "name": name,
+      'path': path,
+      'name': name,
     };
+  }
+
+  /// Converts map to object.
+  static ShakeFile fromMap(Map data) {
+    String path = data['path'] ?? '';
+    String name = data['name'] ?? '';
+
+    return ShakeFile.create(path, name);
   }
 }

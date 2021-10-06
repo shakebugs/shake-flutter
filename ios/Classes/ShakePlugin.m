@@ -92,11 +92,15 @@ static FlutterMethodChannel *channel = nil;
         [self setAutoVideoRecording:call result:result];
     } else if([@"isAutoVideoRecording" isEqualToString:call.method]) {
         [self isAutoVideoRecording:call result:result];
-    } else if([@"setEnableMultipleFeedbackTypes" isEqualToString:call.method]) {
-        [self setEnableMultipleFeedbackTypes:call result:result];
-    } else if([@"isEnableMultipleFeedbackTypes" isEqualToString:call.method]) {
-        [self isEnableMultipleFeedbackTypes:call result:result];
-    } else if([@"setConsoleLogsEnabled" isEqualToString:call.method]) {
+    } else if([@"setFeedbackTypeEnabled" isEqualToString:call.method]) {
+        [self setFeedbackTypeEnabled:call result:result];
+    }  else if([@"isFeedbackTypeEnabled" isEqualToString:call.method]) {
+        [self isFeedbackTypeEnabled:call result:result];
+    } else if([@"setFeedbackTypes" isEqualToString:call.method]) {
+        [self setFeedbackTypes:call result:result];
+    }  else if([@"getFeedbackTypes" isEqualToString:call.method]) {
+        [self getFeedbackTypes:call result:result];
+    }else if([@"setConsoleLogsEnabled" isEqualToString:call.method]) {
         [self setConsoleLogsEnabled:call result:result];
     } else if([@"isConsoleLogsEnabled" isEqualToString:call.method]) {
         [self isConsoleLogsEnabled:call result:result];
@@ -362,18 +366,34 @@ static FlutterMethodChannel *channel = nil;
     result(isAutoVideoRecordingObj);
 }
 
-- (void)setEnableMultipleFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult) result {
+- (void)setFeedbackTypeEnabled:(FlutterMethodCall*) call result:(FlutterResult) result {
     BOOL isFeedbackTypeEnabled = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isFeedbackTypeEnabled = isFeedbackTypeEnabled;
 
     result(nil);
 }
 
-- (void)isEnableMultipleFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult)result {
+- (void)isFeedbackTypeEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL isFeedbackTypeEnabled = SHKShake.configuration.isFeedbackTypeEnabled;
     NSNumber *isFeedbackTypeEnabledObj = [NSNumber numberWithBool:isFeedbackTypeEnabled];
 
     result(isFeedbackTypeEnabledObj);
+}
+
+- (void)setFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSArray *feedbackTypesArray = call.arguments[@"feedbackTypes"];
+    
+    NSMutableArray<SHKFeedbackEntry *> *feedbackTypes = [self mapArrayToFeedbackTypes:feedbackTypesArray];
+    [SHKShake setFeedbackTypes:feedbackTypes];
+    
+    result(nil);
+}
+
+- (void)getFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult)result {
+    NSArray<SHKFeedbackEntry *> *feedbackTypes = [SHKShake getFeedbackTypes];
+    NSArray<NSDictionary *> *feedbackTypesArray = [self mapFeedbackTypesToArray:feedbackTypes];
+
+    result(feedbackTypesArray);
 }
 
 - (void)setConsoleLogsEnabled:(FlutterMethodCall*) call result:(FlutterResult) result {
@@ -452,6 +472,49 @@ static FlutterMethodChannel *channel = nil;
         }
     }
     return shakeFiles;
+}
+
+- (NSMutableArray<SHKFeedbackEntry*>*)mapArrayToFeedbackTypes:(NSArray *)feedbackTypesArray
+{
+    if (feedbackTypesArray == nil) return nil;
+
+    NSMutableArray<SHKFeedbackEntry*>* feedbackTypes = [NSMutableArray array];
+    for(int i = 0; i < [feedbackTypesArray count]; i++) {
+        NSDictionary *feedbackTypeDic = [feedbackTypesArray objectAtIndex:i];
+        NSString *title = [feedbackTypeDic objectForKey:@"title"];
+        NSString *tag = [feedbackTypeDic objectForKey:@"tag"];
+        NSString *icon = [feedbackTypeDic objectForKey:@"icon"];
+
+        UIImage *image = [UIImage imageNamed:icon];
+        SHKFeedbackEntry *feedbackType = [SHKFeedbackEntry entryWithTitle:title andTag:tag icon:image];
+
+        if (feedbackType != nil) {
+            [feedbackTypes addObject:feedbackType];
+        }
+    }
+    return feedbackTypes;
+}
+
+- (NSArray<NSDictionary*>*)mapFeedbackTypesToArray:(NSArray<SHKFeedbackEntry *> *)feedbackTypes
+{
+    if (feedbackTypes == nil) return nil;
+
+    NSMutableArray<NSDictionary*>* feedbackTypesArray = [NSMutableArray array];
+    for(int i = 0; i < [feedbackTypes count]; i++) {
+        SHKFeedbackEntry *feedbackType = [feedbackTypes objectAtIndex:i];
+
+        NSDictionary *feedbackTypeDic = [[NSDictionary alloc] init];
+        feedbackTypeDic = @{
+            @"title": feedbackType.title,
+            @"tag": feedbackType.tag,
+            @"icon": @""
+        };
+
+        if (feedbackTypeDic != nil) {
+            [feedbackTypesArray addObject:feedbackTypeDic];
+        }
+    }
+    return feedbackTypesArray;
 }
 
 - (SHKShakeReportConfiguration*)mapToConfiguration:(nonnull NSDictionary*)configurationDic {
