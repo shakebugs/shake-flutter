@@ -6,12 +6,21 @@ import com.shakebugs.flutter.utils.Files
 import com.shakebugs.flutter.utils.Resources
 import com.shakebugs.shake.LogLevel
 import com.shakebugs.shake.ShakeReportConfiguration
+import com.shakebugs.shake.ShakeScreen
 import com.shakebugs.shake.internal.data.NetworkRequest
 import com.shakebugs.shake.internal.data.NotificationEvent
 import com.shakebugs.shake.report.FeedbackType
 import com.shakebugs.shake.report.ShakeFile
 
+
 class Mapper(private val context: Context) {
+    fun mapToShakeScreen(shakeScreenStr: String?): ShakeScreen {
+        return when (shakeScreenStr) {
+            "newTicket" -> ShakeScreen.NEW
+            "home" -> ShakeScreen.HOME
+            else -> ShakeScreen.NEW
+        }
+    }
 
     fun mapToShakeFiles(data: List<HashMap<String, Any>>?): List<ShakeFile>? {
         return data?.map {

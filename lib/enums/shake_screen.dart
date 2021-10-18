@@ -1,0 +1,1 @@
+enum ShakeScreen { home, newTicket }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shake_flutter/enums/log_level.dart';
+import 'package:shake_flutter/enums/shake_screen.dart';
 import 'package:shake_flutter/helpers/network_tracker.dart';
 import 'package:shake_flutter/helpers/notifications_tracker.dart';
 import 'package:shake_flutter/models/feedback_type.dart';
@@ -33,9 +34,12 @@ class Shake {
 
   /// Shows Shake screen.
   ///
-  /// Use this method to show Shake screen from the code.
-  static void show() async {
-    await _channel.invokeMethod('show');
+  /// [ShakeScreen.home] or [ShakeScreen.newTicket].
+  /// The default one is [ShakeScreen.newTicket]
+  static void show([shakeScreen = ShakeScreen.newTicket]) async {
+    await _channel.invokeMethod('show', {
+      'shakeScreen': describeEnum(shakeScreen),
+    });
   }
 
   /// Enables or disables Shake.
@@ -283,6 +287,32 @@ class Shake {
     await _channel.invokeMethod('setSensitiveDataRedactionEnabled', {
       'enabled': enabled,
     });
+  }
+
+  /// Registers new Shake user.
+  static void registerUser(String userId) async {
+    await _channel.invokeMethod('registerUser', {
+      'userId': userId,
+    });
+  }
+
+  /// Updates existing Shake user id.
+  static void updateUserId(String userId) async {
+    await _channel.invokeMethod('updateUserId', {
+      'userId': userId,
+    });
+  }
+
+  /// Updates existing Shake user metadata.
+  static void updateUserMetadata(Map<String, String?> metadata) async {
+    await _channel.invokeMethod('updateUserMetadata', {
+      'metadata': metadata,
+    });
+  }
+
+  /// Unregister current Shake user.
+  static void unregisterUser() async {
+    await _channel.invokeMethod('unregisterUser');
   }
 
   /// Inserts notification event to the activity history.

@@ -29,7 +29,7 @@ static FlutterMethodChannel *channel = nil;
     if([@"start" isEqualToString:call.method]) {
         [self start:call result:result];
     } else if([@"show" isEqualToString:call.method]) {
-        [self show:result];
+        [self show:call result:result];
     } else if([@"setEnabled" isEqualToString:call.method]) {
         [self setEnabled:call result:result];
     } else if([@"setEnableActivityHistory" isEqualToString:call.method]) {
@@ -98,9 +98,9 @@ static FlutterMethodChannel *channel = nil;
         [self isFeedbackTypeEnabled:call result:result];
     } else if([@"setFeedbackTypes" isEqualToString:call.method]) {
         [self setFeedbackTypes:call result:result];
-    }  else if([@"getFeedbackTypes" isEqualToString:call.method]) {
+    } else if([@"getFeedbackTypes" isEqualToString:call.method]) {
         [self getFeedbackTypes:call result:result];
-    }else if([@"setConsoleLogsEnabled" isEqualToString:call.method]) {
+    } else if([@"setConsoleLogsEnabled" isEqualToString:call.method]) {
         [self setConsoleLogsEnabled:call result:result];
     } else if([@"isConsoleLogsEnabled" isEqualToString:call.method]) {
         [self isConsoleLogsEnabled:call result:result];
@@ -108,6 +108,14 @@ static FlutterMethodChannel *channel = nil;
         [self setSensitiveDataRedactionEnabled:call result:result];
     } else if([@"isSensitiveDataRedactionEnabled" isEqualToString:call.method]) {
         [self isSensitiveDataRedactionEnabled:call result:result];
+    } else if([@"registerUser" isEqualToString:call.method]) {
+        [self registerUser:call result:result];
+    } else if([@"updateUserId" isEqualToString:call.method]) {
+        [self updateUserId:call result:result];
+    } else if([@"updateUserMetadata" isEqualToString:call.method]) {
+        [self updateUserMetadata:call result:result];
+    } else if([@"unregisterUser" isEqualToString:call.method]) {
+        [self unregisterUser:result];
     } else if([@"showNotificationsSettings" isEqualToString:call.method]) {
         [self showNotificationsSettings:result];
     } else {
@@ -116,11 +124,10 @@ static FlutterMethodChannel *channel = nil;
 }
 
 - (void)start:(FlutterMethodCall*) call result:(FlutterResult)result {
-    NSString* clientId = call.arguments[@"clientId"];
-    NSString* clientSecret = call.arguments[@"clientSecret"];
+    NSString *clientId = call.arguments[@"clientId"];
+    NSString *clientSecret = call.arguments[@"clientSecret"];
 
     [self setPlatformInfo];
-    [self disableNetworkRequests];
 
     [SHKShake startWithClientId:clientId clientSecret:clientSecret];
     [self startNotificationsEmitter];
@@ -128,9 +135,12 @@ static FlutterMethodChannel *channel = nil;
     result(nil);
 }
 
-- (void)show:(FlutterResult)result {
-    [SHKShake show];
-
+- (void)show:(FlutterMethodCall*) call result:(FlutterResult)result {
+    NSString *shakeScreenArg = call.arguments[@"shakeScreen"];
+    
+    SHKShowOption showOption = [self mapToShowOption:shakeScreenArg];
+    [SHKShake show:showOption];
+    
     result(nil);
 }
 
@@ -424,6 +434,33 @@ static FlutterMethodChannel *channel = nil;
     result(isSensitiveDataRedactionEnabledObj);
 }
 
+- (void)registerUser:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSString *userId = call.arguments[@"userId"];
+    [SHKShake registerUserWithUserId:userId];
+    
+    result(nil);
+}
+
+- (void)updateUserId:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSString *userId = call.arguments[@"userId"];
+    [SHKShake updateUserId:userId];
+    
+    result(nil);
+}
+
+- (void)updateUserMetadata:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSDictionary *metadata = call.arguments[@"metadata"];
+    [SHKShake updateUserMetadata:metadata];
+   
+    result(nil);
+}
+
+- (void)unregisterUser:(FlutterResult) result {
+    [SHKShake unregisterUser];
+
+    result(nil);
+}
+
 - (void)startNotificationsEmitter {
     SHKShake.notificationEventsFilter = ^SHKNotificationEventEditor *(SHKNotificationEventEditor * notificationEvent) {
         NSDictionary* notificationDict = [self notificationToMap:notificationEvent];
@@ -455,6 +492,18 @@ static FlutterMethodChannel *channel = nil;
         logLevel = LogLevelError;
 
     return logLevel;
+}
+
+- (SHKShowOption)mapToShowOption:(NSString*)showOptionStr
+{
+    SHKShowOption showOption = SHKShowOptionHome;
+
+    if ([showOptionStr isEqualToString:@"home"])
+        showOption = SHKShowOptionHome;
+    if ([showOptionStr isEqualToString:@"newTicket"])
+        showOption = SHKShowOptionNew;
+
+    return showOption;
 }
 
 - (NSMutableArray<SHKShakeFile*>*)mapToShakeFiles:(nonnull NSArray*)files {
@@ -573,10 +622,6 @@ static FlutterMethodChannel *channel = nil;
 - (void)setPlatformInfo {
     NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"15.0.0" };
     [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
-}
-
-- (void)disableNetworkRequests {
-    [SHKShake performSelector:sel_getUid(@"_setNetworkRequestReporterDisabledDueToRN:".UTF8String) withObject:@YES];
 }
 
 - (void)insertRNNotificationEvent:(nonnull NSDictionary*)notificationEvent {

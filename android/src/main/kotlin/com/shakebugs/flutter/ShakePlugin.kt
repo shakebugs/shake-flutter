@@ -59,7 +59,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "start" -> start(call)
-            "show" -> show()
+            "show" -> show(call)
             "setEnabled" -> setEnabled(call)
             "setEnableBlackBox" -> setEnableBlackBox(call)
             "isEnableBlackBox" -> isEnableBlackBox(result)
@@ -95,6 +95,10 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setMetadata" -> setMetadata(call)
             "setShakeReportData" -> setShakeReportData(call)
             "silentReport" -> silentReport(call)
+            "registerUser" -> registerUser(call)
+            "updateUserId" -> updateUserId(call)
+            "updateUserMetadata" -> updateUserMetadata(call)
+            "unregisterUser" -> unregisterUser()
             "insertNetworkRequest" -> insertNetworkRequest(call)
             "insertNotificationEvent" -> insertNotificationEvent(call)
             "isSensitiveDataRedactionEnabled" -> isSensitiveDataRedactionEnabled(result)
@@ -124,8 +128,13 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         startNotificationsEmitter()
     }
 
-    private fun show() {
-        Shake.show()
+    private fun show(call: MethodCall) {
+        val shakeScreenArg: String? = call.argument("shakeScreen")
+
+        val shakeScreen = mapper?.mapToShakeScreen(shakeScreenArg)
+        shakeScreen?.let {
+            Shake.show(shakeScreen)
+        }
     }
 
     private fun setEnabled(call: MethodCall) {
@@ -247,6 +256,28 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         val config = mapper?.mapToReportConfiguration(configurationArg)
 
         Shake.silentReport(description, { shakeFiles }, config)
+    }
+
+    private fun registerUser(call: MethodCall) {
+        val userId: String? = call.argument("userId")
+
+        Shake.registerUser(userId)
+    }
+
+    private fun updateUserId(call: MethodCall) {
+        val userId: String? = call.argument("userId")
+
+        Shake.updateUserId(userId)
+    }
+
+    private fun updateUserMetadata(call: MethodCall) {
+        val metadata: Map<String, String>? = call.argument("metadata")
+
+        Shake.updateUserMetadata(metadata)
+    }
+
+    private fun unregisterUser() {
+        Shake.unregisterUser()
     }
 
     private fun setMetadata(call: MethodCall) {

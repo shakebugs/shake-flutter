@@ -15,6 +15,7 @@ import 'package:shake_example/ui/base/version.dart';
 import 'package:shake_example/utils/files.dart';
 import 'package:shake_example/utils/messages.dart';
 import 'package:shake_flutter/enums/log_level.dart';
+import 'package:shake_flutter/enums/shake_screen.dart';
 import 'package:shake_flutter/models/feedback_type.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/models/notification_event.dart';
@@ -119,8 +120,12 @@ class _HomeState extends State<Home> {
                       children: [
                         Header('Actions'),
                         Button(
-                          'Show',
-                          _onShowPress,
+                          'Show Home',
+                          _onShowHomePressed,
+                        ),
+                        Button(
+                          'Show New',
+                          _onShowNewPressed,
                         ),
                         Button(
                           'Attach data',
@@ -253,6 +258,31 @@ class _HomeState extends State<Home> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Header('User'),
+                        Button(
+                          'Register user',
+                          _onRegisterUserPressed,
+                        ),
+                        Button(
+                          'Update user id',
+                          _onUpdateUserIdPressed,
+                        ),
+                        Button(
+                          'Update user metadata',
+                          _onUpdateUserMetadataPressed,
+                        ),
+                        Button(
+                          'Unregister user',
+                          _onUnregisterUserPressed,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Header('Notifications'),
                         Button('Show notification settings',
                             _showNotificationSettings),
@@ -342,7 +372,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _onShowPress() {
+  void _onShowHomePressed() {
+    Shake.show(ShakeScreen.home);
+  }
+
+  void _onShowNewPressed() {
     Shake.show();
   }
 
@@ -613,5 +647,21 @@ class _HomeState extends State<Home> {
     } catch (e) {
       Messages.show(e.toString());
     }
+  }
+
+  void _onRegisterUserPressed() {
+    Shake.registerUser('john.smith@example.com');
+  }
+
+  void _onUpdateUserIdPressed() {
+    Shake.updateUserId('will.smith@example.com');
+  }
+
+  void _onUpdateUserMetadataPressed() {
+    Shake.updateUserMetadata({'fist_name': 'John', 'last_name': 'Smith'});
+  }
+
+  void _onUnregisterUserPressed() {
+    Shake.unregisterUser();
   }
 }
