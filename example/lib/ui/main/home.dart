@@ -15,6 +15,8 @@ import 'package:shake_example/ui/base/version.dart';
 import 'package:shake_example/utils/files.dart';
 import 'package:shake_example/utils/messages.dart';
 import 'package:shake_flutter/enums/log_level.dart';
+import 'package:shake_flutter/enums/shake_screen.dart';
+import 'package:shake_flutter/models/feedback_type.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/models/notification_event.dart';
 import 'package:shake_flutter/models/shake_file.dart';
@@ -29,21 +31,23 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   NetworkTester networkTester = DartTester();
 
-  bool shakeInvokingEnabled = false;
-  bool buttonInvokingEnabled = false;
-  bool screenshotInvokingEnabled = false;
-  bool shakeEnabled = false;
-  bool blackboxEnabled = false;
-  bool inspectScreenEnabled = false;
-  bool activityHistoryEnabled = false;
-  bool consoleLogsEnabled = false;
-  bool emailFieldEnabled = false;
-  bool feedbackTypesEnabled = false;
-  bool screenRecordingEnabled = false;
-  bool sensitiveDataEnabled = false;
+  bool? shakeInvokingEnabled = false;
+  bool? buttonInvokingEnabled = false;
+  bool? screenshotInvokingEnabled = false;
+  bool? shakeEnabled = false;
+  bool? blackboxEnabled = false;
+  bool? inspectScreenEnabled = false;
+  bool? activityHistoryEnabled = false;
+  bool? consoleLogsEnabled = false;
+  bool? emailFieldEnabled = false;
+  bool? feedbackTypesEnabled = false;
+  bool? screenRecordingEnabled = false;
+  bool? sensitiveDataEnabled = false;
+  bool? screenshotIncluded = false;
+  int? shakingThreshold = 400;
 
-  File file1;
-  File file2;
+  File? file1;
+  File? file2;
 
   @override
   void initState() {
@@ -52,7 +56,7 @@ class _HomeState extends State<Home> {
     _initialize();
   }
 
-  _initialize() async {
+  void _initialize() async {
     final shakeInvokingEnabled = await Shake.isInvokeShakeOnShakeDeviceEvent();
     final buttonInvokingEnabled = await Shake.isShowFloatingReportButton();
     final screenshotInvokingEnabled = await Shake.isInvokeShakeOnScreenshot();
@@ -62,9 +66,11 @@ class _HomeState extends State<Home> {
     final activityHistoryEnabled = await Shake.isEnableActivityHistory();
     final consoleLogsEnabled = await Shake.isConsoleLogsEnabled();
     final emailFieldEnabled = await Shake.isEnableEmailField();
-    final feedbackTypesEnabled = await Shake.isEnableMultipleFeedbackTypes();
+    final feedbackTypesEnabled = await Shake.isFeedbackTypeEnabled();
     final screenRecordingEnabled = await Shake.isAutoVideoRecording();
     final sensitiveDataEnabled = await Shake.isSensitiveDataRedactionEnabled();
+    final shakingThreshold = await Shake.getShakingThreshold();
+    final screenshotIncluded = await Shake.isScreenshotIncluded();
 
     setState(() {
       this.shakeInvokingEnabled = shakeInvokingEnabled;
@@ -79,6 +85,8 @@ class _HomeState extends State<Home> {
       this.feedbackTypesEnabled = feedbackTypesEnabled;
       this.screenRecordingEnabled = screenRecordingEnabled;
       this.sensitiveDataEnabled = sensitiveDataEnabled;
+      this.shakingThreshold = shakingThreshold;
+      this.screenshotIncluded = screenshotIncluded;
     });
 
     file1 = await Files.createDummyFile('file1.txt');
@@ -112,8 +120,12 @@ class _HomeState extends State<Home> {
                       children: [
                         Header('Actions'),
                         Button(
-                          'Show',
-                          _onShowPress,
+                          'Show Home',
+                          _onShowHomePressed,
+                        ),
+                        Button(
+                          'Show New',
+                          _onShowNewPressed,
                         ),
                         Button(
                           'Attach data',
@@ -131,6 +143,10 @@ class _HomeState extends State<Home> {
                           'Add metadata',
                           _addMetadata,
                         ),
+                        Button(
+                          'Set feedback types',
+                          _setFeedbackTypes,
+                        ),
                       ],
                     ),
                   ),
@@ -142,17 +158,17 @@ class _HomeState extends State<Home> {
                         Header('Invoking'),
                         Toggle(
                           'Shaking',
-                          shakeInvokingEnabled,
+                          shakeInvokingEnabled!,
                           _onShakeInvokingToggle,
                         ),
                         Toggle(
                           'Button',
-                          buttonInvokingEnabled,
+                          buttonInvokingEnabled!,
                           _onButtonInvokingToggle,
                         ),
                         Toggle(
                           'Screenshot',
-                          screenshotInvokingEnabled,
+                          screenshotInvokingEnabled!,
                           _onScreenshotInvokingToggle,
                         ),
                       ],
@@ -166,48 +182,98 @@ class _HomeState extends State<Home> {
                         Header('Options'),
                         Toggle(
                           'Enabled',
-                          shakeEnabled,
+                          shakeEnabled!,
                           _onEnableShakeToggle,
                         ),
                         Toggle(
                           'Blackbox',
-                          blackboxEnabled,
+                          blackboxEnabled!,
                           _onEnableBlackboxToggle,
                         ),
                         Toggle(
                           'Inspect screen',
-                          inspectScreenEnabled,
+                          inspectScreenEnabled!,
                           _onEnableInspectScreenToggle,
                         ),
                         Toggle(
                           'Activity history',
-                          activityHistoryEnabled,
+                          activityHistoryEnabled!,
                           _onEnableActivityHistoryToggle,
                         ),
                         Toggle(
                           'Console logs',
-                          consoleLogsEnabled,
+                          consoleLogsEnabled!,
                           _onConsoleLogsEnabledToggle,
                         ),
                         Toggle(
                           'Email field',
-                          emailFieldEnabled,
+                          emailFieldEnabled!,
                           _onEmailFieldEnabledToggle,
                         ),
                         Toggle(
                           'Feedback types',
-                          feedbackTypesEnabled,
+                          feedbackTypesEnabled!,
                           _onFeedbackTypesEnabledToggle,
                         ),
                         Toggle(
                           'Screen recording',
-                          screenRecordingEnabled,
+                          screenRecordingEnabled!,
                           _onScreenRecordingEnabledToggle,
                         ),
                         Toggle(
                           'Sensitive data redaction',
-                          sensitiveDataEnabled,
+                          sensitiveDataEnabled!,
                           _onSensitiveDataEnabledToggle,
+                        ),
+                        Toggle(
+                          'Screenshot included',
+                          screenshotIncluded!,
+                          _onScreenshotIncluded,)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Header('Shaking threshold'),
+                        Button(
+                          '100 ',
+                          _onShakingThreshold100,
+                        ),
+                        Button(
+                          '600',
+                          _onShakingThreshold600,
+                        ),
+                        Button(
+                          '900',
+                          _onShakingThreshold900,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Header('User'),
+                        Button(
+                          'Register user',
+                          _onRegisterUserPressed,
+                        ),
+                        Button(
+                          'Update user id',
+                          _onUpdateUserIdPressed,
+                        ),
+                        Button(
+                          'Update user metadata',
+                          _onUpdateUserMetadataPressed,
+                        ),
+                        Button(
+                          'Unregister user',
+                          _onUnregisterUserPressed,
                         ),
                       ],
                     ),
@@ -306,106 +372,117 @@ class _HomeState extends State<Home> {
     );
   }
 
-  _onShowPress() {
+  void _onShowHomePressed() {
+    Shake.show(ShakeScreen.home);
+  }
+
+  void _onShowNewPressed() {
     Shake.show();
   }
 
-  _onEnableShakeToggle(enabled) {
+  void _onEnableShakeToggle(enabled) {
     setState(() {
       shakeEnabled = enabled;
     });
     Shake.setEnabled(enabled);
   }
 
-  _onShakeInvokingToggle(enabled) {
+  void _onShakeInvokingToggle(enabled) {
     setState(() {
       shakeInvokingEnabled = enabled;
     });
     Shake.setInvokeShakeOnShakeDeviceEvent(enabled);
   }
 
-  _onButtonInvokingToggle(enabled) {
+  void _onButtonInvokingToggle(enabled) {
     setState(() {
       buttonInvokingEnabled = enabled;
     });
     Shake.setShowFloatingReportButton(enabled);
   }
 
-  _onScreenshotInvokingToggle(enabled) {
+  void _onScreenshotInvokingToggle(enabled) {
     setState(() {
       screenshotInvokingEnabled = enabled;
     });
     Shake.setInvokeShakeOnScreenshot(enabled);
   }
 
-  _onEnableBlackboxToggle(enabled) {
+  void _onEnableBlackboxToggle(enabled) {
     setState(() {
       blackboxEnabled = enabled;
     });
     Shake.setEnableBlackBox(enabled);
   }
 
-  _onEnableActivityHistoryToggle(enabled) {
+  void _onEnableActivityHistoryToggle(enabled) {
     setState(() {
       activityHistoryEnabled = enabled;
     });
     Shake.setEnableActivityHistory(enabled);
   }
 
-  _onEnableInspectScreenToggle(enabled) {
+  void _onEnableInspectScreenToggle(enabled) {
     setState(() {
       inspectScreenEnabled = enabled;
     });
     Shake.setEnableInspectScreen(enabled);
   }
 
-  _onConsoleLogsEnabledToggle(enabled) {
+  void _onConsoleLogsEnabledToggle(enabled) {
     setState(() {
       consoleLogsEnabled = enabled;
     });
     Shake.setConsoleLogsEnabled(enabled);
   }
 
-  _onEmailFieldEnabledToggle(enabled) {
+  void _onEmailFieldEnabledToggle(enabled) {
     setState(() {
       emailFieldEnabled = enabled;
     });
     Shake.setEnableEmailField(enabled);
   }
 
-  _onFeedbackTypesEnabledToggle(enabled) {
+  void _onFeedbackTypesEnabledToggle(enabled) {
     setState(() {
       feedbackTypesEnabled = enabled;
     });
-    Shake.setEnableMultipleFeedbackTypes(feedbackTypesEnabled);
+    Shake.setFeedbackTypeEnabled(feedbackTypesEnabled!);
   }
 
-  _onScreenRecordingEnabledToggle(enabled) {
+  void _onScreenRecordingEnabledToggle(enabled) {
     setState(() {
       screenRecordingEnabled = enabled;
     });
-    Shake.setAutoVideoRecording(screenRecordingEnabled);
+    Shake.setAutoVideoRecording(screenRecordingEnabled!);
   }
 
-  _onSensitiveDataEnabledToggle(enabled) {
+  void _onSensitiveDataEnabledToggle(enabled) {
     setState(() {
       sensitiveDataEnabled = enabled;
     });
-    Shake.setSensitiveDataRedactionEnabled(sensitiveDataEnabled);
+    Shake.setSensitiveDataRedactionEnabled(sensitiveDataEnabled!);
   }
 
-  _onAttachDataPress() {
+  void _onScreenshotIncluded(enabled) {
+    setState(() {
+      screenshotIncluded = enabled;
+    });
+    Shake.setScreenshotIncluded(screenshotIncluded!);
+  }
+
+  void _onAttachDataPress() {
     List<ShakeFile> shakeFiles = [];
-    shakeFiles.add(ShakeFile.create(file1.path));
-    shakeFiles.add(ShakeFile.create(file2.path, 'customName'));
+    shakeFiles.add(ShakeFile.create(file1!.path));
+    shakeFiles.add(ShakeFile.create(file2!.path, 'customName'));
 
     Shake.setShakeReportData(shakeFiles);
   }
 
-  _onSilentReportPress() {
+  void _onSilentReportPress() {
     List<ShakeFile> shakeFiles = [];
-    shakeFiles.add(ShakeFile.create(file1.path));
-    shakeFiles.add(ShakeFile.create(file2.path, 'customName'));
+    shakeFiles.add(ShakeFile.create(file1!.path));
+    shakeFiles.add(ShakeFile.create(file2!.path, 'customName'));
 
     ShakeReportConfiguration configuration = ShakeReportConfiguration();
     configuration.activityHistoryData = true;
@@ -420,21 +497,41 @@ class _HomeState extends State<Home> {
     );
   }
 
-  _addCustomLog() {
+  void _addCustomLog() {
     Shake.log(LogLevel.info, 'Custom log.');
   }
 
-  _addMetadata() {
+  void _addMetadata() {
     Shake.setMetadata('Shake', 'This is a Shake metadata.');
   }
 
-  _showNotificationSettings() {
+  void _setFeedbackTypes() {
+    var feedbackType1 = FeedbackType('Mouse', 'mouse', 'ic_mouse');
+    var feedbackType2 = FeedbackType('Keyboard', 'keyboard', 'ic_key');
+    var feedbackType3 = FeedbackType('Display', 'display', 'ic_display');
+
+    Shake.setFeedbackTypes([feedbackType1, feedbackType2, feedbackType3]);
+  }
+
+  void _onShakingThreshold100() {
+    Shake.setShakingThreshold(100);
+  }
+
+  void _onShakingThreshold600() {
+    Shake.setShakingThreshold(600);
+  }
+
+  void _onShakingThreshold900() {
+    Shake.setShakingThreshold(900);
+  }
+
+  void _showNotificationSettings() {
     Shake.showNotificationsSettings();
   }
 
-  _postNotificationEvent() async {
+  void _postNotificationEvent() async {
     FlutterLocalNotificationsPlugin notificationsPlugin =
-        FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
     InitializationSettings initializationSettings = InitializationSettings(
         android: AndroidInitializationSettings('@drawable/ic_bug_report'),
@@ -443,10 +540,9 @@ class _HomeState extends State<Home> {
     await notificationsPlugin.initialize(initializationSettings);
 
     const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-            'shake-flutter', 'Shake Flutter', 'Shake Flutter channel');
+    AndroidNotificationDetails('shake-flutter', 'Shake Flutter');
     const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidDetails);
+    NotificationDetails(android: androidDetails);
     await notificationsPlugin.show(
         0,
         'This notification was generated by the app!',
@@ -454,7 +550,7 @@ class _HomeState extends State<Home> {
         platformChannelSpecifics);
   }
 
-  _insertNotificationEvent() {
+  void _insertNotificationEvent() {
     NotificationEvent notificationEvent = NotificationEvent()
       ..id = '0'
       ..title = 'Title'
@@ -462,7 +558,7 @@ class _HomeState extends State<Home> {
     Shake.insertNotificationEvent(notificationEvent);
   }
 
-  _insertNetworkRequest() {
+  void _insertNetworkRequest() {
     NetworkRequest networkRequest = NetworkRequest()
       ..method = 'POST'
       ..status = '200'
@@ -476,7 +572,7 @@ class _HomeState extends State<Home> {
     Shake.insertNetworkRequest(networkRequest);
   }
 
-  _setNotificationEventsFilter() {
+  void _setNotificationEventsFilter() {
     Shake.setNotificationEventsFilter((notificationEvent) {
       notificationEvent.title = "data_redacted";
       notificationEvent.description = "data_redacted";
@@ -484,7 +580,7 @@ class _HomeState extends State<Home> {
     });
   }
 
-  _setNetworkRequestsFilter() {
+  void _setNetworkRequestsFilter() {
     Shake.setNetworkRequestsFilter((networkRequest) {
       networkRequest.requestBody = "data_redacted";
       networkRequest.responseBody = "data_redacted";
@@ -492,7 +588,7 @@ class _HomeState extends State<Home> {
     });
   }
 
-  _onSendGetRequest() async {
+  void _onSendGetRequest() async {
     try {
       await networkTester.sendGetRequest();
 
@@ -502,7 +598,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  _onSendPostRequest() async {
+  void _onSendPostRequest() async {
     try {
       await networkTester.sendPostRequest();
 
@@ -512,7 +608,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  _onGetFileRequest() async {
+  void _onGetFileRequest() async {
     try {
       await networkTester.sendGetFileRequest();
 
@@ -522,7 +618,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  _onSendMultipartFileRequest() async {
+  void _onSendMultipartFileRequest() async {
     try {
       await networkTester.sendMultipartFileRequest();
 
@@ -532,7 +628,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  _onSend404Request() async {
+  void _onSend404Request() async {
     try {
       await networkTester.send404Request();
 
@@ -542,7 +638,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  _onSendTimeoutRequest() async {
+  void _onSendTimeoutRequest() async {
     try {
       await networkTester.sendTimeoutRequest();
 
@@ -550,5 +646,21 @@ class _HomeState extends State<Home> {
     } catch (e) {
       Messages.show(e.toString());
     }
+  }
+
+  void _onRegisterUserPressed() {
+    Shake.registerUser('john.smith@example.com');
+  }
+
+  void _onUpdateUserIdPressed() {
+    Shake.updateUserId('will.smith@example.com');
+  }
+
+  void _onUpdateUserMetadataPressed() {
+    Shake.updateUserMetadata({'fist_name': 'John', 'last_name': 'Smith'});
+  }
+
+  void _onUnregisterUserPressed() {
+    Shake.unregisterUser();
   }
 }

@@ -3,13 +3,14 @@ package com.shakebugs.flutter
 import android.app.Activity
 import android.content.Intent
 import androidx.annotation.NonNull
+import com.shakebugs.flutter.helpers.Mapper
 import com.shakebugs.flutter.utils.Constants
 import com.shakebugs.flutter.utils.Logger
-import com.shakebugs.flutter.utils.Mappers
 import com.shakebugs.shake.Shake
 import com.shakebugs.shake.ShakeInfo
 import com.shakebugs.shake.internal.data.NetworkRequest
 import com.shakebugs.shake.internal.data.NotificationEvent
+import com.shakebugs.shake.report.FeedbackType
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -17,11 +18,11 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** ShakePlugin */
 class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private var activity: Activity? = null
+    private var mapper: Mapper? = null
 
     /// The MethodChannel that will the communication between Flutter and native Android
     ///
@@ -40,6 +41,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onAttachedToActivity(activityPluginBinding: ActivityPluginBinding) {
         activity = activityPluginBinding.activity
+        mapper = Mapper(activityPluginBinding.activity.applicationContext)
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -54,27 +56,10 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         activity = null
     }
 
-    // This static function is optional and equivalent to onAttachedToEngine. It supports the old
-    // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
-    // plugin registration via this function while apps migrate to use the new Android APIs
-    // post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
-    //
-    // It is encouraged to share logic between onAttachedToEngine and registerWith to keep
-    // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
-    // depending on the user's project. onAttachedToEngine or registerWith must both be defined
-    // in the same class.
-    companion object {
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "shake")
-            channel.setMethodCallHandler(ShakePlugin())
-        }
-    }
-
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "start" -> start(call)
-            "show" -> show()
+            "show" -> show(call)
             "setEnabled" -> setEnabled(call)
             "setEnableBlackBox" -> setEnableBlackBox(call)
             "isEnableBlackBox" -> isEnableBlackBox(result)
@@ -86,14 +71,20 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "isShowFloatingReportButton" -> isShowFloatingReportButton(result)
             "setInvokeShakeOnShakeDeviceEvent" -> setInvokeShakeOnShakeDeviceEvent(call)
             "isInvokeShakeOnShakeDeviceEvent" -> isInvokeShakeOnShakeDeviceEvent(result)
+            "setShakingThreshold" -> setShakingThreshold(call)
+            "getShakingThreshold" -> getShakingThreshold(result)
             "setInvokeShakeOnScreenshot" -> setInvokeShakeOnScreenshot(call)
             "isInvokeShakeOnScreenshot" -> isInvokeShakeOnScreenshot(result)
+            "setScreenshotIncluded" -> setScreenshotIncluded(call)
+            "isScreenshotIncluded" -> isScreenshotIncluded(result)
             "getEmailField" -> getEmailField(result)
             "setEmailField" -> setEmailField(call)
             "isEnableEmailField" -> isEnableEmailField(result)
             "setEnableEmailField" -> setEnableEmailField(call)
-            "isEnableMultipleFeedbackTypes" -> isEnableMultipleFeedbackTypes(result)
-            "setEnableMultipleFeedbackTypes" -> setEnableMultipleFeedbackTypes(call)
+            "isFeedbackTypeEnabled" -> isFeedbackTypeEnabled(result)
+            "setFeedbackTypeEnabled" -> setFeedbackTypeEnabled(call)
+            "getFeedbackTypes" -> getFeedbackTypes(result)
+            "setFeedbackTypes" -> setFeedbackTypes(call)
             "getShowIntroMessage" -> getShowIntroMessage(result)
             "setShowIntroMessage" -> setShowIntroMessage(call)
             "isAutoVideoRecording" -> isAutoVideoRecording(result)
@@ -104,6 +95,10 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setMetadata" -> setMetadata(call)
             "setShakeReportData" -> setShakeReportData(call)
             "silentReport" -> silentReport(call)
+            "registerUser" -> registerUser(call)
+            "updateUserId" -> updateUserId(call)
+            "updateUserMetadata" -> updateUserMetadata(call)
+            "unregisterUser" -> unregisterUser()
             "insertNetworkRequest" -> insertNetworkRequest(call)
             "insertNotificationEvent" -> insertNotificationEvent(call)
             "isSensitiveDataRedactionEnabled" -> isSensitiveDataRedactionEnabled(result)
@@ -130,11 +125,16 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         ShakeReflection.setShakeInfo(shakeInfo)
         ShakeReflection.start(activity, clientId, clientSecret)
 
-        startNotificationsEmitter();
+        startNotificationsEmitter()
     }
 
-    private fun show() {
-        Shake.show()
+    private fun show(call: MethodCall) {
+        val shakeScreenArg: String? = call.argument("shakeScreen")
+
+        val shakeScreen = mapper?.mapToShakeScreen(shakeScreenArg)
+        shakeScreen?.let {
+            Shake.show(shakeScreen)
+        }
     }
 
     private fun setEnabled(call: MethodCall) {
@@ -204,6 +204,18 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         result.success(enabled)
     }
 
+    private fun getShakingThreshold(result: Result){
+        val threshold: Int? = Shake.getReportConfiguration().getShakingThreshold()
+        result.success(threshold)
+    }
+
+    private fun setShakingThreshold(call: MethodCall) {
+        val threshold: Int? = call.argument("shakingThreshold")
+        threshold?.let {
+            Shake.getReportConfiguration().shakingThreshold = threshold
+        }
+    }
+
     private fun setInvokeShakeOnScreenshot(call: MethodCall) {
         val enabled: Boolean? = call.argument("enabled")
         enabled?.let {
@@ -216,21 +228,56 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         result.success(enabled)
     }
 
-    private fun setShakeReportData(call: MethodCall) {
-        val shakeFiles: List<HashMap<String, Any>>? = call.argument("shakeFiles")
+    private fun isScreenshotIncluded(result: Result){
+        val enabled: Boolean = Shake.getReportConfiguration().isScreenshotIncluded
+        result.success(enabled)
+    }
 
-        Shake.onPrepareData { Mappers.mapToShakeFiles(shakeFiles) }
+    private fun setScreenshotIncluded(call: MethodCall){
+        val enabled: Boolean? = call.argument("enabled")
+        enabled?.let {
+            Shake.getReportConfiguration().isScreenshotIncluded = it
+        }
+    }
+
+    private fun setShakeReportData(call: MethodCall) {
+        val shakeFilesArg: List<HashMap<String, Any>>? = call.argument("shakeFiles")
+        shakeFilesArg?.let { shakeFiles ->
+            Shake.onPrepareData { mapper?.mapToShakeFiles(shakeFiles) }
+        }
     }
 
     private fun silentReport(call: MethodCall) {
         val description: String? = call.argument("description")
-        val shakeFilesMap: List<HashMap<String, Any>>? = call.argument("shakeFiles")
-        val configMap: HashMap<String, Any>? = call.argument("configuration")
+        val shakeFilesArg: List<HashMap<String, Any>>? = call.argument("shakeFiles")
+        val configurationArg: HashMap<String, Any>? = call.argument("configuration")
 
-        val shakeFiles = Mappers.mapToShakeFiles(shakeFilesMap)
-        val config = Mappers.mapToShakeReportConfiguration(configMap)
+        val shakeFiles = mapper?.mapToShakeFiles(shakeFilesArg)
+        val config = mapper?.mapToReportConfiguration(configurationArg)
 
         Shake.silentReport(description, { shakeFiles }, config)
+    }
+
+    private fun registerUser(call: MethodCall) {
+        val userId: String? = call.argument("userId")
+
+        Shake.registerUser(userId)
+    }
+
+    private fun updateUserId(call: MethodCall) {
+        val userId: String? = call.argument("userId")
+
+        Shake.updateUserId(userId)
+    }
+
+    private fun updateUserMetadata(call: MethodCall) {
+        val metadata: Map<String, String>? = call.argument("metadata")
+
+        Shake.updateUserMetadata(metadata)
+    }
+
+    private fun unregisterUser() {
+        Shake.unregisterUser()
     }
 
     private fun setMetadata(call: MethodCall) {
@@ -244,7 +291,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         val logLevelStr: String? = call.argument("level")
         val message: String? = call.argument("message")
 
-        val logLevel = Mappers.mapToLogLevel(logLevelStr)
+        val logLevel = mapper?.mapToLogLevel(logLevelStr)
         Shake.log(logLevel, message)
     }
 
@@ -284,15 +331,29 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
 
-    private fun isEnableMultipleFeedbackTypes(result: Result) {
-        val enabled: Boolean = Shake.getReportConfiguration().isEnableMultipleFeedbackTypes
+    private fun isFeedbackTypeEnabled(result: Result) {
+        val enabled: Boolean = Shake.getReportConfiguration().isFeedbackTypeEnabled
         result.success(enabled)
     }
 
-    private fun setEnableMultipleFeedbackTypes(call: MethodCall) {
+    private fun setFeedbackTypeEnabled(call: MethodCall) {
         val enabled: Boolean? = call.argument("enabled")
         enabled?.let {
-            Shake.getReportConfiguration().isEnableMultipleFeedbackTypes = it
+            Shake.getReportConfiguration().isFeedbackTypeEnabled = it
+        }
+    }
+
+    private fun getFeedbackTypes(result: Result) {
+        val feedbackTypes: List<FeedbackType> = Shake.getReportConfiguration().feedbackTypes
+        val feedbackTypesMap: List<Map<String, String>>? = mapper?.feedbackTypesToMap(feedbackTypes)
+        result.success(feedbackTypesMap)
+    }
+
+    private fun setFeedbackTypes(call: MethodCall) {
+        val feedbackTypesArg: List<HashMap<String, Any>>? = call.argument("feedbackTypes")
+        feedbackTypesArg?.let {
+            val feedbackTypes = mapper?.mapToFeedbackTypes(feedbackTypesArg)
+            Shake.getReportConfiguration().feedbackTypes = feedbackTypes
         }
     }
 
@@ -335,7 +396,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private fun insertNotificationEvent(call: MethodCall) {
         val notificationEventMap: HashMap<String, Any>? = call.argument("notificationEvent")
         notificationEventMap?.let {
-            val notificationEvent: NotificationEvent = Mappers.mapToNotificationEvent(it)
+            val notificationEvent: NotificationEvent? = mapper?.mapToNotificationEvent(it)
             ShakeReflection.insertNotificationEvent(notificationEvent)
         }
     }
@@ -343,14 +404,14 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private fun insertNetworkRequest(call: MethodCall) {
         val networkRequestMap: HashMap<String, Any>? = call.argument("networkRequest")
         networkRequestMap?.let {
-            val networkRequest: NetworkRequest = Mappers.mapToNetworkRequest(it)
+            val networkRequest: NetworkRequest? = mapper?.mapToNetworkRequest(it)
             ShakeReflection.insertNetworkRequest(networkRequest)
         }
     }
 
     private fun startNotificationsEmitter() {
         Shake.setNotificationEventsFilter {
-            val map = Mappers.notificationEventToMap(it.build());
+            val map = mapper?.notificationEventToMap(it.build())
             channel.invokeMethod("onNotificationReceived", map)
 
             null

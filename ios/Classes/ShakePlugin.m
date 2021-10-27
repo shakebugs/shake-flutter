@@ -29,7 +29,7 @@ static FlutterMethodChannel *channel = nil;
     if([@"start" isEqualToString:call.method]) {
         [self start:call result:result];
     } else if([@"show" isEqualToString:call.method]) {
-        [self show:result];
+        [self show:call result:result];
     } else if([@"setEnabled" isEqualToString:call.method]) {
         [self setEnabled:call result:result];
     } else if([@"setEnableActivityHistory" isEqualToString:call.method]) {
@@ -52,10 +52,18 @@ static FlutterMethodChannel *channel = nil;
         [self setInvokeShakeOnShakeDeviceEvent:call result:result];
     } else if([@"isInvokeShakeOnShakeDeviceEvent" isEqualToString:call.method]) {
         [self isInvokeShakeOnShakeDeviceEvent:call result:result];
+    } else if([@"setShakingThreshold" isEqualToString:call.method]){
+        [self setShakingThreshold:call result:result];
+    } else if([@"getShakingThreshold" isEqualToString:call.method]){
+        [self getShakingThreshold:call result:result];
     } else if([@"setInvokeShakeOnScreenshot" isEqualToString:call.method]) {
         [self setInvokeShakeOnScreenshot:call result:result];
     } else if([@"isInvokeShakeOnScreenshot" isEqualToString:call.method]) {
         [self isInvokeShakeOnScreenshot:call result:result];
+    } else if([@"setScreenshotIncluded" isEqualToString:call.method]){
+        [self setScreenshotIncluded:call result:result];
+    } else if([@"isScreenshotIncluded" isEqualToString:call.method]){
+        [self isScreenshotIncluded:call result:result];
     } else if ([@"setShakeReportData" isEqualToString:call.method]) {
         [self setShakeReportData:call result:result];
     } else if ([@"silentReport" isEqualToString:call.method]) {
@@ -84,10 +92,14 @@ static FlutterMethodChannel *channel = nil;
         [self setAutoVideoRecording:call result:result];
     } else if([@"isAutoVideoRecording" isEqualToString:call.method]) {
         [self isAutoVideoRecording:call result:result];
-    } else if([@"setEnableMultipleFeedbackTypes" isEqualToString:call.method]) {
-        [self setEnableMultipleFeedbackTypes:call result:result];
-    } else if([@"isEnableMultipleFeedbackTypes" isEqualToString:call.method]) {
-        [self isEnableMultipleFeedbackTypes:call result:result];
+    } else if([@"setFeedbackTypeEnabled" isEqualToString:call.method]) {
+        [self setFeedbackTypeEnabled:call result:result];
+    }  else if([@"isFeedbackTypeEnabled" isEqualToString:call.method]) {
+        [self isFeedbackTypeEnabled:call result:result];
+    } else if([@"setFeedbackTypes" isEqualToString:call.method]) {
+        [self setFeedbackTypes:call result:result];
+    } else if([@"getFeedbackTypes" isEqualToString:call.method]) {
+        [self getFeedbackTypes:call result:result];
     } else if([@"setConsoleLogsEnabled" isEqualToString:call.method]) {
         [self setConsoleLogsEnabled:call result:result];
     } else if([@"isConsoleLogsEnabled" isEqualToString:call.method]) {
@@ -96,6 +108,14 @@ static FlutterMethodChannel *channel = nil;
         [self setSensitiveDataRedactionEnabled:call result:result];
     } else if([@"isSensitiveDataRedactionEnabled" isEqualToString:call.method]) {
         [self isSensitiveDataRedactionEnabled:call result:result];
+    } else if([@"registerUser" isEqualToString:call.method]) {
+        [self registerUser:call result:result];
+    } else if([@"updateUserId" isEqualToString:call.method]) {
+        [self updateUserId:call result:result];
+    } else if([@"updateUserMetadata" isEqualToString:call.method]) {
+        [self updateUserMetadata:call result:result];
+    } else if([@"unregisterUser" isEqualToString:call.method]) {
+        [self unregisterUser:result];
     } else if([@"showNotificationsSettings" isEqualToString:call.method]) {
         [self showNotificationsSettings:result];
     } else {
@@ -104,11 +124,10 @@ static FlutterMethodChannel *channel = nil;
 }
 
 - (void)start:(FlutterMethodCall*) call result:(FlutterResult)result {
-    NSString* clientId = call.arguments[@"clientId"];
-    NSString* clientSecret = call.arguments[@"clientSecret"];
+    NSString *clientId = call.arguments[@"clientId"];
+    NSString *clientSecret = call.arguments[@"clientSecret"];
 
     [self setPlatformInfo];
-    [self disableNetworkRequests];
 
     [SHKShake startWithClientId:clientId clientSecret:clientSecret];
     [self startNotificationsEmitter];
@@ -116,9 +135,12 @@ static FlutterMethodChannel *channel = nil;
     result(nil);
 }
 
-- (void)show:(FlutterResult)result {
-    [SHKShake show];
-
+- (void)show:(FlutterMethodCall*) call result:(FlutterResult)result {
+    NSString *shakeScreenArg = call.arguments[@"shakeScreen"];
+    
+    SHKShowOption showOption = [self mapToShowOption:shakeScreenArg];
+    [SHKShake show:showOption];
+    
     result(nil);
 }
 
@@ -199,6 +221,20 @@ static FlutterMethodChannel *channel = nil;
     result(isInvokeShakeOnShakeDeviceEventObj);
 }
 
+-(void)getShakingThreshold:(FlutterMethodCall*) call result: (FlutterResult) result {
+    int shakingThreshold = (int)(SHKShake.configuration.shakingThreshold);
+    NSNumber *shakingThresholdObj = [NSNumber numberWithInt:shakingThreshold];
+    
+    result(shakingThresholdObj);
+}
+
+-(void)setShakingThreshold:(FlutterMethodCall*) call result: (FlutterResult) result {
+    int shakingThreshold = [call.arguments[@"shakingThreshold"] intValue];
+    SHKShake.configuration.shakingThreshold = shakingThreshold;
+
+    result(nil);
+}
+
 -(void)setInvokeShakeOnScreenshot:(FlutterMethodCall*) call result:(FlutterResult) result {
     BOOL invokeShakeOnScreenshot = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isInvokedByScreenshot = invokeShakeOnScreenshot;
@@ -211,6 +247,20 @@ static FlutterMethodChannel *channel = nil;
     NSNumber *isInvokeShakeOnScreenshotObj = [NSNumber numberWithBool:isInvokeShakeOnScreenshot];
    
     result(isInvokeShakeOnScreenshotObj);
+}
+
+-(void)isScreenshotIncluded:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL isScreenshotIncluded = SHKShake.configuration.isScreenshotIncluded;
+    NSNumber *isScreenshotIncludedObj = [NSNumber numberWithBool:isScreenshotIncluded];
+
+    result(isScreenshotIncludedObj);
+}
+
+- (void)setScreenshotIncluded:(FlutterMethodCall*) call result:(FlutterResult) result {
+    BOOL screenshotIncluded = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isScreenshotIncluded = screenshotIncluded;
+
+    result(nil);
 }
 
 - (void)setShakeReportData:(FlutterMethodCall*) call result:(FlutterResult) result {
@@ -228,14 +278,16 @@ static FlutterMethodChannel *channel = nil;
     NSString *description = call.arguments[@"description"];
     NSArray *files = call.arguments[@"shakeFiles"];
     NSDictionary *configurationMap = call.arguments[@"configuration"];
+    
+    NSArray<SHKShakeFile *> * (^fileAttachBlock)(void) = ^NSArray<SHKShakeFile *> *(void) {
+        NSMutableArray <SHKShakeFile*> *shakeFiles = [self mapToShakeFiles:files];
+        return shakeFiles;
+    };
 
-    NSMutableArray <SHKShakeFile*> *shakeFiles = [self mapToShakeFiles:files];
-    SHKShakeReportConfiguration* reportConfiguration = [self mapToConfiguration:configurationMap];
+    SHKShakeReportConfiguration* conf = [self mapToConfiguration:configurationMap];
 
-    SHKShakeReportData *reportData = [[SHKShakeReportData alloc] initWithBugDescription:description attachedFiles:[NSArray arrayWithArray:shakeFiles]];
-
-    [SHKShake silentReportWithReportData:reportData reportConfiguration:reportConfiguration];
-
+    [SHKShake silentReportWithDescription:description fileAttachBlock:fileAttachBlock reportConfiguration:conf];
+    
     result(nil);
 }
 
@@ -324,18 +376,34 @@ static FlutterMethodChannel *channel = nil;
     result(isAutoVideoRecordingObj);
 }
 
-- (void)setEnableMultipleFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult) result {
+- (void)setFeedbackTypeEnabled:(FlutterMethodCall*) call result:(FlutterResult) result {
     BOOL isFeedbackTypeEnabled = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isFeedbackTypeEnabled = isFeedbackTypeEnabled;
 
     result(nil);
 }
 
-- (void)isEnableMultipleFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult)result {
+- (void)isFeedbackTypeEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL isFeedbackTypeEnabled = SHKShake.configuration.isFeedbackTypeEnabled;
     NSNumber *isFeedbackTypeEnabledObj = [NSNumber numberWithBool:isFeedbackTypeEnabled];
 
     result(isFeedbackTypeEnabledObj);
+}
+
+- (void)setFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSArray *feedbackTypesArray = call.arguments[@"feedbackTypes"];
+    
+    NSMutableArray<SHKFeedbackEntry *> *feedbackTypes = [self mapArrayToFeedbackTypes:feedbackTypesArray];
+    [SHKShake setFeedbackTypes:feedbackTypes];
+    
+    result(nil);
+}
+
+- (void)getFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult)result {
+    NSArray<SHKFeedbackEntry *> *feedbackTypes = [SHKShake getFeedbackTypes];
+    NSArray<NSDictionary *> *feedbackTypesArray = [self mapFeedbackTypesToArray:feedbackTypes];
+
+    result(feedbackTypesArray);
 }
 
 - (void)setConsoleLogsEnabled:(FlutterMethodCall*) call result:(FlutterResult) result {
@@ -364,6 +432,33 @@ static FlutterMethodChannel *channel = nil;
     NSNumber *isSensitiveDataRedactionEnabledObj = [NSNumber numberWithBool:isSensitiveDataRedactionEnabled];
 
     result(isSensitiveDataRedactionEnabledObj);
+}
+
+- (void)registerUser:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSString *userId = call.arguments[@"userId"];
+    [SHKShake registerUserWithUserId:userId];
+    
+    result(nil);
+}
+
+- (void)updateUserId:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSString *userId = call.arguments[@"userId"];
+    [SHKShake updateUserId:userId];
+    
+    result(nil);
+}
+
+- (void)updateUserMetadata:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSDictionary *metadata = call.arguments[@"metadata"];
+    [SHKShake updateUserMetadata:metadata];
+   
+    result(nil);
+}
+
+- (void)unregisterUser:(FlutterResult) result {
+    [SHKShake unregisterUser];
+
+    result(nil);
 }
 
 - (void)startNotificationsEmitter {
@@ -399,6 +494,18 @@ static FlutterMethodChannel *channel = nil;
     return logLevel;
 }
 
+- (SHKShowOption)mapToShowOption:(NSString*)showOptionStr
+{
+    SHKShowOption showOption = SHKShowOptionHome;
+
+    if ([showOptionStr isEqualToString:@"home"])
+        showOption = SHKShowOptionHome;
+    if ([showOptionStr isEqualToString:@"newTicket"])
+        showOption = SHKShowOptionNew;
+
+    return showOption;
+}
+
 - (NSMutableArray<SHKShakeFile*>*)mapToShakeFiles:(nonnull NSArray*)files {
     NSMutableArray<SHKShakeFile*>* shakeFiles = [NSMutableArray array];
     for(int i = 0; i < [files count]; i++) {
@@ -414,6 +521,49 @@ static FlutterMethodChannel *channel = nil;
         }
     }
     return shakeFiles;
+}
+
+- (NSMutableArray<SHKFeedbackEntry*>*)mapArrayToFeedbackTypes:(NSArray *)feedbackTypesArray
+{
+    if (feedbackTypesArray == nil) return nil;
+
+    NSMutableArray<SHKFeedbackEntry*>* feedbackTypes = [NSMutableArray array];
+    for(int i = 0; i < [feedbackTypesArray count]; i++) {
+        NSDictionary *feedbackTypeDic = [feedbackTypesArray objectAtIndex:i];
+        NSString *title = [feedbackTypeDic objectForKey:@"title"];
+        NSString *tag = [feedbackTypeDic objectForKey:@"tag"];
+        NSString *icon = [feedbackTypeDic objectForKey:@"icon"];
+
+        UIImage *image = [UIImage imageNamed:icon];
+        SHKFeedbackEntry *feedbackType = [SHKFeedbackEntry entryWithTitle:title andTag:tag icon:image];
+
+        if (feedbackType != nil) {
+            [feedbackTypes addObject:feedbackType];
+        }
+    }
+    return feedbackTypes;
+}
+
+- (NSArray<NSDictionary*>*)mapFeedbackTypesToArray:(NSArray<SHKFeedbackEntry *> *)feedbackTypes
+{
+    if (feedbackTypes == nil) return nil;
+
+    NSMutableArray<NSDictionary*>* feedbackTypesArray = [NSMutableArray array];
+    for(int i = 0; i < [feedbackTypes count]; i++) {
+        SHKFeedbackEntry *feedbackType = [feedbackTypes objectAtIndex:i];
+
+        NSDictionary *feedbackTypeDic = [[NSDictionary alloc] init];
+        feedbackTypeDic = @{
+            @"title": feedbackType.title,
+            @"tag": feedbackType.tag,
+            @"icon": @""
+        };
+
+        if (feedbackTypeDic != nil) {
+            [feedbackTypesArray addObject:feedbackTypeDic];
+        }
+    }
+    return feedbackTypesArray;
 }
 
 - (SHKShakeReportConfiguration*)mapToConfiguration:(nonnull NSDictionary*)configurationDic {
@@ -470,12 +620,8 @@ static FlutterMethodChannel *channel = nil;
 
 // Private
 - (void)setPlatformInfo {
-    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"14.1.0" };
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"15.0.0" };
     [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
-}
-
-- (void)disableNetworkRequests {
-    [SHKShake performSelector:sel_getUid(@"_setNetworkRequestReporterDisabledDueToRN:".UTF8String) withObject:@YES];
 }
 
 - (void)insertRNNotificationEvent:(nonnull NSDictionary*)notificationEvent {

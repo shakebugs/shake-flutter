@@ -4,6 +4,7 @@ class NotificationEvent {
   String title = '';
   String description = '';
 
+  /// Converts object to map.
   Map<String, String> toMap() {
     Map<String, String> map = <String, String>{};
     map['id'] = id;
@@ -13,11 +14,12 @@ class NotificationEvent {
     return map;
   }
 
+  /// Converts map to object.
   static NotificationEvent fromMap(Map data) {
     NotificationEvent notificationEvent = NotificationEvent();
     notificationEvent.id = data['id'] ?? '';
     notificationEvent.description = data['description'] ?? '';
-    notificationEvent.title = data["title"] ?? '';
+    notificationEvent.title = data['title'] ?? '';
 
     return notificationEvent;
   }

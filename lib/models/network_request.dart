@@ -14,6 +14,7 @@ class NetworkRequest {
   DateTime? endTime;
   DateTime date = DateTime.now();
 
+  /// Converts object to map.
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = <String, dynamic>{};
     map['url'] = url;

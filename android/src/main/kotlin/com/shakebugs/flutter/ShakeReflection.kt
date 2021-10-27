@@ -13,7 +13,7 @@ object ShakeReflection {
     
     fun start(activity: Activity?, clientId: String?, clientSecret: String?) {
         try {
-            val method: Method? = Reflection.getMethod(Class.forName(CLASS_NAME), "startFromActivity", Activity::class.java, String::class.java, String::class.java)
+            val method: Method? = Reflection.getMethod(Class.forName(CLASS_NAME), "startFromWrapper", Activity::class.java, String::class.java, String::class.java)
             method?.invoke(null, activity, clientId, clientSecret)
         } catch (e: Exception) {
             Logger.e("Failed to start Shake", e)
