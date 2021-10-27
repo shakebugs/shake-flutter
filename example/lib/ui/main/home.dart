@@ -56,7 +56,7 @@ class _HomeState extends State<Home> {
     _initialize();
   }
 
-  _initialize() async {
+  void _initialize() async {
     final shakeInvokingEnabled = await Shake.isInvokeShakeOnShakeDeviceEvent();
     final buttonInvokingEnabled = await Shake.isShowFloatingReportButton();
     final screenshotInvokingEnabled = await Shake.isInvokeShakeOnScreenshot();
@@ -505,7 +505,7 @@ class _HomeState extends State<Home> {
     Shake.setMetadata('Shake', 'This is a Shake metadata.');
   }
 
-  void _setFeedbackTypes() async {
+  void _setFeedbackTypes() {
     var feedbackType1 = FeedbackType('Mouse', 'mouse', 'ic_mouse');
     var feedbackType2 = FeedbackType('Keyboard', 'keyboard', 'ic_key');
     var feedbackType3 = FeedbackType('Display', 'display', 'ic_display');
@@ -540,8 +540,7 @@ class _HomeState extends State<Home> {
     await notificationsPlugin.initialize(initializationSettings);
 
     const AndroidNotificationDetails androidDetails =
-    AndroidNotificationDetails(
-        'shake-flutter', 'Shake Flutter', 'Shake Flutter channel');
+    AndroidNotificationDetails('shake-flutter', 'Shake Flutter');
     const NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidDetails);
     await notificationsPlugin.show(

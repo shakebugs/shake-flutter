@@ -222,10 +222,10 @@ static FlutterMethodChannel *channel = nil;
 }
 
 -(void)getShakingThreshold:(FlutterMethodCall*) call result: (FlutterResult) result {
-    NSInteger shakingThreshold = SHKShake.configuration.shakingThreshold;
-    NSNumber *getShakingThresholdObj = [NSNumber numberWithBool:shakingThreshold];
-
-    result(getShakingThresholdObj);
+    int shakingThreshold = (int)(SHKShake.configuration.shakingThreshold);
+    NSNumber *shakingThresholdObj = [NSNumber numberWithInt:shakingThreshold];
+    
+    result(shakingThresholdObj);
 }
 
 -(void)setShakingThreshold:(FlutterMethodCall*) call result: (FlutterResult) result {

@@ -20,7 +20,7 @@ dependencies:
   package_info: ^2.0.2
   path_provider: ^2.0.5
   fluttertoast: ^8.0.8
-  flutter_local_notifications: ^8.2.0
+  flutter_local_notifications: ^9.0.0
 
   # Uncomment following lines to use interceptors from file system
   #  shake_http_client:

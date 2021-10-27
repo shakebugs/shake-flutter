@@ -118,7 +118,7 @@ class Shake {
   }
 
   ///Sets shaking threshold
-  static setShakingThreshold(int shakingThreshold) async {
+  static void setShakingThreshold(int shakingThreshold) async {
     await _channel.invokeMethod('setShakingThreshold', {
       'shakingThreshold': shakingThreshold,
     });
