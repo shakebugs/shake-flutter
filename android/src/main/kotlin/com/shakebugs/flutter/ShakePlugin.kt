@@ -146,7 +146,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
 
-    private fun setEnableBlackBox(call: MethodCall) {
+    private fun setEnableBlackBox(call: MethodCall) {2
         val enabled: Boolean? = call.argument("enabled")
         enabled?.let {
             Shake.getReportConfiguration().isEnableBlackBox = it
