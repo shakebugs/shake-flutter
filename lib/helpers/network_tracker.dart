@@ -12,7 +12,7 @@ class NetworkTracker extends DataTracker {
       networkRequest = filter!(networkRequest);
     }
 
-    if (!networkRequest.url.isHttpUrl()) {
+    if (!networkRequest.url.isHttpUrl())  {
       networkRequest.url = 'https://not_a_valid_url';
     }
 
