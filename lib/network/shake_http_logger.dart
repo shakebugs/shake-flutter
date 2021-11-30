@@ -11,7 +11,7 @@ class ShakeHttpLogger {
   void onRequest(
     HttpClientRequest request, {
     String? requestBody,
-  }) {
+  })  {
     final NetworkRequest networkRequest = NetworkRequest();
     networkRequest.startTime = DateTime.now();
     networkRequest.method = request.method;
