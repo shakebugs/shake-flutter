@@ -1,6 +1,24 @@
-# Shake for Flutter
+# Shake Flutter SDK
 
-Flutter plugin for [Shake](https://www.shakebugs.com).
+[![pub package](https://img.shields.io/pub/v/shake_flutter)](https://pub.dev/packages/shake_flutter)
+
+Flutter plugin for [bug reporting](https://www.shakebugs.com).
+
+## Features
+
+|     Feature     | Avaliable |
+|:---------------:|:---------:|
+|  Bug reporting  |     ✅     |
+| Crash reporting |     ❌     |
+|      Users      |     ✅     |
+
+## Requirements
+
+| Platform | Version |
+|:----------:|:---------:|
+| Flutter  |   1.12  |
+| Android  |   7.0   |
+| iOS      |   12.0  |
 
 ## How to use
 
@@ -17,7 +35,7 @@ Install package by running command in terminal.
 flutter packages get
 ```
 
-## Start Shake
+### Start Shake
 
 Add Shake import.
 ```dart
@@ -41,6 +59,6 @@ void main() {
 
 Replace `client-id` and `client-secret` with the actual values you have in [your workspace settings](https://app.shakebugs.com/settings/workspace#general).
 
-## Documentation
+## Resources
 
-Visit [documentation](https://www.shakebugs.com/docs) for more details.
+- [Official docs](https://www.shakebugs.com/docs/)
