@@ -112,6 +112,23 @@ class Shake {
     return await _channel.invokeMethod('isInvokeShakeOnShakeDeviceEvent');
   }
 
+  /// Get screen top open when Shake is manually invoked.
+  ///
+  /// Returns [ShakeScreen.home] or [ShakeScreen.newTicket].
+  static Future<ShakeScreen> getDefaultScreen() async {
+    var defaultScreenStr = await _channel.invokeMethod('getDefaultScreen');
+    return _mapper.mapToShakeScreen(defaultScreenStr);
+  }
+
+  /// Sets screen to open when Shake is manually invoked.
+  ///
+  /// [ShakeScreen.home] or [ShakeScreen.newTicket].
+  static void setDefaultScreen(ShakeScreen shakeScreen) async {
+    await _channel.invokeMethod('setDefaultScreen', {
+      'shakeScreen': describeEnum(shakeScreen),
+    });
+  }
+
   ///Checks what value shaking threshold is set on
   static Future<int?> getShakingThreshold() async {
     return await _channel.invokeMethod('getShakingThreshold');
@@ -180,6 +197,11 @@ class Shake {
       'key': key,
       'value': value,
     });
+  }
+
+  /// Clears existing metadata.
+  static void clearMetadata() async {
+    await _channel.invokeMethod('clearMetadata');
   }
 
   /// Adds custom log into the activity history.

@@ -7,11 +7,10 @@ import com.shakebugs.flutter.utils.Resources
 import com.shakebugs.shake.LogLevel
 import com.shakebugs.shake.ShakeReportConfiguration
 import com.shakebugs.shake.ShakeScreen
-import com.shakebugs.shake.internal.data.NetworkRequest
-import com.shakebugs.shake.internal.data.NotificationEvent
+import com.shakebugs.shake.internal.domain.models.NetworkRequest
+import com.shakebugs.shake.internal.domain.models.NotificationEvent
 import com.shakebugs.shake.report.FeedbackType
 import com.shakebugs.shake.report.ShakeFile
-
 
 class Mapper(private val context: Context) {
     fun mapToShakeScreen(shakeScreenStr: String?): ShakeScreen {
@@ -19,6 +18,14 @@ class Mapper(private val context: Context) {
             "newTicket" -> ShakeScreen.NEW
             "home" -> ShakeScreen.HOME
             else -> ShakeScreen.NEW
+        }
+    }
+
+    fun shakeScreenToString(shakeScreen: ShakeScreen): String? {
+        return when (shakeScreen) {
+            ShakeScreen.HOME -> "home"
+            ShakeScreen.NEW -> "newTicket"
+            else -> null
         }
     }
 
@@ -65,6 +72,7 @@ class Mapper(private val context: Context) {
             config.activityHistoryData = data["activityHistoryData"] as Boolean
             config.blackBoxData = data["blackBoxData"] as Boolean
             config.screenshot = data["screenshot"] as Boolean
+            config.video = data["video"] as Boolean
             config.showReportSentMessage = data["showReportSentMessage"] as Boolean
         }
         return config

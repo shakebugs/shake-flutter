@@ -8,8 +8,9 @@ import com.shakebugs.flutter.utils.Constants
 import com.shakebugs.flutter.utils.Logger
 import com.shakebugs.shake.Shake
 import com.shakebugs.shake.ShakeInfo
-import com.shakebugs.shake.internal.data.NetworkRequest
-import com.shakebugs.shake.internal.data.NotificationEvent
+import com.shakebugs.shake.ShakeScreen
+import com.shakebugs.shake.internal.domain.models.NetworkRequest
+import com.shakebugs.shake.internal.domain.models.NotificationEvent
 import com.shakebugs.shake.report.FeedbackType
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -75,6 +76,8 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "getShakingThreshold" -> getShakingThreshold(result)
             "setInvokeShakeOnScreenshot" -> setInvokeShakeOnScreenshot(call)
             "isInvokeShakeOnScreenshot" -> isInvokeShakeOnScreenshot(result)
+            "getDefaultScreen" -> getDefaultScreen(result)
+            "setDefaultScreen" -> setDefaultScreen(call)
             "setScreenshotIncluded" -> setScreenshotIncluded(call)
             "isScreenshotIncluded" -> isScreenshotIncluded(result)
             "getEmailField" -> getEmailField(result)
@@ -93,6 +96,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setConsoleLogsEnabled" -> setConsoleLogsEnabled(call)
             "log" -> log(call)
             "setMetadata" -> setMetadata(call)
+            "clearMetadata" -> clearMetadata()
             "setShakeReportData" -> setShakeReportData(call)
             "silentReport" -> silentReport(call)
             "registerUser" -> registerUser(call)
@@ -204,8 +208,22 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         result.success(enabled)
     }
 
-    private fun getShakingThreshold(result: Result){
-        val threshold: Int? = Shake.getReportConfiguration().getShakingThreshold()
+    private fun getDefaultScreen(result: Result) {
+        val defaultScreen: ShakeScreen = Shake.getReportConfiguration().defaultScreen
+        val defaultScreenStr: String = mapper?.shakeScreenToString(defaultScreen) ?: "newTicket"
+        result.success(defaultScreenStr)
+    }
+
+    private fun setDefaultScreen(call: MethodCall) {
+        val defaultScreenStr: String? = call.argument("shakeScreen")
+        val defaultScreen: ShakeScreen? = mapper?.mapToShakeScreen(defaultScreenStr)
+        defaultScreen?.let {
+            Shake.getReportConfiguration().defaultScreen = defaultScreen
+        }
+    }
+
+    private fun getShakingThreshold(result: Result) {
+        val threshold: Int = Shake.getReportConfiguration().shakingThreshold
         result.success(threshold)
     }
 
@@ -228,12 +246,12 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         result.success(enabled)
     }
 
-    private fun isScreenshotIncluded(result: Result){
+    private fun isScreenshotIncluded(result: Result) {
         val enabled: Boolean = Shake.getReportConfiguration().isScreenshotIncluded
         result.success(enabled)
     }
 
-    private fun setScreenshotIncluded(call: MethodCall){
+    private fun setScreenshotIncluded(call: MethodCall) {
         val enabled: Boolean? = call.argument("enabled")
         enabled?.let {
             Shake.getReportConfiguration().isScreenshotIncluded = it
@@ -285,6 +303,10 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         val value: String? = call.argument("value")
 
         Shake.setMetadata(key, value)
+    }
+
+    private fun clearMetadata() {
+        Shake.clearMetadata()
     }
 
     private fun log(call: MethodCall) {
