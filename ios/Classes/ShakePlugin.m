@@ -60,6 +60,10 @@ static FlutterMethodChannel *channel = nil;
         [self setInvokeShakeOnScreenshot:call result:result];
     } else if([@"isInvokeShakeOnScreenshot" isEqualToString:call.method]) {
         [self isInvokeShakeOnScreenshot:call result:result];
+    } else if([@"getDefaultScreen" isEqualToString:call.method]) {
+        [self getDefaultScreen:call result:result];
+    } else if([@"setDefaultScreen" isEqualToString:call.method]) {
+        [self setDefaultScreen:call result:result];
     } else if([@"setScreenshotIncluded" isEqualToString:call.method]){
         [self setScreenshotIncluded:call result:result];
     } else if([@"isScreenshotIncluded" isEqualToString:call.method]){
@@ -74,6 +78,8 @@ static FlutterMethodChannel *channel = nil;
         [self insertNotificationEvent:call result:result];
     } else if ([@"setMetadata" isEqualToString:call.method]) {
         [self setMetadata:call result:result];
+    } else if([@"clearMetadata" isEqualToString:call.method]) {
+        [self clearMetadata:result];
     } else if ([@"log" isEqualToString:call.method]) {
         [self log:call result:result];
     } else if([@"setShowIntroMessage" isEqualToString:call.method]) {
@@ -136,7 +142,7 @@ static FlutterMethodChannel *channel = nil;
 }
 
 - (void)show:(FlutterMethodCall*) call result:(FlutterResult)result {
-    NSString *shakeScreenArg = call.arguments[@"shakeScreen"];
+    NSString* shakeScreenArg = call.arguments[@"shakeScreen"];
     
     SHKShowOption showOption = [self mapToShowOption:shakeScreenArg];
     [SHKShake show:showOption];
@@ -249,6 +255,21 @@ static FlutterMethodChannel *channel = nil;
     result(isInvokeShakeOnScreenshotObj);
 }
 
+- (void)getDefaultScreen:(FlutterMethodCall*) call result:(FlutterResult)result {
+    SHKShowOption showOption = SHKShake.configuration.defaultShowOption;
+    NSString* showOptionStr = [self showOptionToString:showOption];
+   
+    result(showOptionStr);
+}
+
+-(void)setDefaultScreen:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSString* showOptionsStr = call.arguments[@"shakeScreen"];
+    SHKShowOption showOption = [self mapToShowOption:showOptionsStr];
+    SHKShake.configuration.defaultShowOption = showOption;
+   
+    result(nil);
+}
+
 -(void)isScreenshotIncluded:(FlutterMethodCall*) call result:(FlutterResult) result {
     BOOL isScreenshotIncluded = SHKShake.configuration.isScreenshotIncluded;
     NSNumber *isScreenshotIncludedObj = [NSNumber numberWithBool:isScreenshotIncluded];
@@ -314,6 +335,12 @@ static FlutterMethodChannel *channel = nil;
     NSString* value = call.arguments[@"value"];
 
     [SHKShake setMetadataWithKey: key value: value];
+
+    result(nil);
+}
+
+- (void)clearMetadata:(FlutterResult)result {
+    [SHKShake clearMetadata];
 
     result(nil);
 }
@@ -506,6 +533,16 @@ static FlutterMethodChannel *channel = nil;
     return showOption;
 }
 
+- (NSString*)showOptionToString:(SHKShowOption)showOption
+{
+    if (showOption == SHKShowOptionHome)
+        return @"home";
+    if (showOption == SHKShowOptionNew)
+        return @"newTicket";
+
+    return @"newTicket";
+}
+
 - (NSMutableArray<SHKShakeFile*>*)mapToShakeFiles:(nonnull NSArray*)files {
     NSMutableArray<SHKShakeFile*>* shakeFiles = [NSMutableArray array];
     for(int i = 0; i < [files count]; i++) {
@@ -569,13 +606,15 @@ static FlutterMethodChannel *channel = nil;
 - (SHKShakeReportConfiguration*)mapToConfiguration:(nonnull NSDictionary*)configurationDic {
     BOOL includesBlackBoxData = [[configurationDic objectForKey:@"blackBoxData"] boolValue];
     BOOL includesActivityHistoryData = [[configurationDic objectForKey:@"activityHistoryData"] boolValue];
-    BOOL includesScreenshotImage = [[configurationDic objectForKey:@"screenshot"] boolValue];
+    BOOL includesScreenshot = [[configurationDic objectForKey:@"screenshot"] boolValue];
+    BOOL includesVideo = [[configurationDic objectForKey:@"video"] boolValue];
     BOOL showsToastMessageOnSend = [[configurationDic objectForKey:@"showReportSentMessage"] boolValue];
 
     SHKShakeReportConfiguration *reportConfiguration = [[SHKShakeReportConfiguration alloc] init];
     reportConfiguration.includesBlackBoxData = includesBlackBoxData;
     reportConfiguration.includesActivityHistoryData = includesActivityHistoryData;
-    reportConfiguration.includesScreenshotImage = includesScreenshotImage;
+    reportConfiguration.includesScreenshotImage = includesScreenshot;
+    reportConfiguration.includesVideo = includesVideo;
     reportConfiguration.showsToastMessageOnSend = showsToastMessageOnSend;
 
     return reportConfiguration;
