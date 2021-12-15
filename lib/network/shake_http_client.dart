@@ -62,7 +62,8 @@ class ShakeHttpClient implements HttpClient {
 
   @override
   set authenticateProxy(
-      Future<bool> Function(String host, int port, String scheme, String? realm)?
+      Future<bool> Function(
+              String host, int port, String scheme, String? realm)?
           f) {
     client.authenticateProxy = f;
   }
