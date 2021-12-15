@@ -6,7 +6,7 @@ Flutter plugin for [bug reporting](https://www.shakebugs.com).
 
 ## Features
 
-|     Feature     | Avaliable |
+|     Feature     | Available |
 |:---------------:|:---------:|
 |  Bug reporting  |     ✅     |
 | Crash reporting |     ❌     |
