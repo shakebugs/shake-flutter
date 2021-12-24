@@ -19,9 +19,6 @@ Shake SDK wrapper
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
-  s.preserve_paths = 'Shake.framework'
-  s.xcconfig = {'OTHER_LDFLAGS' => '-framework Shake'}
-  s.vendored_frameworks = 'Shake.framework'
-  s.dependency "#{ENV['IOS_DEPENDENCY']}", "~> 15.0.0-rc"
   s.swift_version = '5.0'
+  s.dependency "#{ENV['IOS_DEPENDENCY']}", "~> 15.1.0-rc"
 end

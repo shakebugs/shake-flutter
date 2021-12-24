@@ -9,10 +9,10 @@ PODS:
     - Flutter
   - path_provider (0.0.1):
     - Flutter
-  - Shake-Staging (15.0.0-rc.1373)
+  - Shake-Staging (15.1.0-rc.1447)
   - shake_flutter (0.0.1):
     - Flutter
-    - Shake-Staging (~> 15.0.0-rc)
+    - Shake-Staging (~> 15.1.0-rc.1447)
   - Toast (4.0.0)
   - url_launcher (0.0.1):
     - Flutter
@@ -54,11 +54,11 @@ SPEC CHECKSUMS:
   fluttertoast: 6122fa75143e992b1d3470f61000f591a798cc58
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
-  Shake-Staging: d7d5af5607f7b377723fd88915c7e2e410b349b8
-  shake_flutter: ca19f9aa0119392650d6d6764245d653a6e38def
+  Shake-Staging: 1e48bab5826b8192d7c0a3917f3e1e7d44d6b02e
+  shake_flutter: f21bd5c31b35e9b3963146422751633b596672bb
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
 
-PODFILE CHECKSUM: 350b23a1ddb073e6f234cd77e085ec2d3d146984
+PODFILE CHECKSUM: 18de14b99602a19f41203ed1bd1f3eb50097dbcf
 
 COCOAPODS: 1.11.2
