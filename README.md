@@ -6,7 +6,7 @@ Flutter plugin for [bug reporting](https://www.shakebugs.com).
 
 ## Features
 
-|     Feature     | Avaliable |
+|     Feature     | Available |
 |:---------------:|:---------:|
 |  Bug reporting  |     ✅     |
 | Crash reporting |     ❌     |
@@ -27,7 +27,7 @@ Flutter plugin for [bug reporting](https://www.shakebugs.com).
 Add Shake to your `pubspec.yaml` file.
 ```yaml
 dependencies:
-      shake_flutter: ^15.0.0
+      shake_flutter: ^15.1.0
 ```
 
 Install package by running command in terminal.

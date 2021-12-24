@@ -9,10 +9,10 @@ PODS:
     - Flutter
   - path_provider (0.0.1):
     - Flutter
-  - Shake-Staging (15.1.0-rc.1424)
+  - Shake-Staging (15.1.0-rc.1447)
   - shake_flutter (0.0.1):
     - Flutter
-    - Shake-Staging (= 15.1.0-rc.1424)
+    - Shake-Staging (~> 15.1.0-rc.1447)
   - Toast (4.0.0)
   - url_launcher (0.0.1):
     - Flutter
@@ -54,8 +54,8 @@ SPEC CHECKSUMS:
   fluttertoast: 6122fa75143e992b1d3470f61000f591a798cc58
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
-  Shake-Staging: 077f520696ad54f58e83144849cc0d0655c386fa
-  shake_flutter: 5ca3fdd664fcb55cfb5f2f1f7d952010098e1458
+  Shake-Staging: 1e48bab5826b8192d7c0a3917f3e1e7d44d6b02e
+  shake_flutter: f21bd5c31b35e9b3963146422751633b596672bb
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
 
