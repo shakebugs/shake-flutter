@@ -27,12 +27,31 @@ Flutter plugin for [bug reporting](https://www.shakebugs.com).
 Add Shake to your `pubspec.yaml` file.
 ```yaml
 dependencies:
-      shake_flutter: ^15.1.0
+      shake_flutter: ^15.2.0
 ```
 
 Install package by running command in terminal.
 ```bash
 flutter packages get
+```
+
+### Set compileSdkVersion version in the build.gradle file
+
+Since Shake requires `compileSdkVersion` 29 or greater, verify that `compileSdkVersion` is correctly set in the */android/app/build.gradle* file:
+
+```groovy title="build.gradle"
+android {
+    // highlight-next-line
+    compileSdkVersion 29
+
+    defaultConfig {
+        applicationId "com.shakebugs.flutter.example"
+        minSdkVersion 24
+        targetSdkVersion 29
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+}
 ```
 
 ### Start Shake
