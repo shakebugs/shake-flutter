@@ -42,14 +42,16 @@ class Shake {
     });
   }
 
-  /// Enables or disables Shake.
-  ///
-  /// If false, Shake immediately stops tracking data
-  /// and Shake screen invoking becomes disabled.
-  static void setEnabled(bool enabled) async {
-    await _channel.invokeMethod('setEnabled', {
+  /// Sets if user feedback is enabled.
+  static void setUserFeedbackEnabled(bool enabled) async {
+    await _channel.invokeMethod('setUserFeedbackEnabled', {
       'enabled': enabled,
     });
+  }
+
+  /// Checks if user feedback is enabled.
+  static Future<bool?> isUserFeedbackEnabled() async {
+    return await _channel.invokeMethod('isUserFeedbackEnabled');
   }
 
   /// Sets if black-box is enabled.

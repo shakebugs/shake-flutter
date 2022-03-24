@@ -31,10 +31,10 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   NetworkTester networkTester = DartTester();
 
+  bool? userFeedbackEnabled = false;
   bool? shakeInvokingEnabled = false;
   bool? buttonInvokingEnabled = false;
   bool? screenshotInvokingEnabled = false;
-  bool? shakeEnabled = false;
   bool? blackboxEnabled = false;
   bool? inspectScreenEnabled = false;
   bool? activityHistoryEnabled = false;
@@ -57,10 +57,10 @@ class _HomeState extends State<Home> {
   }
 
   void _initialize() async {
+    final userFeedbackEnabled = await Shake.isUserFeedbackEnabled();
     final shakeInvokingEnabled = await Shake.isInvokeShakeOnShakeDeviceEvent();
     final buttonInvokingEnabled = await Shake.isShowFloatingReportButton();
     final screenshotInvokingEnabled = await Shake.isInvokeShakeOnScreenshot();
-    final shakeEnabled = true; // Not provided by native SDK
     final blackboxEnabled = await Shake.isEnableBlackBox();
     final inspectScreenEnabled = await Shake.isEnableInspectScreen();
     final activityHistoryEnabled = await Shake.isEnableActivityHistory();
@@ -73,10 +73,10 @@ class _HomeState extends State<Home> {
     final screenshotIncluded = await Shake.isScreenshotIncluded();
 
     setState(() {
+      this.userFeedbackEnabled = userFeedbackEnabled;
       this.shakeInvokingEnabled = shakeInvokingEnabled;
       this.buttonInvokingEnabled = buttonInvokingEnabled;
       this.screenshotInvokingEnabled = screenshotInvokingEnabled;
-      this.shakeEnabled = shakeEnabled;
       this.blackboxEnabled = blackboxEnabled;
       this.inspectScreenEnabled = inspectScreenEnabled;
       this.activityHistoryEnabled = activityHistoryEnabled;
@@ -181,9 +181,9 @@ class _HomeState extends State<Home> {
                       children: [
                         Header('Options'),
                         Toggle(
-                          'Enabled',
-                          shakeEnabled!,
-                          _onEnableShakeToggle,
+                          'User feedback',
+                          userFeedbackEnabled!,
+                          _onUserFeedbackToggle,
                         ),
                         Toggle(
                           'Blackbox',
@@ -381,11 +381,11 @@ class _HomeState extends State<Home> {
     Shake.show();
   }
 
-  void _onEnableShakeToggle(enabled) {
+  void _onUserFeedbackToggle(enabled) {
     setState(() {
-      shakeEnabled = enabled;
+      userFeedbackEnabled = enabled;
     });
-    Shake.setEnabled(enabled);
+    Shake.setUserFeedbackEnabled(enabled);
   }
 
   void _onShakeInvokingToggle(enabled) {

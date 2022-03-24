@@ -30,8 +30,10 @@ static FlutterMethodChannel *channel = nil;
         [self start:call result:result];
     } else if([@"show" isEqualToString:call.method]) {
         [self show:call result:result];
-    } else if([@"setEnabled" isEqualToString:call.method]) {
-        [self setEnabled:call result:result];
+    } else if([@"setUserFeedbackEnabled" isEqualToString:call.method]) {
+        [self setUserFeedbackEnabled:call result:result];
+    } else if([@"isUserFeedbackEnabled" isEqualToString:call.method]) {
+        [self isUserFeedbackEnabled:call result:result];
     } else if([@"setEnableActivityHistory" isEqualToString:call.method]) {
         [self setEnableActivityHistory:call result:result];
     } else if([@"isEnableActivityHistory" isEqualToString:call.method]) {
@@ -150,24 +152,31 @@ static FlutterMethodChannel *channel = nil;
     result(nil);
 }
 
-- (void)setEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
-    BOOL shakeEnabled = [call.arguments[@"enabled"] boolValue];
-    SHKShake.isPaused = !shakeEnabled;
-    
+- (void)setUserFeedbackEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL enabled = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isUserFeedbackEnabled = enabled;
+
     result(nil);
+}
+
+- (void)isUserFeedbackEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isEnabled = SHKShake.configuration.isUserFeedbackEnabled;
+    NSNumber *isEnabledObj = [NSNumber numberWithBool:isEnabled];
+
+    result(isEnabledObj);
 }
 
 - (void)setEnableActivityHistory:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL enableActivityHistory = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isActivityHistoryEnabled = enableActivityHistory;
-    
+
     result(nil);
 }
 
 - (void)isEnableActivityHistory:(FlutterMethodCall*) call result:(FlutterResult)result {
     BOOL isEnableActivityHistory = SHKShake.configuration.isActivityHistoryEnabled;
     NSNumber *isActivityHistoryEnabledObj = [NSNumber numberWithBool:isEnableActivityHistory];
-    
+
     result(isActivityHistoryEnabledObj);
 }
 
