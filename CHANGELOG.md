@@ -1,3 +1,7 @@
+# 15.2.0
+
+Upgraded inspect screen
+
 # 15.1.0
 
 Real-time chat

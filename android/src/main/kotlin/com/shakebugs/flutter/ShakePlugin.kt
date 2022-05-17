@@ -61,7 +61,8 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         when (call.method) {
             "start" -> start(call)
             "show" -> show(call)
-            "setEnabled" -> setEnabled(call)
+            "isUserFeedbackEnabled" -> isUserFeedbackEnabled(result)
+            "setUserFeedbackEnabled" -> setUserFeedbackEnabled(call)
             "setEnableBlackBox" -> setEnableBlackBox(call)
             "isEnableBlackBox" -> isEnableBlackBox(result)
             "setEnableActivityHistory" -> setEnableActivityHistory(call)
@@ -141,11 +142,16 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
 
-    private fun setEnabled(call: MethodCall) {
+    private fun setUserFeedbackEnabled(call: MethodCall) {
         val enabled: Boolean? = call.argument("enabled")
         enabled?.let {
-            Shake.setEnabled(enabled)
+            Shake.setUserFeedbackEnabled(enabled)
         }
+    }
+
+    private fun isUserFeedbackEnabled(result: Result) {
+        val enabled: Boolean = Shake.isUserFeedbackEnabled()
+        result.success(enabled)
     }
 
     private fun setEnableBlackBox(call: MethodCall) {
