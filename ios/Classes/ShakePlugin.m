@@ -124,6 +124,8 @@ static FlutterMethodChannel *channel = nil;
         [self updateUserMetadata:call result:result];
     } else if([@"unregisterUser" isEqualToString:call.method]) {
         [self unregisterUser:result];
+    } else if([@"startUnreadMessagesEmitter" isEqualToString:call.method]) {
+        [self startUnreadMessagesEmitter:result];
     } else if([@"showNotificationsSettings" isEqualToString:call.method]) {
         [self showNotificationsSettings:result];
     } else {
@@ -495,6 +497,14 @@ static FlutterMethodChannel *channel = nil;
     [SHKShake unregisterUser];
 
     result(nil);
+}
+
+- (void)startUnreadMessagesEmitter:(FlutterResult)result {
+    SHKShake.unreadMessagesListener = ^(NSUInteger count) {
+        [channel invokeMethod:@"onUnreadMessagesReceived" arguments:[NSNumber numberWithInt:(int)count]];
+    };
+
+   result(nil);
 }
 
 - (void)startNotificationsEmitter {
