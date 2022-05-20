@@ -1,3 +1,8 @@
+# 15.3.0
+
+Added chat messages listener
+Added duration to network requests
+
 # 15.2.0
 
 Upgraded inspect screen
