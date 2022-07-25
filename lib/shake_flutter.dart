@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shake_flutter/enums/log_level.dart';
 import 'package:shake_flutter/enums/shake_screen.dart';
+import 'package:shake_flutter/helpers/configuration.dart';
 import 'package:shake_flutter/helpers/network_tracker.dart';
 import 'package:shake_flutter/helpers/notifications_tracker.dart';
 import 'package:shake_flutter/models/feedback_type.dart';
@@ -16,6 +17,7 @@ import 'package:shake_flutter/utils/mapper.dart';
 /// Interface for using Shake SDK.
 class Shake {
   static const MethodChannel _channel = const MethodChannel('shake');
+  static Configuration _configuration = Configuration();
   static NotificationsTracker _notificationsTracker = NotificationsTracker();
   static NetworkTracker _networkTracker = NetworkTracker();
   static Mapper _mapper = Mapper();
@@ -363,12 +365,16 @@ class Shake {
   }
 
   /// Sets filter for notification events.
+  ///
+  /// Set null if you want to remove filter.
   static void setNotificationEventsFilter(
       NotificationEventFilter? filter) async {
     _notificationsTracker.filter = filter;
   }
 
   /// Sets filter for network requests.
+  ///
+  /// Set null if you want to remove filter.
   static void setNetworkRequestsFilter(NetworkRequestFilter? filter) async {
     _networkTracker.filter = filter;
   }
@@ -380,6 +386,14 @@ class Shake {
     await _channel.invokeMethod('showNotificationsSettings');
   }
 
+  /// Sets unread chat messages number listener.
+  ///
+  /// Set null if you want to remove listener.
+  static void setUnreadMessagesListener(UnreadMessagesListener? listener) async {
+    _configuration.unreadMessagesListener = listener;
+    await _channel.invokeMethod('startUnreadMessagesEmitter');
+  }
+
   /// Handles method calls from native to Flutter
   static Future<void> _channelMethodHandler(MethodCall call) async {
     switch (call.method) {
@@ -387,6 +401,10 @@ class Shake {
         NotificationEvent notificationEvent =
             NotificationEvent.fromMap(call.arguments);
         insertNotificationEvent(notificationEvent);
+        break;
+      case 'onUnreadMessagesReceived':
+        int count = call.arguments;
+        _configuration.unreadMessagesListener?.call(count);
         break;
     }
   }

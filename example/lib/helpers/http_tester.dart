@@ -5,11 +5,7 @@
 // import 'package:shake_http_client/shake_http_client.dart';
 //
 // class HttpTester implements NetworkTester {
-//   ShakeHttpClient _httpClient;
-//
-//   HttpTester() {
-//     _httpClient = ShakeHttpClient();
-//   }
+//   ShakeHttpClient _httpClient = ShakeHttpClient();
 //
 //   @override
 //   Future<void> sendGetRequest() async {

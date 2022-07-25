@@ -9,6 +9,7 @@ import com.shakebugs.flutter.utils.Logger
 import com.shakebugs.shake.Shake
 import com.shakebugs.shake.ShakeInfo
 import com.shakebugs.shake.ShakeScreen
+import com.shakebugs.shake.chat.UnreadChatMessagesListener
 import com.shakebugs.shake.internal.domain.models.NetworkRequest
 import com.shakebugs.shake.internal.domain.models.NotificationEvent
 import com.shakebugs.shake.report.FeedbackType
@@ -108,6 +109,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "insertNotificationEvent" -> insertNotificationEvent(call)
             "isSensitiveDataRedactionEnabled" -> isSensitiveDataRedactionEnabled(result)
             "setSensitiveDataRedactionEnabled" -> setSensitiveDataRedactionEnabled(call)
+            "startUnreadMessagesEmitter" -> startUnreadMessagesEmitter()
             "showNotificationsSettings" -> showNotificationsSettings()
             else -> result.notImplemented()
         }
@@ -435,6 +437,14 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             val networkRequest: NetworkRequest? = mapper?.mapToNetworkRequest(it)
             ShakeReflection.insertNetworkRequest(networkRequest)
         }
+    }
+
+    private fun startUnreadMessagesEmitter() {
+        Shake.setUnreadChatMessagesListener(object : UnreadChatMessagesListener {
+            override fun onUnreadMessagesCountChanged(count: Int) {
+                channel.invokeMethod("onUnreadMessagesReceived", count)
+            }
+        })
     }
 
     private fun startNotificationsEmitter() {

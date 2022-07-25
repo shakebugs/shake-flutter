@@ -8,10 +8,9 @@
 // import 'package:shake_example/utils/files.dart';
 //
 // class DioTester implements NetworkTester {
-//   Dio _dio;
+//   Dio _dio = Dio();
 //
 //   DioTester() {
-//     _dio = Dio();
 //     _dio.interceptors.add(ShakeDioInterceptor());
 //   }
 //

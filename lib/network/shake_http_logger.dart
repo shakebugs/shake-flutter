@@ -35,6 +35,7 @@ class ShakeHttpLogger {
     }
 
     networkRequest.endTime = DateTime.now();
+    networkRequest.duration = _findDuration(networkRequest);
     networkRequest.status = response.statusCode.toString();
     networkRequest.responseBody = _removeBinaryData(responseBody);
     response.headers.forEach((String header, dynamic value) {
@@ -42,6 +43,15 @@ class ShakeHttpLogger {
     });
 
     Shake.insertNetworkRequest(networkRequest);
+  }
+
+  int _findDuration(NetworkRequest networkRequest) {
+    if (networkRequest.startTime != null && networkRequest.endTime != null) {
+      return networkRequest.endTime!
+          .difference(networkRequest.startTime!)
+          .inMilliseconds;
+    }
+    return 0;
   }
 
   String _removeBinaryData(String? text) {
