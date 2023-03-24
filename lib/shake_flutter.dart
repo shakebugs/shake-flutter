@@ -7,10 +7,10 @@ import 'package:shake_flutter/enums/shake_screen.dart';
 import 'package:shake_flutter/helpers/configuration.dart';
 import 'package:shake_flutter/helpers/network_tracker.dart';
 import 'package:shake_flutter/helpers/notifications_tracker.dart';
-import 'package:shake_flutter/models/feedback_type.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/models/notification_event.dart';
 import 'package:shake_flutter/models/shake_file.dart';
+import 'package:shake_flutter/models/shake_form.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
 import 'package:shake_flutter/utils/mapper.dart';
 
@@ -31,6 +31,21 @@ class Shake {
     await _channel.invokeMethod('start', {
       'clientId': clientID,
       'clientSecret': clientSecret,
+    });
+  }
+
+  /// Gets shake form for the new ticket screen.
+  static Future<ShakeForm?> getShakeForm() async {
+    Map? shakeFormMap = await _channel.invokeMethod('getShakeForm');
+    if (shakeFormMap == null) return null;
+    return ShakeForm.fromMap(shakeFormMap);
+  }
+
+  /// Sets shake form for the new ticket screen.
+  static void setShakeForm(ShakeForm shakeForm) async {
+    var shakeFormMap = shakeForm.toMap();
+    await _channel.invokeMethod('setShakeForm', {
+      'shakeForm': shakeFormMap,
     });
   }
 
@@ -78,18 +93,6 @@ class Shake {
   /// Checks if activity history events are tracked.
   static Future<bool?> isEnableActivityHistory() async {
     return await _channel.invokeMethod('isEnableActivityHistory');
-  }
-
-  /// Sets if inspect screen button is visible on wrap up screen.
-  static void setEnableInspectScreen(bool enabled) async {
-    await _channel.invokeMethod('setEnableInspectScreen', {
-      'enabled': enabled,
-    });
-  }
-
-  /// Checks if inspect screen button is visible on wrap up screen.
-  static Future<bool?> isEnableInspectScreen() async {
-    return await _channel.invokeMethod('isEnableInspectScreen');
   }
 
   /// Sets if floating report button is visible.
@@ -228,57 +231,6 @@ class Shake {
     });
   }
 
-  /// Checks if email field is enabled.
-  static Future<bool?> isEnableEmailField() async {
-    return await _channel.invokeMethod('isEnableEmailField');
-  }
-
-  /// Sets if email field is enabled.
-  static void setEnableEmailField(bool enabled) async {
-    await _channel.invokeMethod('setEnableEmailField', {
-      'enabled': enabled,
-    });
-  }
-
-  /// Gets default email field.
-  static Future<String?> getEmailField() async {
-    return await _channel.invokeMethod('getEmailField');
-  }
-
-  /// Sets default email field.
-  static void setEmailField(String email) async {
-    await _channel.invokeMethod('setEmailField', {
-      'email': email,
-    });
-  }
-
-  /// Checks if feedback type picker is visible on the new ticket screen.
-  static Future<bool?> isFeedbackTypeEnabled() async {
-    return await _channel.invokeMethod('isFeedbackTypeEnabled');
-  }
-
-  /// Sets if feedback type picker is visible on the new ticket screen.
-  static void setFeedbackTypeEnabled(bool enabled) async {
-    await _channel.invokeMethod('setFeedbackTypeEnabled', {
-      'enabled': enabled,
-    });
-  }
-
-  /// Gets feedback types shown on the new ticket screen.
-  static Future<List<FeedbackType>> getFeedbackTypes() async {
-    List<Map>? feedbackTypesMap =
-        await _channel.invokeListMethod<Map>('getFeedbackTypes');
-    return _mapper.mapToFeedbackTypes(feedbackTypesMap) ?? [];
-  }
-
-  /// Sets feedback types shown on the new ticket screen.
-  static void setFeedbackTypes(List<FeedbackType> feedbackTypes) async {
-    var feedbackTypesMap = _mapper.feedbackTypesToMap(feedbackTypes);
-    await _channel.invokeMethod('setFeedbackTypes', {
-      'feedbackTypes': feedbackTypesMap,
-    });
-  }
-
   /// Checks if console logs are attached to the tickets.
   static Future<bool?> isConsoleLogsEnabled() async {
     return await _channel.invokeMethod('isConsoleLogsEnabled');
@@ -389,7 +341,8 @@ class Shake {
   /// Sets unread chat messages number listener.
   ///
   /// Set null if you want to remove listener.
-  static void setUnreadMessagesListener(UnreadMessagesListener? listener) async {
+  static void setUnreadMessagesListener(
+      UnreadMessagesListener? listener) async {
     _configuration.unreadMessagesListener = listener;
     await _channel.invokeMethod('startUnreadMessagesEmitter');
   }

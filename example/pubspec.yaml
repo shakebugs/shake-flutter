@@ -1,6 +1,6 @@
 name: shake_example
 description: Demonstrates how to use the shake plugin.
-version: 15.0.0
+version: 16.0.0
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -16,11 +16,11 @@ dependencies:
   shake_flutter:
     path: ..
 
-  url_launcher: ^6.0.12
+  url_launcher: ^6.1.10
   package_info: ^2.0.2
-  path_provider: ^2.0.5
-  fluttertoast: ^8.0.8
-  flutter_local_notifications: ^9.0.0
+  path_provider: ^2.0.14
+  fluttertoast: ^8.2.1
+  flutter_local_notifications: ^13.0.0
 
   # Uncomment following lines to use interceptors from file system
   #  shake_http_client:

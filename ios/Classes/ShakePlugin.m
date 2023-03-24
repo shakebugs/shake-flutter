@@ -30,6 +30,10 @@ static FlutterMethodChannel *channel = nil;
         [self start:call result:result];
     } else if([@"show" isEqualToString:call.method]) {
         [self show:call result:result];
+    } else if([@"setShakeForm" isEqualToString:call.method]) {
+        [self setShakeForm:call result:result];
+    } else if([@"getShakeForm" isEqualToString:call.method]) {
+        [self getShakeForm:call result:result];
     } else if([@"setUserFeedbackEnabled" isEqualToString:call.method]) {
         [self setUserFeedbackEnabled:call result:result];
     } else if([@"isUserFeedbackEnabled" isEqualToString:call.method]) {
@@ -38,10 +42,6 @@ static FlutterMethodChannel *channel = nil;
         [self setEnableActivityHistory:call result:result];
     } else if([@"isEnableActivityHistory" isEqualToString:call.method]) {
         [self isEnableActivityHistory:call result:result];
-    } else if([@"setEnableInspectScreen" isEqualToString:call.method]) {
-        [self setEnableInspectScreen:call result:result];
-    } else if([@"isEnableInspectScreen" isEqualToString:call.method]) {
-        [self isEnableInspectScreen:call result:result];
      } else if([@"setEnableBlackBox" isEqualToString:call.method]) {
         [self setEnableBlackBox:call result:result];
     } else if([@"isEnableBlackBox" isEqualToString:call.method]) {
@@ -88,26 +88,10 @@ static FlutterMethodChannel *channel = nil;
         [self setShowIntroMessage:call result:result];
     } else if([@"isShowIntroMessage" isEqualToString:call.method]) {
         [self isShowIntroMessage:call result:result];
-    } else if([@"setEnableEmailField" isEqualToString:call.method]) {
-        [self setEnableEmailField:call result:result];
-    } else if([@"isEnableEmailField" isEqualToString:call.method]) {
-        [self isEnableEmailField:call result:result];
-    } else if([@"setEmailField" isEqualToString:call.method]) {
-        [self setEmailField:call result:result];
-    } else if([@"getEmailField" isEqualToString:call.method]) {
-        [self getEmailField:call result:result];
     } else if([@"setAutoVideoRecording" isEqualToString:call.method]) {
         [self setAutoVideoRecording:call result:result];
     } else if([@"isAutoVideoRecording" isEqualToString:call.method]) {
         [self isAutoVideoRecording:call result:result];
-    } else if([@"setFeedbackTypeEnabled" isEqualToString:call.method]) {
-        [self setFeedbackTypeEnabled:call result:result];
-    }  else if([@"isFeedbackTypeEnabled" isEqualToString:call.method]) {
-        [self isFeedbackTypeEnabled:call result:result];
-    } else if([@"setFeedbackTypes" isEqualToString:call.method]) {
-        [self setFeedbackTypes:call result:result];
-    } else if([@"getFeedbackTypes" isEqualToString:call.method]) {
-        [self getFeedbackTypes:call result:result];
     } else if([@"setConsoleLogsEnabled" isEqualToString:call.method]) {
         [self setConsoleLogsEnabled:call result:result];
     } else if([@"isConsoleLogsEnabled" isEqualToString:call.method]) {
@@ -145,6 +129,22 @@ static FlutterMethodChannel *channel = nil;
     result(nil);
 }
 
+- (void)setShakeForm:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSDictionary* shakeFormDict = call.arguments[@"shakeForm"];
+    
+    SHKForm* shakeForm = [self mapDicToShakeForm:shakeFormDict];
+    SHKShake.configuration.form = shakeForm;
+    
+    result(nil);
+}
+
+- (void)getShakeForm:(FlutterMethodCall*) call result:(FlutterResult)result {
+    SHKForm *shakeForm = SHKShake.configuration.form;
+    NSDictionary *shakeFormDict = [self mapShakeFormToDict:shakeForm];
+    
+    result(shakeFormDict);
+}
+
 - (void)show:(FlutterMethodCall*) call result:(FlutterResult)result {
     NSString* shakeScreenArg = call.arguments[@"shakeScreen"];
     
@@ -180,20 +180,6 @@ static FlutterMethodChannel *channel = nil;
     NSNumber *isActivityHistoryEnabledObj = [NSNumber numberWithBool:isEnableActivityHistory];
 
     result(isActivityHistoryEnabledObj);
-}
-
-- (void)setEnableInspectScreen:(FlutterMethodCall*) call result:(FlutterResult)result {
-    BOOL enableInspectScreen = [call.arguments[@"enabled"] boolValue];
-    SHKShake.configuration.isInspectScreenEnabled = enableInspectScreen;
-    
-    result(nil);
-}
-
-- (void)isEnableInspectScreen:(FlutterMethodCall*) call result:(FlutterResult)result {
-    BOOL isEnableInspectScreen = SHKShake.configuration.isInspectScreenEnabled;
-    NSNumber *isEnableInspectScreenObj = [NSNumber numberWithBool:isEnableInspectScreen];
-    
-    result(isEnableInspectScreenObj);
 }
 
 - (void)setEnableBlackBox:(FlutterMethodCall*) call result:(FlutterResult)result {
@@ -378,30 +364,6 @@ static FlutterMethodChannel *channel = nil;
     result(isShowIntroMessageObj);
 }
 
-- (void)setEnableEmailField:(FlutterMethodCall*) call result:(FlutterResult) result {
-    BOOL enableEmailField = [call.arguments[@"enabled"] boolValue];
-    SHKShake.configuration.isEmailFieldEnabled = enableEmailField;
-    result(nil);
-}
-
-- (void)isEnableEmailField:(FlutterMethodCall*) call result:(FlutterResult)result {
-    BOOL isEnableEmailField = SHKShake.configuration.isEmailFieldEnabled;
-    NSNumber *isEnableEmailFieldObj = [NSNumber numberWithBool:isEnableEmailField];
-    result(isEnableEmailFieldObj);
-}
-
-- (void)setEmailField:(FlutterMethodCall*) call result:(FlutterResult) result {
-    NSString* email = call.arguments[@"email"];
-    if (email == (id)[NSNull null]) email = nil;
-    SHKShake.configuration.emailField = email;
-    result(nil);
-}
-
-- (void)getEmailField:(FlutterMethodCall*) call result:(FlutterResult)result {
-    NSString* email = SHKShake.configuration.emailField;
-    result(email);
-}
-
 - (void)setAutoVideoRecording:(FlutterMethodCall*) call result:(FlutterResult) result {
     BOOL autoVideoRecording = [call.arguments[@"enabled"] boolValue];
     SHKShake.configuration.isAutoVideoRecordingEnabled = autoVideoRecording;
@@ -412,36 +374,6 @@ static FlutterMethodChannel *channel = nil;
     BOOL isAutoVideoRecording = SHKShake.configuration.isAutoVideoRecordingEnabled;
     NSNumber *isAutoVideoRecordingObj = [NSNumber numberWithBool:isAutoVideoRecording];
     result(isAutoVideoRecordingObj);
-}
-
-- (void)setFeedbackTypeEnabled:(FlutterMethodCall*) call result:(FlutterResult) result {
-    BOOL isFeedbackTypeEnabled = [call.arguments[@"enabled"] boolValue];
-    SHKShake.configuration.isFeedbackTypeEnabled = isFeedbackTypeEnabled;
-
-    result(nil);
-}
-
-- (void)isFeedbackTypeEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
-    BOOL isFeedbackTypeEnabled = SHKShake.configuration.isFeedbackTypeEnabled;
-    NSNumber *isFeedbackTypeEnabledObj = [NSNumber numberWithBool:isFeedbackTypeEnabled];
-
-    result(isFeedbackTypeEnabledObj);
-}
-
-- (void)setFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult) result {
-    NSArray *feedbackTypesArray = call.arguments[@"feedbackTypes"];
-    
-    NSMutableArray<SHKFeedbackEntry *> *feedbackTypes = [self mapArrayToFeedbackTypes:feedbackTypesArray];
-    [SHKShake setFeedbackTypes:feedbackTypes];
-    
-    result(nil);
-}
-
-- (void)getFeedbackTypes:(FlutterMethodCall*) call result:(FlutterResult)result {
-    NSArray<SHKFeedbackEntry *> *feedbackTypes = [SHKShake getFeedbackTypes];
-    NSArray<NSDictionary *> *feedbackTypesArray = [self mapFeedbackTypesToArray:feedbackTypes];
-
-    result(feedbackTypesArray);
 }
 
 - (void)setConsoleLogsEnabled:(FlutterMethodCall*) call result:(FlutterResult) result {
@@ -579,49 +511,6 @@ static FlutterMethodChannel *channel = nil;
     return shakeFiles;
 }
 
-- (NSMutableArray<SHKFeedbackEntry*>*)mapArrayToFeedbackTypes:(NSArray *)feedbackTypesArray
-{
-    if (feedbackTypesArray == nil) return nil;
-
-    NSMutableArray<SHKFeedbackEntry*>* feedbackTypes = [NSMutableArray array];
-    for(int i = 0; i < [feedbackTypesArray count]; i++) {
-        NSDictionary *feedbackTypeDic = [feedbackTypesArray objectAtIndex:i];
-        NSString *title = [feedbackTypeDic objectForKey:@"title"];
-        NSString *tag = [feedbackTypeDic objectForKey:@"tag"];
-        NSString *icon = [feedbackTypeDic objectForKey:@"icon"];
-
-        UIImage *image = [UIImage imageNamed:icon];
-        SHKFeedbackEntry *feedbackType = [SHKFeedbackEntry entryWithTitle:title andTag:tag icon:image];
-
-        if (feedbackType != nil) {
-            [feedbackTypes addObject:feedbackType];
-        }
-    }
-    return feedbackTypes;
-}
-
-- (NSArray<NSDictionary*>*)mapFeedbackTypesToArray:(NSArray<SHKFeedbackEntry *> *)feedbackTypes
-{
-    if (feedbackTypes == nil) return nil;
-
-    NSMutableArray<NSDictionary*>* feedbackTypesArray = [NSMutableArray array];
-    for(int i = 0; i < [feedbackTypes count]; i++) {
-        SHKFeedbackEntry *feedbackType = [feedbackTypes objectAtIndex:i];
-
-        NSDictionary *feedbackTypeDic = [[NSDictionary alloc] init];
-        feedbackTypeDic = @{
-            @"title": feedbackType.title,
-            @"tag": feedbackType.tag,
-            @"icon": @""
-        };
-
-        if (feedbackTypeDic != nil) {
-            [feedbackTypesArray addObject:feedbackTypeDic];
-        }
-    }
-    return feedbackTypesArray;
-}
-
 - (SHKShakeReportConfiguration*)mapToConfiguration:(nonnull NSDictionary*)configurationDic {
     BOOL includesBlackBoxData = [[configurationDic objectForKey:@"blackBoxData"] boolValue];
     BOOL includesActivityHistoryData = [[configurationDic objectForKey:@"activityHistoryData"] boolValue];
@@ -676,9 +565,196 @@ static FlutterMethodChannel *channel = nil;
     return notificationDict;
 }
 
+- (SHKForm *)mapDicToShakeForm:(NSDictionary *)shakeFormDic
+{
+    if (shakeFormDic == nil) return nil;
+    
+    NSMutableArray *dictComponents = [shakeFormDic objectForKey:@"components"];
+    if (dictComponents == nil) dictComponents = [NSMutableArray array];
+
+    NSMutableArray<id<SHKFormItemProtocol>>* formComponents = [NSMutableArray array];
+    
+    for(int i = 0; i < [dictComponents count]; i++) {
+        NSDictionary *component = [dictComponents objectAtIndex:i];
+
+        NSString *type = [component objectForKey:@"type"];
+        if ([type isEqualToString:@"title"]) {
+            NSString *label = [component objectForKey:@"label"];
+            NSString *labelRes = [component objectForKey:@"labelRes"] ?: nil;
+            NSString *initialValue = [component objectForKey:@"initialValue"];
+            BOOL required = [[component objectForKey:@"required"] boolValue];
+            
+            if (labelRes && [labelRes isEqual:[NSNull null]]) labelRes=nil; // NSNull causes crash
+            
+            [formComponents addObject:[[SHKTitle alloc] initWithLabel:label required:required labelRes:labelRes initialValue:initialValue]];
+        }
+        if ([type isEqualToString:@"text_input"]) {
+            NSString *label = [component objectForKey:@"label"];
+            NSString *labelRes = [component objectForKey:@"labelRes"];
+            NSString *initialValue = [component objectForKey:@"initialValue"];
+            BOOL required = [[component objectForKey:@"required"] boolValue];
+            
+            if (labelRes && [labelRes isEqual:[NSNull null]]) labelRes=nil; // NSNull causes crash
+            
+            [formComponents addObject:[[SHKTextInput alloc] initWithLabel:label required:required labelRes:labelRes initialValue:initialValue]];
+        }
+        if ([type isEqualToString:@"email"]) {
+            NSString *label = [component objectForKey:@"label"];
+            NSString *labelRes = [component objectForKey:@"labelRes"];
+            NSString *initialValue = [component objectForKey:@"initialValue"];
+            BOOL required = [[component objectForKey:@"required"] boolValue];
+            
+            if (labelRes && [labelRes isEqual:[NSNull null]]) labelRes=nil; // NSNull causes crash
+            
+            [formComponents addObject:[[SHKEmail alloc] initWithLabel:label required:required labelRes:labelRes initialValue:initialValue]];
+        }
+        if ([type isEqualToString:@"picker"]) {
+            NSString *label = [component objectForKey:@"label"];
+            NSString *labelRes = [component objectForKey:@"labelRes"];
+            NSArray *itemsArray = [component objectForKey:@"items"];
+
+            NSMutableArray<SHKPickerItem*>* items = [NSMutableArray array];
+            for(int j = 0; j < [itemsArray count]; j++) {
+                NSDictionary *arrayItem = [itemsArray objectAtIndex:j];
+                
+                NSString *icon = [arrayItem objectForKey:@"icon"];
+                NSString *text = [arrayItem objectForKey:@"text"];
+                NSString *textRes = [arrayItem objectForKey:@"textRes"];
+                NSString *tag = [arrayItem objectForKey:@"tag"];
+                
+                if (icon && [icon isEqual:[NSNull null]]) icon=nil; // NSNull causes
+                if (textRes && [textRes isEqual:[NSNull null]]) textRes=nil; // NSNull causes crash
+                
+                SHKPickerItem* item = [[SHKPickerItem alloc] initWithIconName:icon text:text textRes:textRes tag:tag];
+                [items addObject:item];
+            }
+            
+            if (labelRes && [labelRes isEqual:[NSNull null]]) labelRes=nil; // NSNull causes crash
+            
+            [formComponents addObject:[[SHKPicker alloc] initWithLabel:label items:items labelRes:labelRes]];
+        }
+        if ([type isEqualToString:@"attachments"]) {
+            [formComponents addObject:SHKAttachments.new];
+        }
+        
+        if ([type isEqualToString:@"inspect"]) {
+            [formComponents addObject:SHKInspectButton.new];
+        
+        }
+    }
+    return [[SHKForm alloc] initWithItems:formComponents];
+}
+
+- (NSDictionary*)mapShakeFormToDict:(SHKForm*)shakeForm
+{
+    if (shakeForm == nil) return nil;
+
+    NSMutableArray<NSDictionary*>* componentsArray = [NSMutableArray array];
+    
+    for(int i = 0; i < [shakeForm.items count]; i++) {
+        id<SHKFormItemProtocol> item = [shakeForm.items objectAtIndex:i];
+        
+        if ([item isKindOfClass:[SHKTitle class]]) {
+            SHKTitle *component = item;
+            
+            NSDictionary *dict = [[NSDictionary alloc] init];
+            dict = @{
+                @"type": @"title",
+                @"label": component.label,
+                @"labelRes": component.labelRes ?: [NSNull null],
+                @"initialValue": component.initialValue ?: @"",
+                @"required": [NSNumber numberWithBool:component.required]
+            };
+            
+            [componentsArray addObject:dict];
+        }
+        if ([item isKindOfClass:[SHKTextInput class]]) {
+            SHKTextInput *component = item;
+            
+            NSDictionary *dict = [[NSDictionary alloc] init];
+            dict = @{
+                @"type": @"text_input",
+                @"label": component.label,
+                @"labelRes": component.labelRes ?: [NSNull null],
+                @"initialValue": component.initialValue ?: @"",
+                @"required": [NSNumber numberWithBool:component.required]
+            };
+            
+            [componentsArray addObject:dict];
+        }
+
+        if ([item isKindOfClass:[SHKEmail class]]) {
+            SHKEmail *component = item;
+            
+            NSDictionary *dict = [[NSDictionary alloc] init];
+            dict = @{
+                @"type": @"email",
+                @"label": component.label,
+                @"labelRes": component.labelRes ?: [NSNull null],
+                @"initialValue": component.initialValue ?: @"",
+                @"required": [NSNumber numberWithBool:component.required]
+            };
+            
+            [componentsArray addObject:dict];
+        }
+
+        if ([item isKindOfClass:[SHKPicker class]]) {
+            SHKPicker *component = item;
+            
+            NSMutableArray<NSDictionary*>* pickerItemsArray = [NSMutableArray array];
+            for(int j = 0; j < [component.items count]; j++) {
+                SHKPickerItem *pickerItem = [component.items objectAtIndex:j];
+                
+                NSDictionary *pickerItemDict = [[NSDictionary alloc] init];
+                pickerItemDict = @{
+                    @"icon": pickerItem.iconName ?: [NSNull null],
+                    @"text": pickerItem.text,
+                    @"textRes": pickerItem.textRes ?: [NSNull null],
+                    @"tag": pickerItem.tag ?: [NSNull null],
+                };
+                
+                [pickerItemsArray addObject:pickerItemDict];
+            }
+            
+
+            NSDictionary *componentDict = [[NSDictionary alloc] init];
+            componentDict = @{
+                @"type": @"picker",
+                @"label": component.label,
+                @"labelRes": component.labelRes ?: [NSNull null],
+                @"items": pickerItemsArray
+            };
+            
+            [componentsArray addObject:componentDict];
+        }
+
+        if ([item isKindOfClass:[SHKAttachments class]]) {
+            NSDictionary *dict = [[NSDictionary alloc] init];
+            dict = @{
+                @"type": @"attachments",
+            };
+            
+            [componentsArray addObject:dict];
+        }
+        if ([item isKindOfClass:[SHKInspectButton class]]) {
+            NSDictionary *dict = [[NSDictionary alloc] init];
+            dict = @{
+                @"type": @"inspect",
+            };
+            
+            [componentsArray addObject:dict];
+        }
+    }
+    
+    NSDictionary *shakeFormDict = [[NSDictionary alloc] init];
+    shakeFormDict = @{@"components": componentsArray};
+    
+    return shakeFormDict;
+}
+
 // Private
 - (void)setPlatformInfo {
-    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"15.0.0" };
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"16.0.0" };
     [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
 }
 

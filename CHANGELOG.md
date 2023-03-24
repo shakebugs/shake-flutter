@@ -1,3 +1,11 @@
+# 16.0.0
+
+- Upgraded to Shake Android and iOS native SDK 16.0.0
+- Implemented models and method for creating Shake custom forms
+- Removed old methods for Shake form customization
+- Updated example project dependencies and added custom form code example
+- Added OSI-approved license and fixed static analysis errors
+
 # 15.3.0
 
 Added chat messages listener

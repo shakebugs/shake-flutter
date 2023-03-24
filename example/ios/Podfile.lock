@@ -7,14 +7,15 @@ PODS:
     - Toast
   - package_info (0.0.1):
     - Flutter
-  - path_provider (0.0.1):
+  - path_provider_foundation (0.0.1):
     - Flutter
-  - Shake-Staging (15.3.0-rc.1515)
+    - FlutterMacOS
+  - Shake-Staging (16.0.0-rc.1531)
   - shake_flutter (0.0.1):
     - Flutter
-    - Shake-Staging (~> 15.3.0-rc)
+    - Shake-Staging (~> 16.0.0-rc)
   - Toast (4.0.0)
-  - url_launcher (0.0.1):
+  - url_launcher_ios (0.0.1):
     - Flutter
 
 DEPENDENCIES:
@@ -22,9 +23,9 @@ DEPENDENCIES:
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
-  - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - shake_flutter (from `.symlinks/plugins/shake_flutter/ios`)
-  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   "git@github.com:shakebugs/Specs.git":
@@ -41,23 +42,23 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/fluttertoast/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
-  path_provider:
-    :path: ".symlinks/plugins/path_provider/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/ios"
   shake_flutter:
     :path: ".symlinks/plugins/shake_flutter/ios"
-  url_launcher:
-    :path: ".symlinks/plugins/url_launcher/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
-  fluttertoast: 6122fa75143e992b1d3470f61000f591a798cc58
+  fluttertoast: eb263d302cc92e04176c053d2385237e9f43fad0
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
-  path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
-  Shake-Staging: 502b935776ee8cac30e2f49c4856f424b41d369f
-  shake_flutter: 74f030d8951a3427f4f52aec5cd744a75151a18d
+  path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
+  Shake-Staging: f517144794e05334154ca37272e1ca8b2506ef2f
+  shake_flutter: 2e8134384282f62ed48a4557a9f12c5e89d91f59
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
-  url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
+  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
 
 PODFILE CHECKSUM: 18de14b99602a19f41203ed1bd1f3eb50097dbcf
 
