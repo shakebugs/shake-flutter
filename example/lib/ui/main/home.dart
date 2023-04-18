@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shake_example/constants/colors.dart';
@@ -16,10 +15,17 @@ import 'package:shake_example/utils/files.dart';
 import 'package:shake_example/utils/messages.dart';
 import 'package:shake_flutter/enums/log_level.dart';
 import 'package:shake_flutter/enums/shake_screen.dart';
-import 'package:shake_flutter/models/feedback_type.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/models/notification_event.dart';
 import 'package:shake_flutter/models/shake_file.dart';
+import 'package:shake_flutter/models/shake_form.dart';
+import 'package:shake_flutter/models/shake_picker.dart';
+import 'package:shake_flutter/models/shake_picker_item.dart';
+import 'package:shake_flutter/models/shake_title.dart';
+import 'package:shake_flutter/models/shake_email.dart';
+import 'package:shake_flutter/models/shake_text_input.dart';
+import 'package:shake_flutter/models/shake_inspect_button.dart';
+import 'package:shake_flutter/models/shake_attachments.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
 import 'package:shake_flutter/shake_flutter.dart';
 
@@ -36,11 +42,8 @@ class _HomeState extends State<Home> {
   bool? buttonInvokingEnabled = false;
   bool? screenshotInvokingEnabled = false;
   bool? blackboxEnabled = false;
-  bool? inspectScreenEnabled = false;
   bool? activityHistoryEnabled = false;
   bool? consoleLogsEnabled = false;
-  bool? emailFieldEnabled = false;
-  bool? feedbackTypesEnabled = false;
   bool? screenRecordingEnabled = false;
   bool? sensitiveDataEnabled = false;
   bool? screenshotIncluded = false;
@@ -62,11 +65,8 @@ class _HomeState extends State<Home> {
     final buttonInvokingEnabled = await Shake.isShowFloatingReportButton();
     final screenshotInvokingEnabled = await Shake.isInvokeShakeOnScreenshot();
     final blackboxEnabled = await Shake.isEnableBlackBox();
-    final inspectScreenEnabled = await Shake.isEnableInspectScreen();
     final activityHistoryEnabled = await Shake.isEnableActivityHistory();
     final consoleLogsEnabled = await Shake.isConsoleLogsEnabled();
-    final emailFieldEnabled = await Shake.isEnableEmailField();
-    final feedbackTypesEnabled = await Shake.isFeedbackTypeEnabled();
     final screenRecordingEnabled = await Shake.isAutoVideoRecording();
     final sensitiveDataEnabled = await Shake.isSensitiveDataRedactionEnabled();
     final shakingThreshold = await Shake.getShakingThreshold();
@@ -78,11 +78,8 @@ class _HomeState extends State<Home> {
       this.buttonInvokingEnabled = buttonInvokingEnabled;
       this.screenshotInvokingEnabled = screenshotInvokingEnabled;
       this.blackboxEnabled = blackboxEnabled;
-      this.inspectScreenEnabled = inspectScreenEnabled;
       this.activityHistoryEnabled = activityHistoryEnabled;
       this.consoleLogsEnabled = consoleLogsEnabled;
-      this.emailFieldEnabled = emailFieldEnabled;
-      this.feedbackTypesEnabled = feedbackTypesEnabled;
       this.screenRecordingEnabled = screenRecordingEnabled;
       this.sensitiveDataEnabled = sensitiveDataEnabled;
       this.shakingThreshold = shakingThreshold;
@@ -144,8 +141,8 @@ class _HomeState extends State<Home> {
                           _addMetadata,
                         ),
                         Button(
-                          'Set feedback types',
-                          _setFeedbackTypes,
+                          'Set custom form',
+                          _setCustomForm,
                         ),
                       ],
                     ),
@@ -191,11 +188,6 @@ class _HomeState extends State<Home> {
                           _onEnableBlackboxToggle,
                         ),
                         Toggle(
-                          'Inspect screen',
-                          inspectScreenEnabled!,
-                          _onEnableInspectScreenToggle,
-                        ),
-                        Toggle(
                           'Activity history',
                           activityHistoryEnabled!,
                           _onEnableActivityHistoryToggle,
@@ -204,16 +196,6 @@ class _HomeState extends State<Home> {
                           'Console logs',
                           consoleLogsEnabled!,
                           _onConsoleLogsEnabledToggle,
-                        ),
-                        Toggle(
-                          'Email field',
-                          emailFieldEnabled!,
-                          _onEmailFieldEnabledToggle,
-                        ),
-                        Toggle(
-                          'Feedback types',
-                          feedbackTypesEnabled!,
-                          _onFeedbackTypesEnabledToggle,
                         ),
                         Toggle(
                           'Screen recording',
@@ -423,32 +405,11 @@ class _HomeState extends State<Home> {
     Shake.setEnableActivityHistory(enabled);
   }
 
-  void _onEnableInspectScreenToggle(enabled) {
-    setState(() {
-      inspectScreenEnabled = enabled;
-    });
-    Shake.setEnableInspectScreen(enabled);
-  }
-
   void _onConsoleLogsEnabledToggle(enabled) {
     setState(() {
       consoleLogsEnabled = enabled;
     });
     Shake.setConsoleLogsEnabled(enabled);
-  }
-
-  void _onEmailFieldEnabledToggle(enabled) {
-    setState(() {
-      emailFieldEnabled = enabled;
-    });
-    Shake.setEnableEmailField(enabled);
-  }
-
-  void _onFeedbackTypesEnabledToggle(enabled) {
-    setState(() {
-      feedbackTypesEnabled = enabled;
-    });
-    Shake.setFeedbackTypeEnabled(feedbackTypesEnabled!);
   }
 
   void _onScreenRecordingEnabledToggle(enabled) {
@@ -509,12 +470,57 @@ class _HomeState extends State<Home> {
     Shake.setMetadata('Shake', 'This is a Shake metadata.');
   }
 
-  void _setFeedbackTypes() {
-    var feedbackType1 = FeedbackType('Mouse', 'mouse', 'ic_mouse');
-    var feedbackType2 = FeedbackType('Keyboard', 'keyboard', 'ic_key');
-    var feedbackType3 = FeedbackType('Display', 'display', 'ic_display');
+  void _setCustomForm() async {
+    // ShakeForm? oldForm = await Shake.getShakeForm();
+    // oldForm?.components.removeWhere((element) => element.type == 'inspect');
 
-    Shake.setFeedbackTypes([feedbackType1, feedbackType2, feedbackType3]);
+    List<ShakePickerItem> pickerItems = [
+      ShakePickerItem(
+        'Mouse',
+        textRes: null,
+        icon: 'ic_mouse',
+        tag: 'mouse',
+      ),
+      ShakePickerItem(
+        'Keyboard',
+        textRes: null,
+        icon: 'ic_key',
+        tag: 'keyboard',
+      ),
+      ShakePickerItem(
+        'Display',
+        textRes: null,
+        icon: 'ic_display',
+        tag: 'display',
+      )
+    ];
+
+    ShakeForm shakeForm = ShakeForm([
+      ShakePicker(
+        'Category',
+        pickerItems,
+        labelRes: 'picker_label',
+      ),
+      ShakeTitle(
+        'Short title',
+        labelRes: null,
+        initialValue: '',
+        required: true,
+      ),
+      ShakeTextInput(
+        'Repro Steps',
+        labelRes: null,
+        initialValue: '',
+        required: false,
+      ),
+      ShakeEmail(
+        'YourEmail',
+      ),
+      ShakeInspectButton(),
+      ShakeAttachments(),
+    ]);
+
+    Shake.setShakeForm(shakeForm);
   }
 
   void _onShakingThreshold100() {
@@ -539,7 +545,7 @@ class _HomeState extends State<Home> {
 
     InitializationSettings initializationSettings = InitializationSettings(
         android: AndroidInitializationSettings('@drawable/ic_bug_report'),
-        iOS: IOSInitializationSettings());
+        iOS: DarwinInitializationSettings());
 
     await notificationsPlugin.initialize(initializationSettings);
 

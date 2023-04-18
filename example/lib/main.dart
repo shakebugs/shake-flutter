@@ -12,7 +12,6 @@ void main() {
   Shake.setInvokeShakeOnShakeDeviceEvent(true);
   Shake.setShowFloatingReportButton(true);
   Shake.setAutoVideoRecording(true);
-  Shake.setEmailField('test@shakebugs.com');
   Shake.setShowIntroMessage(true);
   Shake.setSensitiveDataRedactionEnabled(true);
   Shake.setConsoleLogsEnabled(false);

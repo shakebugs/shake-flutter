@@ -2,7 +2,6 @@ package com.shakebugs.flutter
 
 import android.app.Activity
 import android.content.Intent
-import androidx.annotation.NonNull
 import com.shakebugs.flutter.helpers.Mapper
 import com.shakebugs.flutter.utils.Constants
 import com.shakebugs.flutter.utils.Logger
@@ -10,9 +9,9 @@ import com.shakebugs.shake.Shake
 import com.shakebugs.shake.ShakeInfo
 import com.shakebugs.shake.ShakeScreen
 import com.shakebugs.shake.chat.UnreadChatMessagesListener
+import com.shakebugs.shake.form.ShakeForm
 import com.shakebugs.shake.internal.domain.models.NetworkRequest
 import com.shakebugs.shake.internal.domain.models.NotificationEvent
-import com.shakebugs.shake.report.FeedbackType
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -32,12 +31,12 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "shake")
         channel.setMethodCallHandler(this)
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 
@@ -58,9 +57,11 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         activity = null
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "start" -> start(call)
+            "getShakeForm" -> getShakeForm(result)
+            "setShakeForm" -> setShakeForm(call)
             "show" -> show(call)
             "isUserFeedbackEnabled" -> isUserFeedbackEnabled(result)
             "setUserFeedbackEnabled" -> setUserFeedbackEnabled(call)
@@ -68,8 +69,6 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "isEnableBlackBox" -> isEnableBlackBox(result)
             "setEnableActivityHistory" -> setEnableActivityHistory(call)
             "isEnableActivityHistory" -> isEnableActivityHistory(result)
-            "setEnableInspectScreen" -> setEnableInspectScreen(call)
-            "isEnableInspectScreen" -> isEnableInspectScreen(result)
             "setShowFloatingReportButton" -> setShowFloatingReportButton(call)
             "isShowFloatingReportButton" -> isShowFloatingReportButton(result)
             "setInvokeShakeOnShakeDeviceEvent" -> setInvokeShakeOnShakeDeviceEvent(call)
@@ -82,14 +81,6 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setDefaultScreen" -> setDefaultScreen(call)
             "setScreenshotIncluded" -> setScreenshotIncluded(call)
             "isScreenshotIncluded" -> isScreenshotIncluded(result)
-            "getEmailField" -> getEmailField(result)
-            "setEmailField" -> setEmailField(call)
-            "isEnableEmailField" -> isEnableEmailField(result)
-            "setEnableEmailField" -> setEnableEmailField(call)
-            "isFeedbackTypeEnabled" -> isFeedbackTypeEnabled(result)
-            "setFeedbackTypeEnabled" -> setFeedbackTypeEnabled(call)
-            "getFeedbackTypes" -> getFeedbackTypes(result)
-            "setFeedbackTypes" -> setFeedbackTypes(call)
             "getShowIntroMessage" -> getShowIntroMessage(result)
             "setShowIntroMessage" -> setShowIntroMessage(call)
             "isAutoVideoRecording" -> isAutoVideoRecording(result)
@@ -135,6 +126,20 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         startNotificationsEmitter()
     }
 
+    private fun getShakeForm(result: Result) {
+        val shakeForm: ShakeForm = Shake.getReportConfiguration().shakeForm
+        val shakeFormMap: Map<String, Any?> = mapper?.shakeFormToMap(shakeForm) ?: mapOf()
+        result.success(shakeFormMap)
+    }
+
+    private fun setShakeForm(call: MethodCall) {
+        val shakeFormArgs: HashMap<String, Any?>? = call.argument("shakeForm")
+        shakeFormArgs?.let {
+            val shakeForm = mapper?.mapToShakeForm(shakeFormArgs)
+            Shake.getReportConfiguration().shakeForm = shakeForm
+        }
+    }
+
     private fun show(call: MethodCall) {
         val shakeScreenArg: String? = call.argument("shakeScreen")
 
@@ -177,18 +182,6 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun isEnableActivityHistory(result: Result) {
         val enabled: Boolean = Shake.getReportConfiguration().isEnableActivityHistory
-        result.success(enabled)
-    }
-
-    private fun setEnableInspectScreen(call: MethodCall) {
-        val enabled: Boolean? = call.argument("enabled")
-        enabled?.let {
-            Shake.getReportConfiguration().isEnableInspectScreen = it
-        }
-    }
-
-    private fun isEnableInspectScreen(result: Result) {
-        val enabled: Boolean = Shake.getReportConfiguration().isEnableInspectScreen
         result.success(enabled)
     }
 
@@ -334,56 +327,6 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         val enabled: Boolean? = call.argument("enabled")
         enabled?.let {
             Shake.getReportConfiguration().isAutoVideoRecording = it
-        }
-    }
-
-    private fun isEnableEmailField(result: Result) {
-        val enabled: Boolean = Shake.getReportConfiguration().isEnableEmailField
-        result.success(enabled)
-    }
-
-    private fun setEnableEmailField(call: MethodCall) {
-        val enabled: Boolean? = call.argument("enabled")
-        enabled?.let {
-            Shake.getReportConfiguration().isEnableEmailField = it
-        }
-    }
-
-    private fun getEmailField(result: Result) {
-        val email: String = Shake.getReportConfiguration().emailField
-        result.success(email)
-    }
-
-    private fun setEmailField(call: MethodCall) {
-        val email: String? = call.argument("email")
-        email?.let {
-            Shake.getReportConfiguration().emailField = email
-        }
-    }
-
-    private fun isFeedbackTypeEnabled(result: Result) {
-        val enabled: Boolean = Shake.getReportConfiguration().isFeedbackTypeEnabled
-        result.success(enabled)
-    }
-
-    private fun setFeedbackTypeEnabled(call: MethodCall) {
-        val enabled: Boolean? = call.argument("enabled")
-        enabled?.let {
-            Shake.getReportConfiguration().isFeedbackTypeEnabled = it
-        }
-    }
-
-    private fun getFeedbackTypes(result: Result) {
-        val feedbackTypes: List<FeedbackType> = Shake.getReportConfiguration().feedbackTypes
-        val feedbackTypesMap: List<Map<String, String>>? = mapper?.feedbackTypesToMap(feedbackTypes)
-        result.success(feedbackTypesMap)
-    }
-
-    private fun setFeedbackTypes(call: MethodCall) {
-        val feedbackTypesArg: List<HashMap<String, Any>>? = call.argument("feedbackTypes")
-        feedbackTypesArg?.let {
-            val feedbackTypes = mapper?.mapToFeedbackTypes(feedbackTypesArg)
-            Shake.getReportConfiguration().feedbackTypes = feedbackTypes
         }
     }
 

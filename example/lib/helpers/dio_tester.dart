@@ -59,7 +59,7 @@
 //     await _dio.post(
 //       NetworkTester.TIMEOUT_URL,
 //       data: jsonEncode(body),
-//       options: Options(receiveTimeout: 1),
+//       options: Options(receiveTimeout: Duration(seconds: 1)),
 //     );
 //   }
 // }

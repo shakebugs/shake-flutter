@@ -20,7 +20,7 @@ class Link extends StatelessWidget {
         width: double.infinity,
         child: GestureDetector(
           onTap: () {
-            launch(link);
+            launchUrl(Uri.parse(link));
           },
           child: Text(
             text,
