@@ -17,16 +17,17 @@ import 'package:shake_flutter/enums/log_level.dart';
 import 'package:shake_flutter/enums/shake_screen.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/models/notification_event.dart';
+import 'package:shake_flutter/models/shake_attachments.dart';
+import 'package:shake_flutter/models/shake_email.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_form.dart';
+import 'package:shake_flutter/models/shake_inspect_button.dart';
 import 'package:shake_flutter/models/shake_picker.dart';
 import 'package:shake_flutter/models/shake_picker_item.dart';
-import 'package:shake_flutter/models/shake_title.dart';
-import 'package:shake_flutter/models/shake_email.dart';
-import 'package:shake_flutter/models/shake_text_input.dart';
-import 'package:shake_flutter/models/shake_inspect_button.dart';
-import 'package:shake_flutter/models/shake_attachments.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
+import 'package:shake_flutter/models/shake_text_input.dart';
+import 'package:shake_flutter/models/shake_theme.dart';
+import 'package:shake_flutter/models/shake_title.dart';
 import 'package:shake_flutter/shake_flutter.dart';
 
 class Home extends StatefulWidget {
@@ -90,6 +91,345 @@ class _HomeState extends State<Home> {
     file2 = await Files.createDummyFile('file2.txt');
   }
 
+  void _onShowHomePressed() {
+    Shake.show(ShakeScreen.home);
+  }
+
+  void _onShowNewPressed() {
+    Shake.show();
+  }
+
+  void _onUserFeedbackToggle(enabled) {
+    setState(() {
+      userFeedbackEnabled = enabled;
+    });
+    Shake.setUserFeedbackEnabled(enabled);
+  }
+
+  void _onShakeInvokingToggle(enabled) {
+    setState(() {
+      shakeInvokingEnabled = enabled;
+    });
+    Shake.setInvokeShakeOnShakeDeviceEvent(enabled);
+  }
+
+  void _onButtonInvokingToggle(enabled) {
+    setState(() {
+      buttonInvokingEnabled = enabled;
+    });
+    Shake.setShowFloatingReportButton(enabled);
+  }
+
+  void _onScreenshotInvokingToggle(enabled) {
+    setState(() {
+      screenshotInvokingEnabled = enabled;
+    });
+    Shake.setInvokeShakeOnScreenshot(enabled);
+  }
+
+  void _onEnableBlackboxToggle(enabled) {
+    setState(() {
+      blackboxEnabled = enabled;
+    });
+    Shake.setEnableBlackBox(enabled);
+  }
+
+  void _onEnableActivityHistoryToggle(enabled) {
+    setState(() {
+      activityHistoryEnabled = enabled;
+    });
+    Shake.setEnableActivityHistory(enabled);
+  }
+
+  void _onConsoleLogsEnabledToggle(enabled) {
+    setState(() {
+      consoleLogsEnabled = enabled;
+    });
+    Shake.setConsoleLogsEnabled(enabled);
+  }
+
+  void _onScreenRecordingEnabledToggle(enabled) {
+    setState(() {
+      screenRecordingEnabled = enabled;
+    });
+    Shake.setAutoVideoRecording(screenRecordingEnabled!);
+  }
+
+  void _onSensitiveDataEnabledToggle(enabled) {
+    setState(() {
+      sensitiveDataEnabled = enabled;
+    });
+    Shake.setSensitiveDataRedactionEnabled(sensitiveDataEnabled!);
+  }
+
+  void _onScreenshotIncluded(enabled) {
+    setState(() {
+      screenshotIncluded = enabled;
+    });
+    Shake.setScreenshotIncluded(screenshotIncluded!);
+  }
+
+  void _onAttachDataPress() {
+    List<ShakeFile> shakeFiles = [];
+    shakeFiles.add(ShakeFile.create(file1!.path));
+    shakeFiles.add(ShakeFile.create(file2!.path, 'customName'));
+
+    Shake.setShakeReportData(shakeFiles);
+  }
+
+  void _onSilentReportPress() {
+    List<ShakeFile> shakeFiles = [];
+    shakeFiles.add(ShakeFile.create(file1!.path));
+    shakeFiles.add(ShakeFile.create(file2!.path, 'customName'));
+
+    ShakeReportConfiguration configuration = ShakeReportConfiguration();
+    configuration.activityHistoryData = true;
+    configuration.blackBoxData = true;
+    configuration.screenshot = true;
+    configuration.video = true;
+    configuration.showReportSentMessage = true;
+
+    Shake.silentReport(
+      configuration: configuration,
+      description: 'Description',
+      shakeFiles: shakeFiles,
+    );
+  }
+
+  void _addCustomLog() {
+    Shake.log(LogLevel.info, 'Custom log.');
+  }
+
+  void _addMetadata() {
+    Shake.setMetadata("Shake", "Metadata to clear.");
+    Shake.clearMetadata();
+    Shake.setMetadata('Shake', 'This is a Shake metadata.');
+  }
+
+  void _setCustomForm() async {
+    // ShakeForm? oldForm = await Shake.getShakeForm();
+    // oldForm?.components.removeWhere((element) => element.type == 'inspect');
+
+    List<ShakePickerItem> pickerItems = [
+      ShakePickerItem(
+        'Mouse',
+        textRes: null,
+        icon: 'ic_mouse',
+        tag: 'mouse',
+      ),
+      ShakePickerItem(
+        'Keyboard',
+        textRes: null,
+        icon: 'ic_key',
+        tag: 'keyboard',
+      ),
+      ShakePickerItem(
+        'Display',
+        textRes: null,
+        icon: 'ic_display',
+        tag: 'display',
+      )
+    ];
+
+    ShakeForm shakeForm = ShakeForm([
+      ShakePicker(
+        'Category',
+        pickerItems,
+        labelRes: 'picker_label',
+      ),
+      ShakeTitle(
+        'Short title',
+        labelRes: null,
+        initialValue: '',
+        required: true,
+      ),
+      ShakeTextInput(
+        'Repro Steps',
+        labelRes: null,
+        initialValue: '',
+        required: false,
+      ),
+      ShakeEmail(
+        'YourEmail',
+      ),
+      ShakeInspectButton(),
+      ShakeAttachments(),
+    ]);
+
+    Shake.setShakeForm(shakeForm);
+  }
+
+  void _setCustomTheme() async {
+    ShakeTheme shakeTheme = ShakeTheme();
+    shakeTheme.fontFamilyBold = 'lib/assets/fonts/Lexend-Bold.ttf';
+    shakeTheme.fontFamilyMedium = 'lib/assets/fonts/Lexend-Regular.ttf';
+    shakeTheme.backgroundColor = '#FFFFFF';
+    shakeTheme.secondaryBackgroundColor = '#FFFFFF';
+    shakeTheme.textColor = '#0e0e0e';
+    shakeTheme.secondaryTextColor = '#3f3f3f';
+    shakeTheme.accentColor = '#ff0000';
+    shakeTheme.accentTextColor = '#ffffff';
+    shakeTheme.outlineColor = '#464646';
+    shakeTheme.borderRadius = 0.0;
+    shakeTheme.elevation = 10.0;
+    shakeTheme.shadowOffset = Offset(0.1, 0.1);
+    shakeTheme.shadowRadius = 3;
+    shakeTheme.shadowOpacity = 0.5;
+
+    Shake.setShakeTheme(shakeTheme);
+  }
+
+  void _onShakingThreshold100() {
+    Shake.setShakingThreshold(100);
+  }
+
+  void _onShakingThreshold600() {
+    Shake.setShakingThreshold(600);
+  }
+
+  void _onShakingThreshold900() {
+    Shake.setShakingThreshold(900);
+  }
+
+  void _showNotificationSettings() {
+    Shake.showNotificationsSettings();
+  }
+
+  void _postNotificationEvent() async {
+    FlutterLocalNotificationsPlugin notificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+
+    InitializationSettings initializationSettings = InitializationSettings(
+        android: AndroidInitializationSettings('@drawable/ic_bug_report'),
+        iOS: DarwinInitializationSettings());
+
+    await notificationsPlugin.initialize(initializationSettings);
+
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails('shake-flutter', 'Shake Flutter');
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidDetails);
+    await notificationsPlugin.show(
+        0,
+        'This notification was generated by the app!',
+        'Notification message.',
+        platformChannelSpecifics);
+  }
+
+  void _insertNotificationEvent() {
+    NotificationEvent notificationEvent = NotificationEvent()
+      ..id = '0'
+      ..title = 'Title'
+      ..description = 'Description';
+    Shake.insertNotificationEvent(notificationEvent);
+  }
+
+  void _insertNetworkRequest() {
+    NetworkRequest networkRequest = NetworkRequest()
+      ..method = 'POST'
+      ..status = '200'
+      ..url = 'https://www.shakebugs.com'
+      ..requestBody = 'Request body'
+      ..responseBody = 'Response body'
+      ..requestHeaders = {'testHeader1': 'value'}
+      ..responseHeaders = {'testHeader2': 'value'}
+      ..duration = 100
+      ..date = new DateTime.now();
+    Shake.insertNetworkRequest(networkRequest);
+  }
+
+  void _setNotificationEventsFilter() {
+    Shake.setNotificationEventsFilter((notificationEvent) {
+      notificationEvent.title = "data_redacted";
+      notificationEvent.description = "data_redacted";
+      return notificationEvent;
+    });
+  }
+
+  void _setNetworkRequestsFilter() {
+    Shake.setNetworkRequestsFilter((networkRequest) {
+      networkRequest.requestBody = "data_redacted";
+      networkRequest.responseBody = "data_redacted";
+      return networkRequest;
+    });
+  }
+
+  void _onSendGetRequest() async {
+    try {
+      await networkTester.sendGetRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  void _onSendPostRequest() async {
+    try {
+      await networkTester.sendPostRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  void _onGetFileRequest() async {
+    try {
+      await networkTester.sendGetFileRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  void _onSendMultipartFileRequest() async {
+    try {
+      await networkTester.sendMultipartFileRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  void _onSend404Request() async {
+    try {
+      await networkTester.send404Request();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  void _onSendTimeoutRequest() async {
+    try {
+      await networkTester.sendTimeoutRequest();
+
+      Messages.show("Request succeeded.");
+    } catch (e) {
+      Messages.show(e.toString());
+    }
+  }
+
+  void _onRegisterUserPressed() {
+    Shake.registerUser('john.smith@example.com');
+  }
+
+  void _onUpdateUserIdPressed() {
+    Shake.updateUserId('will.smith@example.com');
+  }
+
+  void _onUpdateUserMetadataPressed() {
+    Shake.updateUserMetadata({'fist_name': 'John', 'last_name': 'Smith'});
+  }
+
+  void _onUnregisterUserPressed() {
+    Shake.unregisterUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -143,6 +483,10 @@ class _HomeState extends State<Home> {
                         Button(
                           'Set custom form',
                           _setCustomForm,
+                        ),
+                        Button(
+                          'Set custom theme',
+                          _setCustomTheme,
                         ),
                       ],
                     ),
@@ -353,324 +697,5 @@ class _HomeState extends State<Home> {
             ),
           )),
     );
-  }
-
-  void _onShowHomePressed() {
-    Shake.show(ShakeScreen.home);
-  }
-
-  void _onShowNewPressed() {
-    Shake.show();
-  }
-
-  void _onUserFeedbackToggle(enabled) {
-    setState(() {
-      userFeedbackEnabled = enabled;
-    });
-    Shake.setUserFeedbackEnabled(enabled);
-  }
-
-  void _onShakeInvokingToggle(enabled) {
-    setState(() {
-      shakeInvokingEnabled = enabled;
-    });
-    Shake.setInvokeShakeOnShakeDeviceEvent(enabled);
-  }
-
-  void _onButtonInvokingToggle(enabled) {
-    setState(() {
-      buttonInvokingEnabled = enabled;
-    });
-    Shake.setShowFloatingReportButton(enabled);
-  }
-
-  void _onScreenshotInvokingToggle(enabled) {
-    setState(() {
-      screenshotInvokingEnabled = enabled;
-    });
-    Shake.setInvokeShakeOnScreenshot(enabled);
-  }
-
-  void _onEnableBlackboxToggle(enabled) {
-    setState(() {
-      blackboxEnabled = enabled;
-    });
-    Shake.setEnableBlackBox(enabled);
-  }
-
-  void _onEnableActivityHistoryToggle(enabled) {
-    setState(() {
-      activityHistoryEnabled = enabled;
-    });
-    Shake.setEnableActivityHistory(enabled);
-  }
-
-  void _onConsoleLogsEnabledToggle(enabled) {
-    setState(() {
-      consoleLogsEnabled = enabled;
-    });
-    Shake.setConsoleLogsEnabled(enabled);
-  }
-
-  void _onScreenRecordingEnabledToggle(enabled) {
-    setState(() {
-      screenRecordingEnabled = enabled;
-    });
-    Shake.setAutoVideoRecording(screenRecordingEnabled!);
-  }
-
-  void _onSensitiveDataEnabledToggle(enabled) {
-    setState(() {
-      sensitiveDataEnabled = enabled;
-    });
-    Shake.setSensitiveDataRedactionEnabled(sensitiveDataEnabled!);
-  }
-
-  void _onScreenshotIncluded(enabled) {
-    setState(() {
-      screenshotIncluded = enabled;
-    });
-    Shake.setScreenshotIncluded(screenshotIncluded!);
-  }
-
-  void _onAttachDataPress() {
-    List<ShakeFile> shakeFiles = [];
-    shakeFiles.add(ShakeFile.create(file1!.path));
-    shakeFiles.add(ShakeFile.create(file2!.path, 'customName'));
-
-    Shake.setShakeReportData(shakeFiles);
-  }
-
-  void _onSilentReportPress() {
-    List<ShakeFile> shakeFiles = [];
-    shakeFiles.add(ShakeFile.create(file1!.path));
-    shakeFiles.add(ShakeFile.create(file2!.path, 'customName'));
-
-    ShakeReportConfiguration configuration = ShakeReportConfiguration();
-    configuration.activityHistoryData = true;
-    configuration.blackBoxData = true;
-    configuration.screenshot = true;
-    configuration.video = true;
-    configuration.showReportSentMessage = true;
-
-    Shake.silentReport(
-      configuration: configuration,
-      description: 'Description',
-      shakeFiles: shakeFiles,
-    );
-  }
-
-  void _addCustomLog() {
-    Shake.log(LogLevel.info, 'Custom log.');
-  }
-
-  void _addMetadata() {
-    Shake.setMetadata("Shake", "Metadata to clear.");
-    Shake.clearMetadata();
-    Shake.setMetadata('Shake', 'This is a Shake metadata.');
-  }
-
-  void _setCustomForm() async {
-    // ShakeForm? oldForm = await Shake.getShakeForm();
-    // oldForm?.components.removeWhere((element) => element.type == 'inspect');
-
-    List<ShakePickerItem> pickerItems = [
-      ShakePickerItem(
-        'Mouse',
-        textRes: null,
-        icon: 'ic_mouse',
-        tag: 'mouse',
-      ),
-      ShakePickerItem(
-        'Keyboard',
-        textRes: null,
-        icon: 'ic_key',
-        tag: 'keyboard',
-      ),
-      ShakePickerItem(
-        'Display',
-        textRes: null,
-        icon: 'ic_display',
-        tag: 'display',
-      )
-    ];
-
-    ShakeForm shakeForm = ShakeForm([
-      ShakePicker(
-        'Category',
-        pickerItems,
-        labelRes: 'picker_label',
-      ),
-      ShakeTitle(
-        'Short title',
-        labelRes: null,
-        initialValue: '',
-        required: true,
-      ),
-      ShakeTextInput(
-        'Repro Steps',
-        labelRes: null,
-        initialValue: '',
-        required: false,
-      ),
-      ShakeEmail(
-        'YourEmail',
-      ),
-      ShakeInspectButton(),
-      ShakeAttachments(),
-    ]);
-
-    Shake.setShakeForm(shakeForm);
-  }
-
-  void _onShakingThreshold100() {
-    Shake.setShakingThreshold(100);
-  }
-
-  void _onShakingThreshold600() {
-    Shake.setShakingThreshold(600);
-  }
-
-  void _onShakingThreshold900() {
-    Shake.setShakingThreshold(900);
-  }
-
-  void _showNotificationSettings() {
-    Shake.showNotificationsSettings();
-  }
-
-  void _postNotificationEvent() async {
-    FlutterLocalNotificationsPlugin notificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-
-    InitializationSettings initializationSettings = InitializationSettings(
-        android: AndroidInitializationSettings('@drawable/ic_bug_report'),
-        iOS: DarwinInitializationSettings());
-
-    await notificationsPlugin.initialize(initializationSettings);
-
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails('shake-flutter', 'Shake Flutter');
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidDetails);
-    await notificationsPlugin.show(
-        0,
-        'This notification was generated by the app!',
-        'Notification message.',
-        platformChannelSpecifics);
-  }
-
-  void _insertNotificationEvent() {
-    NotificationEvent notificationEvent = NotificationEvent()
-      ..id = '0'
-      ..title = 'Title'
-      ..description = 'Description';
-    Shake.insertNotificationEvent(notificationEvent);
-  }
-
-  void _insertNetworkRequest() {
-    NetworkRequest networkRequest = NetworkRequest()
-      ..method = 'POST'
-      ..status = '200'
-      ..url = 'https://www.shakebugs.com'
-      ..requestBody = 'Request body'
-      ..responseBody = 'Response body'
-      ..requestHeaders = {'testHeader1': 'value'}
-      ..responseHeaders = {'testHeader2': 'value'}
-      ..duration = 100
-      ..date = new DateTime.now();
-    Shake.insertNetworkRequest(networkRequest);
-  }
-
-  void _setNotificationEventsFilter() {
-    Shake.setNotificationEventsFilter((notificationEvent) {
-      notificationEvent.title = "data_redacted";
-      notificationEvent.description = "data_redacted";
-      return notificationEvent;
-    });
-  }
-
-  void _setNetworkRequestsFilter() {
-    Shake.setNetworkRequestsFilter((networkRequest) {
-      networkRequest.requestBody = "data_redacted";
-      networkRequest.responseBody = "data_redacted";
-      return networkRequest;
-    });
-  }
-
-  void _onSendGetRequest() async {
-    try {
-      await networkTester.sendGetRequest();
-
-      Messages.show("Request succeeded.");
-    } catch (e) {
-      Messages.show(e.toString());
-    }
-  }
-
-  void _onSendPostRequest() async {
-    try {
-      await networkTester.sendPostRequest();
-
-      Messages.show("Request succeeded.");
-    } catch (e) {
-      Messages.show(e.toString());
-    }
-  }
-
-  void _onGetFileRequest() async {
-    try {
-      await networkTester.sendGetFileRequest();
-
-      Messages.show("Request succeeded.");
-    } catch (e) {
-      Messages.show(e.toString());
-    }
-  }
-
-  void _onSendMultipartFileRequest() async {
-    try {
-      await networkTester.sendMultipartFileRequest();
-
-      Messages.show("Request succeeded.");
-    } catch (e) {
-      Messages.show(e.toString());
-    }
-  }
-
-  void _onSend404Request() async {
-    try {
-      await networkTester.send404Request();
-
-      Messages.show("Request succeeded.");
-    } catch (e) {
-      Messages.show(e.toString());
-    }
-  }
-
-  void _onSendTimeoutRequest() async {
-    try {
-      await networkTester.sendTimeoutRequest();
-
-      Messages.show("Request succeeded.");
-    } catch (e) {
-      Messages.show(e.toString());
-    }
-  }
-
-  void _onRegisterUserPressed() {
-    Shake.registerUser('john.smith@example.com');
-  }
-
-  void _onUpdateUserIdPressed() {
-    Shake.updateUserId('will.smith@example.com');
-  }
-
-  void _onUpdateUserMetadataPressed() {
-    Shake.updateUserMetadata({'fist_name': 'John', 'last_name': 'Smith'});
-  }
-
-  void _onUnregisterUserPressed() {
-    Shake.unregisterUser();
   }
 }

@@ -6,7 +6,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   const clientId = 'HtTFUmUziF5Qjk1XLraAJXtVB1cL62yHWWqsDnrG';
-  const clientSecret = 'IPRqEI2iSQhmUP6NGQcPNKCs7JQCJrpFUG0qDmLx4Yx2spd3caXnC3o';
+  const clientSecret =
+      'IPRqEI2iSQhmUP6NGQcPNKCs7JQCJrpFUG0qDmLx4Yx2spd3caXnC3o';
 
   Shake.setInvokeShakeOnScreenshot(true);
   Shake.setInvokeShakeOnShakeDeviceEvent(true);
@@ -15,6 +16,7 @@ void main() {
   Shake.setShowIntroMessage(true);
   Shake.setSensitiveDataRedactionEnabled(true);
   Shake.setConsoleLogsEnabled(false);
+  Shake.setHomeSubtitle("Flutter Shake example");
   Shake.start(clientId, clientSecret);
 
   runApp(Home());

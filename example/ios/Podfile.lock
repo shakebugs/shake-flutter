@@ -10,10 +10,10 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - Shake-Staging (16.0.0-rc.1531)
+  - Shake-Staging (16.1.0-rc.1547)
   - shake_flutter (0.0.1):
     - Flutter
-    - Shake-Staging (~> 16.0.0-rc)
+    - Shake-Staging (~> 16.1.0-rc)
   - Toast (4.0.0)
   - url_launcher_ios (0.0.1):
     - Flutter
@@ -23,7 +23,7 @@ DEPENDENCIES:
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
-  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - shake_flutter (from `.symlinks/plugins/shake_flutter/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
@@ -43,7 +43,7 @@ EXTERNAL SOURCES:
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
   path_provider_foundation:
-    :path: ".symlinks/plugins/path_provider_foundation/ios"
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   shake_flutter:
     :path: ".symlinks/plugins/shake_flutter/ios"
   url_launcher_ios:
@@ -55,8 +55,8 @@ SPEC CHECKSUMS:
   fluttertoast: eb263d302cc92e04176c053d2385237e9f43fad0
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
-  Shake-Staging: f517144794e05334154ca37272e1ca8b2506ef2f
-  shake_flutter: 2e8134384282f62ed48a4557a9f12c5e89d91f59
+  Shake-Staging: a707415123869f692ff1c5f7d963cc02aa6354c6
+  shake_flutter: f7fed85f3556dca9394a354d14bf8dabcd8b1943
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
 

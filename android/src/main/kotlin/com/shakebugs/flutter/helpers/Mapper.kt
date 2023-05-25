@@ -1,6 +1,7 @@
 package com.shakebugs.flutter.helpers
 
 import android.content.Context
+import android.graphics.Color
 import com.shakebugs.flutter.utils.Converter
 import com.shakebugs.flutter.utils.Converter.resToString
 import com.shakebugs.flutter.utils.Converter.stringToRes
@@ -12,6 +13,8 @@ import com.shakebugs.shake.form.*
 import com.shakebugs.shake.internal.domain.models.NetworkRequest
 import com.shakebugs.shake.internal.domain.models.NotificationEvent
 import com.shakebugs.shake.report.ShakeFile
+import com.shakebugs.shake.theme.ShakeTheme
+import io.flutter.FlutterInjector
 
 
 class Mapper(private val context: Context) {
@@ -103,7 +106,9 @@ class Mapper(private val context: Context) {
         }
     }
 
-    fun mapToShakeForm(shakeFormMap: HashMap<String, Any?>): ShakeForm {
+    fun mapToShakeForm(shakeFormMap: HashMap<String, Any?>?): ShakeForm? {
+        if (shakeFormMap == null) return null
+
         val formComponentsArray: List<Map<String, Any?>> =
             shakeFormMap["components"] as? List<Map<String, Any?>> ?: listOf()
 
@@ -238,5 +243,43 @@ class Mapper(private val context: Context) {
         shakeFormMap["components"] = componentsArray
 
         return shakeFormMap
+    }
+
+    fun mapToShakeTheme(shakeThemeMap: HashMap<String, Any>?): ShakeTheme? {
+        if (shakeThemeMap == null) return null
+
+        val fontFamilyBold = shakeThemeMap["fontFamilyBold"] as? String?
+        val fontFamilyMedium = shakeThemeMap["fontFamilyMedium"] as? String?
+        val backgroundColor = shakeThemeMap["backgroundColor"] as? String?
+        val secondaryBackgroundColor = shakeThemeMap["secondaryBackgroundColor"] as? String?
+        val textColor = shakeThemeMap["textColor"] as? String?
+        val secondaryTextColor = shakeThemeMap["secondaryTextColor"] as? String?
+        val accentColor = shakeThemeMap["accentColor"] as? String?
+        val accentTextColor = shakeThemeMap["accentTextColor"] as? String?
+        val outlineColor = shakeThemeMap["outlineColor"] as? String?
+        val borderRadius = shakeThemeMap["borderRadius"] as? Double?
+        val elevation = shakeThemeMap["elevation"] as? Double?
+
+        val shakeTheme = ShakeTheme()
+        shakeTheme.fontFamilyBoldValue = findAssetPath(fontFamilyBold)
+        shakeTheme.fontFamilyMediumValue = findAssetPath(fontFamilyMedium)
+        shakeTheme.backgroundColorValue = Color.parseColor(backgroundColor)
+        shakeTheme.secondaryBackgroundColorValue = Color.parseColor(secondaryBackgroundColor)
+        shakeTheme.textColorValue = Color.parseColor(textColor)
+        shakeTheme.secondaryTextColorValue = Color.parseColor(secondaryTextColor)
+        shakeTheme.accentColorValue = Color.parseColor(accentColor)
+        shakeTheme.accentTextColorValue = Color.parseColor(accentTextColor)
+        shakeTheme.outlineColorValue = Color.parseColor(outlineColor)
+        shakeTheme.borderRadiusValue = borderRadius?.toFloat()
+        shakeTheme.elevationValue = elevation?.toFloat()
+
+        return shakeTheme
+    }
+
+    private fun findAssetPath(assetName: String?): String? {
+        if (assetName == null) return null
+
+        val loader = FlutterInjector.instance().flutterLoader()
+        return loader.getLookupKeyForAsset(assetName)
     }
 }

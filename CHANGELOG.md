@@ -1,3 +1,9 @@
+# 16.1.0
+
+- Upgraded to Shake Android and iOS native SDK 16.1.0
+- Implemented method for changing Shake screens theme
+- Implemented method for changing Shake home screen subtitle
+
 # 16.0.0
 
 - Upgraded to Shake Android and iOS native SDK 16.0.0

@@ -12,6 +12,7 @@ import com.shakebugs.shake.chat.UnreadChatMessagesListener
 import com.shakebugs.shake.form.ShakeForm
 import com.shakebugs.shake.internal.domain.models.NetworkRequest
 import com.shakebugs.shake.internal.domain.models.NotificationEvent
+import com.shakebugs.shake.theme.ShakeTheme
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -62,6 +63,8 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "start" -> start(call)
             "getShakeForm" -> getShakeForm(result)
             "setShakeForm" -> setShakeForm(call)
+            "setShakeTheme" -> setShakeTheme(call)
+            "setHomeSubtitle" -> setHomeSubtitle(call)
             "show" -> show(call)
             "isUserFeedbackEnabled" -> isUserFeedbackEnabled(result)
             "setUserFeedbackEnabled" -> setUserFeedbackEnabled(call)
@@ -133,11 +136,20 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun setShakeForm(call: MethodCall) {
-        val shakeFormArgs: HashMap<String, Any?>? = call.argument("shakeForm")
-        shakeFormArgs?.let {
-            val shakeForm = mapper?.mapToShakeForm(shakeFormArgs)
-            Shake.getReportConfiguration().shakeForm = shakeForm
-        }
+        val shakeFormMap: HashMap<String, Any?>? = call.argument("shakeForm")
+        val shakeForm = mapper?.mapToShakeForm(shakeFormMap)
+        Shake.getReportConfiguration().shakeForm = shakeForm
+    }
+
+    private fun setShakeTheme(call: MethodCall) {
+        val shakeThemeMap: HashMap<String, Any>? = call.argument("shakeTheme")
+        val shakeTheme: ShakeTheme? = mapper?.mapToShakeTheme(shakeThemeMap)
+        Shake.getReportConfiguration().theme = shakeTheme
+    }
+
+    private fun setHomeSubtitle(call: MethodCall) {
+        val subtitle: String? = call.argument("subtitle")
+        Shake.getReportConfiguration().homeSubtitle = subtitle
     }
 
     private fun show(call: MethodCall) {

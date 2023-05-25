@@ -8,7 +8,10 @@
 #import "shake_flutter-Swift.h"
 #endif
 
+#import <CoreText/CoreText.h>
+
 static FlutterMethodChannel *channel = nil;
+static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 
 @implementation ShakePlugin
 
@@ -20,6 +23,7 @@ static FlutterMethodChannel *channel = nil;
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     id<FlutterBinaryMessenger> messenger = [registrar messenger];
     channel = [FlutterMethodChannel methodChannelWithName:@"shake" binaryMessenger:messenger];
+    pluginRegistrar = registrar;
     ShakePlugin *instance = [[ShakePlugin alloc] initWithMessenger:messenger];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -34,6 +38,10 @@ static FlutterMethodChannel *channel = nil;
         [self setShakeForm:call result:result];
     } else if([@"getShakeForm" isEqualToString:call.method]) {
         [self getShakeForm:call result:result];
+    } else if([@"setShakeTheme" isEqualToString:call.method]) {
+        [self setShakeTheme:call result:result];
+    } else if([@"setHomeSubtitle" isEqualToString:call.method]) {
+        [self setHomeSubtitle:call result:result];
     } else if([@"setUserFeedbackEnabled" isEqualToString:call.method]) {
         [self setUserFeedbackEnabled:call result:result];
     } else if([@"isUserFeedbackEnabled" isEqualToString:call.method]) {
@@ -144,6 +152,23 @@ static FlutterMethodChannel *channel = nil;
     
     result(shakeFormDict);
 }
+
+- (void)setShakeTheme:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSDictionary *shakeThemeDict = call.arguments[@"shakeTheme"];
+    
+    SHKTheme *shakeTheme = [self mapDictToShakeTheme:shakeThemeDict];
+    SHKShake.configuration.theme = shakeTheme;
+    
+    result(nil);
+}
+
+- (void)setHomeSubtitle:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSString *subtitle = call.arguments[@"subtitle"];
+    SHKShake.configuration.homeSubtitle = subtitle;
+    
+    result(nil);
+}
+
 
 - (void)show:(FlutterMethodCall*) call result:(FlutterResult)result {
     NSString* shakeScreenArg = call.arguments[@"shakeScreen"];
@@ -752,9 +777,94 @@ static FlutterMethodChannel *channel = nil;
     return shakeFormDict;
 }
 
+- (SHKTheme*)mapDictToShakeTheme:(NSDictionary*)themeDict
+{
+    if (themeDict == nil) return nil;
+
+    NSString *fontFamilyBold = [themeDict objectForKey:@"fontFamilyBold"];
+    NSString *fontFamilyMedium = [themeDict objectForKey:@"fontFamilyMedium"];
+    NSString *backgroundColor = [themeDict objectForKey:@"backgroundColor"];
+    NSString *secondaryBackgroundColor = [themeDict objectForKey:@"secondaryBackgroundColor"];
+    NSString *textColor = [themeDict objectForKey:@"textColor"];
+    NSString *secondaryTextColor = [themeDict objectForKey:@"secondaryTextColor"];
+    NSString *accentColor = [themeDict objectForKey:@"accentColor"];
+    NSString *accentTextColor = [themeDict objectForKey:@"accentTextColor"];
+    NSString *outlineColor = [themeDict objectForKey:@"outlineColor"];
+    NSNumber *borderRadius = [themeDict objectForKey:@"borderRadius"];
+    NSNumber *shadowRadius = [themeDict objectForKey:@"shadowRadius"];
+    NSNumber *shadowOpacity = [themeDict objectForKey:@"shadowOpacity"];
+    NSNumber *shadowOffsetWidth = [themeDict objectForKey:@"shadowOffsetWidth"];
+    NSNumber *shadowOffsetHeight = [themeDict objectForKey:@"shadowOffsetHeight"];
+    
+    NSString *fontFamilyBoldValue = [fontFamilyBold isKindOfClass:[NSNull class]] ? nil : [self registerFontFromFlutterAssets:fontFamilyBold];
+    NSString *fontFamilyMediumValue = [fontFamilyMedium isKindOfClass:[NSNull class]] ? nil : [self registerFontFromFlutterAssets:fontFamilyMedium];
+    UIColor *backgroundColorValue = [backgroundColor isKindOfClass:[NSNull class]] ? nil : [self colorFromHexString:backgroundColor];
+    UIColor *secondaryBackgroundColorValue = [secondaryBackgroundColor isKindOfClass:[NSNull class]] ? nil : [self colorFromHexString:secondaryBackgroundColor];
+    UIColor *textColorValue = [textColor isKindOfClass:[NSNull class]] ? nil : [self colorFromHexString:textColor];
+    UIColor *secondaryTextColorValue = [secondaryTextColor isKindOfClass:[NSNull class]] ? nil : [self colorFromHexString:secondaryTextColor];
+    UIColor *accentColorValue = [accentColor isKindOfClass:[NSNull class]] ? nil : [self colorFromHexString:accentColor];
+    UIColor *accentTextColorValue = [accentTextColor isKindOfClass:[NSNull class]] ? nil : [self colorFromHexString:accentTextColor];
+    UIColor *outlineColorValue = [outlineColor isKindOfClass:[NSNull class]] ? nil : [self colorFromHexString:outlineColor];
+    CGFloat borderRadiusValue = [borderRadius isKindOfClass:[NSNull class]] ? 11 : [borderRadius floatValue];
+    CGFloat shadowRadiusValue = [shadowRadius isKindOfClass:[NSNull class]] ? 0 : [shadowRadius floatValue];
+    CGFloat shadowOpacityValue = [shadowOpacity isKindOfClass:[NSNull class]] ? 0 : [shadowOpacity floatValue];
+    CGFloat shadowOffsetWidthValue = [shadowOffsetWidth isKindOfClass:[NSNull class]] ? 0 : [shadowOffsetWidth floatValue];
+    CGFloat shadowOffsetHeightValue = [shadowOffsetHeight isKindOfClass:[NSNull class]] ? 0 : [shadowOffsetHeight floatValue];
+    
+    return [[SHKTheme alloc] initWithFontFamilyMedium:fontFamilyMediumValue
+                      fontFamilyBold:fontFamilyBoldValue
+                      background:backgroundColorValue
+                      secondaryBackground:secondaryBackgroundColorValue
+                      textColor:textColorValue
+                      secondaryTextColor:secondaryTextColorValue
+                      brandAccentColor:accentColorValue
+                      brandTextColor:accentTextColorValue
+                      borderRadius:borderRadiusValue
+                      outlineColor:outlineColorValue
+                      shadowInfo:[[SHKShadowInfo alloc]initWithOffset:CGSizeMake(shadowOffsetWidthValue, shadowOffsetHeightValue)
+                      opacity:shadowOpacityValue
+                      radius:shadowRadiusValue
+                      color:UIColor.blackColor]];
+}
+
+- (UIColor *)colorFromHexString:(NSString *)hexString {
+    if (hexString == nil) return nil;
+    
+    unsigned rgbValue = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+    [scanner setScanLocation:1]; // bypass '#' character
+    [scanner scanHexInt:&rgbValue];
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+}
+
+- (NSString*)registerFontFromFlutterAssets:(NSString *)fontFilename {
+    if (fontFilename == nil) return nil;
+    
+    NSString* fontName = [[fontFilename lastPathComponent] stringByDeletingPathExtension];
+    NSString *fontKey = [pluginRegistrar lookupKeyForAsset:fontFilename];
+    NSString *path = [[NSBundle mainBundle] pathForResource:fontKey ofType:nil];
+    NSData *fontData = [NSData dataWithContentsOfFile:path];
+    CGDataProviderRef dataProvider = CGDataProviderCreateWithCFData((CFDataRef)fontData);
+    CGFontRef fontRef = CGFontCreateWithDataProvider(dataProvider);
+    CFErrorRef errorRef = NULL;
+
+    if (fontRef != NULL) {
+        if (!CTFontManagerRegisterGraphicsFont(fontRef, &errorRef)) {
+            CFStringRef errorDescription = CFErrorCopyDescription(errorRef);
+            NSLog(@"Failed to register font: %@", errorDescription);
+            CFRelease(errorDescription);
+        }
+        CGFontRelease(fontRef);
+    }
+    CGDataProviderRelease(dataProvider);
+
+    return fontName;
+}
+
+
 // Private
 - (void)setPlatformInfo {
-    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"16.0.0" };
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"16.1.0" };
     [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
 }
 
