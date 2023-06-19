@@ -3,6 +3,7 @@ package com.shakebugs.flutter.helpers
 import android.content.Context
 import android.graphics.Color
 import com.shakebugs.flutter.utils.Converter
+import com.shakebugs.flutter.utils.Converter.convertDpToPixel
 import com.shakebugs.flutter.utils.Converter.resToString
 import com.shakebugs.flutter.utils.Converter.stringToRes
 import com.shakebugs.flutter.utils.Files
@@ -270,8 +271,8 @@ class Mapper(private val context: Context) {
         shakeTheme.accentColorValue = Color.parseColor(accentColor)
         shakeTheme.accentTextColorValue = Color.parseColor(accentTextColor)
         shakeTheme.outlineColorValue = Color.parseColor(outlineColor)
-        shakeTheme.borderRadiusValue = borderRadius?.toFloat()
-        shakeTheme.elevationValue = elevation?.toFloat()
+        shakeTheme.borderRadiusValue = convertDpToPixel(context, borderRadius?.toFloat())
+        shakeTheme.elevationValue = convertDpToPixel(context, elevation?.toFloat())
 
         return shakeTheme
     }
