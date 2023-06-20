@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.DisplayMetrics
 import com.shakebugs.flutter.utils.Logger.w
+import android.graphics.Color;
 
 object Converter {
     fun stringToInt(string: String): Int {
@@ -45,5 +46,9 @@ object Converter {
     fun convertPixelsToDp(context: Context, px: Float?): Float? {
         if (px == null) return null
         return px / (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    }
+
+    fun stringToColor(color: String?): Int? {
+        return if (color == null) null else Color.parseColor(color)
     }
 }

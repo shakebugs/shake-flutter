@@ -5,6 +5,7 @@ import android.graphics.Color
 import com.shakebugs.flutter.utils.Converter
 import com.shakebugs.flutter.utils.Converter.convertDpToPixel
 import com.shakebugs.flutter.utils.Converter.resToString
+import com.shakebugs.flutter.utils.Converter.stringToColor
 import com.shakebugs.flutter.utils.Converter.stringToRes
 import com.shakebugs.flutter.utils.Files
 import com.shakebugs.shake.LogLevel
@@ -264,13 +265,13 @@ class Mapper(private val context: Context) {
         val shakeTheme = ShakeTheme()
         shakeTheme.fontFamilyBoldValue = findAssetPath(fontFamilyBold)
         shakeTheme.fontFamilyMediumValue = findAssetPath(fontFamilyMedium)
-        shakeTheme.backgroundColorValue = Color.parseColor(backgroundColor)
-        shakeTheme.secondaryBackgroundColorValue = Color.parseColor(secondaryBackgroundColor)
-        shakeTheme.textColorValue = Color.parseColor(textColor)
-        shakeTheme.secondaryTextColorValue = Color.parseColor(secondaryTextColor)
-        shakeTheme.accentColorValue = Color.parseColor(accentColor)
-        shakeTheme.accentTextColorValue = Color.parseColor(accentTextColor)
-        shakeTheme.outlineColorValue = Color.parseColor(outlineColor)
+        shakeTheme.backgroundColorValue = stringToColor(backgroundColor)
+        shakeTheme.secondaryBackgroundColorValue = stringToColor(secondaryBackgroundColor)
+        shakeTheme.textColorValue = stringToColor(textColor)
+        shakeTheme.secondaryTextColorValue = stringToColor(secondaryTextColor)
+        shakeTheme.accentColorValue = stringToColor(accentColor)
+        shakeTheme.accentTextColorValue = stringToColor(accentTextColor)
+        shakeTheme.outlineColorValue = stringToColor(outlineColor)
         shakeTheme.borderRadiusValue = convertDpToPixel(context, borderRadius?.toFloat())
         shakeTheme.elevationValue = convertDpToPixel(context, elevation?.toFloat())
 
