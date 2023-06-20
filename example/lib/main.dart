@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shake_example/dark_mode_observer.dart';
 import 'package:shake_example/ui/main/home.dart';
 import 'package:shake_flutter/shake_flutter.dart';
 
@@ -19,5 +20,5 @@ void main() {
   Shake.setHomeSubtitle("Flutter Shake example");
   Shake.start(clientId, clientSecret);
 
-  runApp(Home());
+  runApp(DarkModeObserver(child: Home()));
 }
