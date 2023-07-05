@@ -12,6 +12,7 @@ import 'package:shake_flutter/models/notification_event.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_form.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
+import 'package:shake_flutter/models/shake_theme.dart';
 import 'package:shake_flutter/utils/mapper.dart';
 
 /// Interface for using Shake SDK.
@@ -46,6 +47,21 @@ class Shake {
     var shakeFormMap = shakeForm.toMap();
     await _channel.invokeMethod('setShakeForm', {
       'shakeForm': shakeFormMap,
+    });
+  }
+
+  /// Sets shake theme for the Shake UI.
+  static void setShakeTheme(ShakeTheme shakeTheme) async {
+    var shakeThemeMap = shakeTheme.toMap();
+    await _channel.invokeMethod('setShakeTheme', {
+      'shakeTheme': shakeThemeMap,
+    });
+  }
+
+  /// Sets shake home screen subtitle.
+  static void setHomeSubtitle(String subtitle) async {
+    await _channel.invokeMethod('setHomeSubtitle', {
+      'subtitle': subtitle,
     });
   }
 
