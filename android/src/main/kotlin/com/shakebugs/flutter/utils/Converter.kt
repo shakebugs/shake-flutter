@@ -2,7 +2,9 @@ package com.shakebugs.flutter.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.DisplayMetrics
 import com.shakebugs.flutter.utils.Logger.w
+import android.graphics.Color;
 
 object Converter {
     fun stringToInt(string: String): Int {
@@ -34,5 +36,19 @@ object Converter {
         } catch (ignore: java.lang.Exception) {
         }
         return iconRes
+    }
+
+    fun convertDpToPixel(context: Context, dp: Float?): Float? {
+        if (dp == null) return null
+        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    }
+
+    fun convertPixelsToDp(context: Context, px: Float?): Float? {
+        if (px == null) return null
+        return px / (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    }
+
+    fun stringToColor(color: String?): Int? {
+        return if (color == null) null else Color.parseColor(color)
     }
 }
