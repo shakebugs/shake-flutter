@@ -2,34 +2,42 @@ import 'package:shake_flutter/models/shake_form_component.dart';
 
 /// Represents Shake form Title input.
 class ShakeTitle extends ShakeFormComponent {
-  String label;
-  String? labelRes;
+  String key;
+  String? label;
   String initialValue;
   bool required;
+  String? labelRes;
 
-  ShakeTitle(this.label,
-      {this.labelRes, this.initialValue = "", this.required = false})
+  ShakeTitle(this.key, this.label,
+      {this.initialValue = "", this.required = false, this.labelRes})
       : super('title');
 
   /// Converts object to map.
   Map<String, dynamic> toMap() {
     return {
       'type': type,
+      'key': key,
       'label': label,
-      'labelRes': labelRes,
       'initialValue': initialValue,
-      'required': required
+      'required': required,
+      'labelRes': labelRes,
     };
   }
 
   /// Converts map to object.
   static ShakeTitle fromMap(Map data) {
-    String label = data['label'] ?? '';
-    String? labelRes = data['labelRes'];
+    String key = data['key'] ?? '';
+    String? label = data['label'];
     String initialValue = data['initialValue'] ?? '';
     bool required = data['required'] ?? false;
+    String? labelRes = data['labelRes'];
 
-    return ShakeTitle(label,
-        labelRes: labelRes, initialValue: initialValue, required: required);
+    return ShakeTitle(
+      key,
+      label,
+      initialValue: initialValue,
+      required: required,
+      labelRes: labelRes,
+    );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shake_example/assets/sample_image.dart';
 import 'package:shake_example/constants/colors.dart';
 import 'package:shake_example/helpers/dart_tester.dart';
 import 'package:shake_example/helpers/network_tester.dart';
@@ -211,47 +212,19 @@ class _HomeState extends State<Home> {
     // oldForm?.components.removeWhere((element) => element.type == 'inspect');
 
     List<ShakePickerItem> pickerItems = [
-      ShakePickerItem(
-        'Mouse',
-        textRes: null,
-        icon: 'ic_mouse',
-        tag: 'mouse',
-      ),
-      ShakePickerItem(
-        'Keyboard',
-        textRes: null,
-        icon: 'ic_key',
-        tag: 'keyboard',
-      ),
-      ShakePickerItem(
-        'Display',
-        textRes: null,
-        icon: 'ic_display',
-        tag: 'display',
-      )
+      ShakePickerItem('Mouse', 'Mouse', icon: sampleImage, tag: 'mouse'),
+      ShakePickerItem('Keyboard', 'Keyboard',
+          icon: sampleImage, tag: 'keyboard'),
+      ShakePickerItem('Display', 'Display', tag: 'display')
     ];
 
     ShakeForm shakeForm = ShakeForm([
-      ShakePicker(
-        'Category',
-        pickerItems,
-        labelRes: 'picker_label',
-      ),
-      ShakeTitle(
-        'Short title',
-        labelRes: null,
-        initialValue: '',
-        required: true,
-      ),
-      ShakeTextInput(
-        'Repro Steps',
-        labelRes: null,
-        initialValue: '',
-        required: false,
-      ),
-      ShakeEmail(
-        'YourEmail',
-      ),
+      ShakePicker('Category', 'Category', pickerItems),
+      ShakeTitle('Short title', 'Short title',
+          initialValue: '', required: true),
+      ShakeTextInput('Repro Steps', 'Repro Steps',
+          initialValue: '', required: false),
+      ShakeEmail('YourEmail', 'YourEmail'),
       ShakeInspectButton(),
       ShakeAttachments(),
     ]);

@@ -1,9 +1,10 @@
 package com.shakebugs.flutter.helpers
 
 import android.content.Context
-import android.graphics.Color
 import com.shakebugs.flutter.utils.Converter
+import com.shakebugs.flutter.utils.Converter.convertBase64ToDrawable
 import com.shakebugs.flutter.utils.Converter.convertDpToPixel
+import com.shakebugs.flutter.utils.Converter.convertDrawableToBase64
 import com.shakebugs.flutter.utils.Converter.resToString
 import com.shakebugs.flutter.utils.Converter.stringToColor
 import com.shakebugs.flutter.utils.Converter.stringToRes
@@ -11,7 +12,16 @@ import com.shakebugs.flutter.utils.Files
 import com.shakebugs.shake.LogLevel
 import com.shakebugs.shake.ShakeReportConfiguration
 import com.shakebugs.shake.ShakeScreen
-import com.shakebugs.shake.form.*
+import com.shakebugs.shake.chat.ChatNotification
+import com.shakebugs.shake.form.ShakeAttachments
+import com.shakebugs.shake.form.ShakeEmail
+import com.shakebugs.shake.form.ShakeForm
+import com.shakebugs.shake.form.ShakeFormComponent
+import com.shakebugs.shake.form.ShakeInspectButton
+import com.shakebugs.shake.form.ShakePicker
+import com.shakebugs.shake.form.ShakePickerItem
+import com.shakebugs.shake.form.ShakeTextInput
+import com.shakebugs.shake.form.ShakeTitle
 import com.shakebugs.shake.internal.domain.models.NetworkRequest
 import com.shakebugs.shake.internal.domain.models.NotificationEvent
 import com.shakebugs.shake.report.ShakeFile
@@ -118,52 +128,63 @@ class Mapper(private val context: Context) {
         for (componentMap in formComponentsArray) {
             val type: String = componentMap["type"] as String
             if ("title" == type) {
-                val label: String = componentMap["label"] as? String ?: ""
-                val labelResName: String? = componentMap["labelRes"] as? String
+                val key: String = componentMap["key"] as? String ?: ""
+                val label: String? = componentMap["label"] as? String?
                 val initialValue: String = componentMap["initialValue"] as? String ?: ""
                 val required: Boolean = componentMap["required"] as? Boolean ?: false
 
-                val labelRes: Int? = stringToRes(context, labelResName, "string")
-                formComponents.add(ShakeTitle(label, labelRes, initialValue, required))
+                val comp = ShakeTitle(key, label, initialValue, required)
+                comp.label = stringToRes(context, componentMap["labelRes"] as? String, "string")
+
+                formComponents.add(comp)
             }
             if ("text_input" == type) {
-                val label: String = componentMap["label"] as? String ?: ""
-                val labelResName: String? = componentMap["labelRes"] as? String
+                val key: String = componentMap["key"] as? String ?: ""
+                val label: String? = componentMap["label"] as? String?
                 val initialValue: String = componentMap["initialValue"] as? String ?: ""
                 val required: Boolean = componentMap["required"] as? Boolean ?: false
 
-                val labelRes: Int? = stringToRes(context, labelResName, "string")
-                formComponents.add(ShakeTextInput(label, labelRes, initialValue, required))
+                val comp = ShakeTextInput(key, label, initialValue, required)
+                comp.label = stringToRes(context, componentMap["labelRes"] as? String, "string")
+
+                formComponents.add(comp)
             }
             if ("email" == type) {
-                val label: String = componentMap["label"] as? String ?: ""
-                val labelResName: String? = componentMap["labelRes"] as? String
+                val key: String = componentMap["key"] as? String ?: ""
+                val label: String? = componentMap["label"] as? String?
                 val initialValue: String = componentMap["initialValue"] as? String ?: ""
                 val required: Boolean = componentMap["required"] as? Boolean ?: false
 
-                val labelRes: Int? = stringToRes(context, labelResName, "string")
-                formComponents.add(ShakeEmail(label, labelRes, initialValue, required))
+                val comp = ShakeEmail(key, label, initialValue, required)
+                comp.label = stringToRes(context, componentMap["labelRes"] as? String, "string")
+
+                formComponents.add(comp)
             }
             if ("picker" == type) {
-                val label: String = componentMap["label"] as? String ?: ""
-                val labelResName: String? = componentMap["labelRes"] as? String
                 val itemsList: List<Map<String, Any?>> =
                     componentMap["items"] as? List<Map<String, Any?>> ?: listOf()
-
                 val items: MutableList<ShakePickerItem> = arrayListOf()
                 for (itemMap in itemsList) {
-                    val text: String = itemMap["text"] as? String ?: ""
-                    val textResName: String? = itemMap["textRes"] as? String
-                    val iconResName: String? = itemMap["icon"] as? String
+                    val key: String = itemMap["key"] as? String ?: ""
+                    val text: String? = itemMap["text"] as? String?
+                    val icon: String? = itemMap["icon"] as? String?
                     val tag: String? = itemMap["tag"] as? String
 
-                    val iconRes: Int? = stringToRes(context, iconResName, "drawable")
-                    val textRes: Int? = stringToRes(context, textResName, "string")
-                    items.add(ShakePickerItem(iconRes, text, textRes, tag))
+                    val item =
+                        ShakePickerItem(key, text, convertBase64ToDrawable(context, icon), tag)
+                    item.icon = stringToRes(context, itemMap["iconRes"] as? String, "drawable")
+                    item.text = stringToRes(context, itemMap["textRes"] as? String, "string")
+
+                    items.add(item)
                 }
 
-                val labelRes: Int? = stringToRes(context, labelResName, "string")
-                formComponents.add(ShakePicker(label, labelRes, items))
+                val key: String = componentMap["key"] as? String ?: ""
+                val label: String? = componentMap["label"] as? String?
+
+                val comp = ShakePicker(key, label, items)
+                comp.label = stringToRes(context, componentMap["labelRes"] as? String, "string")
+
+                formComponents.add(comp)
             }
             if ("attachments" == type) {
                 formComponents.add(ShakeAttachments())
@@ -180,9 +201,10 @@ class Mapper(private val context: Context) {
         for (component in shakeForm.components) {
             if (component is ShakeTitle) {
                 val componentMap: HashMap<String, Any?> = hashMapOf()
+                componentMap["key"] = component.key
                 componentMap["type"] = component.type
-                componentMap["label"] = component.label
-                componentMap["labelRes"] = resToString(context, component.labelRes)
+                componentMap["label"] = component.labelValue
+                componentMap["labelRes"] = resToString(context, component.label)
                 componentMap["initialValue"] = component.initialValue
                 componentMap["required"] = component.required
 
@@ -190,9 +212,10 @@ class Mapper(private val context: Context) {
             }
             if (component is ShakeTextInput) {
                 val componentMap: HashMap<String, Any?> = hashMapOf()
+                componentMap["key"] = component.key
                 componentMap["type"] = component.type
-                componentMap["label"] = component.label
-                componentMap["labelRes"] = resToString(context, component.labelRes)
+                componentMap["label"] = component.labelValue
+                componentMap["labelRes"] = resToString(context, component.label)
                 componentMap["initialValue"] = component.initialValue
                 componentMap["required"] = component.required
 
@@ -200,9 +223,10 @@ class Mapper(private val context: Context) {
             }
             if (component is ShakeEmail) {
                 val componentMap: HashMap<String, Any?> = hashMapOf()
+                componentMap["key"] = component.key
                 componentMap["type"] = component.type
-                componentMap["label"] = component.label
-                componentMap["labelRes"] = resToString(context, component.labelRes)
+                componentMap["label"] = component.labelValue
+                componentMap["labelRes"] = resToString(context, component.label)
                 componentMap["initialValue"] = component.initialValue
                 componentMap["required"] = component.required
 
@@ -212,18 +236,21 @@ class Mapper(private val context: Context) {
                 val items: ArrayList<Map<String, Any?>> = arrayListOf()
                 for (item in component.items) {
                     val itemMap: HashMap<String, Any?> = hashMapOf()
-                    itemMap["icon"] = resToString(context, item.icon)
-                    itemMap["text"] = item.text
-                    itemMap["textRes"] = resToString(context, item.textRes)
+                    itemMap["key"] = item.key
+                    itemMap["text"] = item.textValue
+                    itemMap["textRes"] = resToString(context, item.text)
+                    itemMap["icon"] = convertDrawableToBase64(item.iconValue)
+                    itemMap["iconRes"] = resToString(context, item.icon)
                     itemMap["tag"] = item.tag
 
                     items.add(itemMap)
                 }
 
                 val componentMap: HashMap<String, Any?> = hashMapOf()
+                componentMap["key"] = component.key
                 componentMap["type"] = component.type
-                componentMap["label"] = component.label
-                componentMap["labelRes"] = resToString(context, component.labelRes)
+                componentMap["label"] = component.labelValue
+                componentMap["labelRes"] = resToString(context, component.label)
                 componentMap["items"] = items
 
                 componentsArray.add(componentMap)
@@ -276,6 +303,23 @@ class Mapper(private val context: Context) {
         shakeTheme.elevationValue = convertDpToPixel(context, elevation?.toFloat())
 
         return shakeTheme
+    }
+
+    fun mapToChatNotification(data: HashMap<String, Any>): ChatNotification? {
+        var chatNotification: ChatNotification? = null
+
+        try {
+            val id: String? = data["id"] as? String?
+            val userId: String? = data["userId"] as? String?
+            val title: String? = data["title"] as? String?
+            val message: String? = data["message"] as? String?
+            if (id != null && userId != null && title != null && message != null) {
+                chatNotification = ChatNotification(id, userId, title, message)
+            }
+        } catch (ignore: Exception) {
+        }
+
+        return chatNotification
     }
 
     private fun findAssetPath(assetName: String?): String? {
