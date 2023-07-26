@@ -11,6 +11,7 @@ import 'package:shake_flutter/helpers/notifications_tracker.dart';
 import 'package:shake_flutter/models/chat_notification.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/models/notification_event.dart';
+import 'package:shake_flutter/models/shake_base_action.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_form.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
@@ -67,9 +68,17 @@ class Shake {
     });
   }
 
+  /// Sets shake home screen subtitle.
+  static Future<void> setHomeActions(List<ShakeBaseAction> homeActions) async {
+    _configuration.homeActions = homeActions;
+    await _channel.invokeMethod('setHomeActions', {
+      'homeActions': homeActions.map((action) => action.toMap()).toList(),
+    });
+  }
+
   /// Shows Shake screen.
   ///
-  /// [ShakeScreen.home] or [ShakeScreen.newTicket].
+  /// [ShakeScreen.home], [ShakeScreen.newTicket] or [ShakeScreen.chat].
   /// The default one is [ShakeScreen.newTicket]
   static Future<void> show([shakeScreen = ShakeScreen.newTicket]) async {
     await _channel.invokeMethod('show', {
@@ -193,7 +202,7 @@ class Shake {
   /// Sets files which will be attached with a ticket.
   static Future<void> setShakeReportData(List<ShakeFile> shakeFiles) async {
     await _channel.invokeMethod('setShakeReportData', {
-      'shakeFiles': _mapper.shakeFilesToMap(shakeFiles),
+      'shakeFiles': shakeFiles.map((shakeFile) => shakeFile.toMap()).toList(),
     });
   }
 
@@ -211,7 +220,7 @@ class Shake {
 
     await _channel.invokeMethod('silentReport', {
       'description': description,
-      'shakeFiles': _mapper.shakeFilesToMap(shakeFiles),
+      'shakeFiles': shakeFiles.map((shakeFile) => shakeFile.toMap()).toList(),
       'configuration': configuration.toMap()
     });
   }
@@ -420,6 +429,12 @@ class Shake {
       case 'onUnreadMessagesReceived':
         int count = call.arguments;
         _configuration.unreadMessagesListener?.call(count);
+        break;
+      case 'onHomeActionTap':
+        _configuration.homeActions
+            ?.firstWhere((element) => element.title == call.arguments)
+            .handler
+            ?.call();
         break;
       case 'onShakeOpen':
         _configuration.onShakeOpen?.call();

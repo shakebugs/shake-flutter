@@ -9,6 +9,7 @@ import com.shakebugs.flutter.utils.Constants
 import com.shakebugs.shake.Shake
 import com.shakebugs.shake.ShakeInfo
 import com.shakebugs.shake.ShakeScreen
+import com.shakebugs.shake.actions.ShakeHomeAction
 import com.shakebugs.shake.chat.ChatNotification
 import com.shakebugs.shake.chat.UnreadChatMessagesListener
 import com.shakebugs.shake.form.ShakeForm
@@ -72,6 +73,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "setShakeForm" -> setShakeForm(call, result)
             "setShakeTheme" -> setShakeTheme(call, result)
             "setHomeSubtitle" -> setHomeSubtitle(call, result)
+            "setHomeActions" -> setHomeActions(call, result)
             "show" -> show(call, result)
             "isUserFeedbackEnabled" -> isUserFeedbackEnabled(call, result)
             "setUserFeedbackEnabled" -> setUserFeedbackEnabled(call, result)
@@ -176,6 +178,21 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         Shake.getReportConfiguration().homeSubtitleValue = subtitle
 
         result.success(null)
+    }
+
+    private fun setHomeActions(call: MethodCall, result: Result) {
+        val homeActions: List<HashMap<String, Any>>? = call.argument("homeActions")
+
+        val actions: ArrayList<ShakeHomeAction>? = mapper?.mapArrayToHomeActions(homeActions)
+        actions?.let {
+            for (action in actions) {
+                action.handler = {
+                    channel.invokeMethod("onHomeActionTap", action.titleValue)
+                }
+            }
+        }
+
+        Shake.getReportConfiguration().homeActions = actions
     }
 
     private fun show(call: MethodCall, result: Result) {

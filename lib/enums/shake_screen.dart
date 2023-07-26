@@ -1,1 +1,1 @@
-enum ShakeScreen { home, newTicket }
+enum ShakeScreen { home, newTicket, chat }

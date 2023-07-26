@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="development" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <option name="buildFlavor" value="development" />
+    <option name="envs">
+      <entry key="ANDROID_DEPENDENCY" value="com.shakebugs:shake-staging" />
+      <entry key="IOS_DEPENDENCY" value="Shake-Staging" />
+    </option>
+    <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+    <method v="2" />
+  </configuration>
+</component>
