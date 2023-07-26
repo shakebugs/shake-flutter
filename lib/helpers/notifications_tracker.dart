@@ -1,10 +1,9 @@
-import 'package:shake_flutter/helpers/data_tracker.dart';
 import 'package:shake_flutter/models/notification_event.dart';
 
 typedef NotificationEvent NotificationEventFilter(
     NotificationEvent notificationEvent);
 
-class NotificationsTracker extends DataTracker {
+class NotificationsTracker {
   NotificationEventFilter? filter;
 
   NotificationEvent filterNotificationEvent(

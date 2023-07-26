@@ -133,6 +133,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 
     [SHKShake startWithClientId:clientId clientSecret:clientSecret];
     [self startNotificationsEmitter];
+    [self startShakeCallbacksEmitter];
 
     result(nil);
 }
@@ -470,6 +471,22 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         [channel invokeMethod:@"onNotificationReceived" arguments:notificationDict];
 
         return nil;
+    };
+}
+
+- (void)startShakeCallbacksEmitter {
+    SHKShake.configuration.shakeOpenListener = ^() {
+        [channel invokeMethod:@"onShakeOpen" arguments:nil];
+    };
+    SHKShake.configuration.shakeDismissListener = ^() {
+        [channel invokeMethod:@"onShakeDismiss" arguments:nil];
+    };
+    SHKShake.configuration.shakeSubmitListener = ^(NSString* type, NSDictionary* fields) {
+        NSDictionary *data = @{
+            @"type": type,
+            @"fields": fields
+        };
+        [channel invokeMethod:@"onShakeSubmit" arguments:data];
     };
 }
 

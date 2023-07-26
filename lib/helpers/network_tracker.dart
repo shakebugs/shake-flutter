@@ -1,10 +1,9 @@
-import 'package:shake_flutter/helpers/data_tracker.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/utils/extensions.dart';
 
 typedef NetworkRequest NetworkRequestFilter(NetworkRequest networkRequest);
 
-class NetworkTracker extends DataTracker {
+class NetworkTracker {
   NetworkRequestFilter? filter;
 
   NetworkRequest filterNetworkRequest(NetworkRequest networkRequest) {

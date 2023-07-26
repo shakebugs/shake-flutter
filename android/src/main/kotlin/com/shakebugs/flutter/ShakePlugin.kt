@@ -14,6 +14,9 @@ import com.shakebugs.shake.chat.UnreadChatMessagesListener
 import com.shakebugs.shake.form.ShakeForm
 import com.shakebugs.shake.internal.domain.models.NetworkRequest
 import com.shakebugs.shake.internal.domain.models.NotificationEvent
+import com.shakebugs.shake.report.ShakeDismissListener
+import com.shakebugs.shake.report.ShakeOpenListener
+import com.shakebugs.shake.report.ShakeSubmitListener
 import com.shakebugs.shake.theme.ShakeTheme
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -140,6 +143,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
 
         startNotificationsEmitter()
+        startShakeCallbacksEmitter();
 
         result.success(null)
     }
@@ -451,15 +455,6 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         result.success(null)
     }
 
-    private fun startNotificationsEmitter() {
-        Shake.setNotificationEventsFilter {
-            val map = mapper?.notificationEventToMap(it.build())
-            channel.invokeMethod("onNotificationReceived", map)
-
-            null
-        }
-    }
-
     private fun showNotificationsSettings(call: MethodCall, result: Result) {
         context?.startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"))
 
@@ -481,5 +476,38 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
 
         result.success(null)
+    }
+
+    /*
+     * Callbacks starters.
+     */
+    private fun startNotificationsEmitter() {
+        Shake.setNotificationEventsFilter {
+            val map = mapper?.notificationEventToMap(it.build())
+            channel.invokeMethod("onNotificationReceived", map)
+
+            null
+        }
+    }
+
+    private fun startShakeCallbacksEmitter() {
+        Shake.getReportConfiguration().shakeOpenListener = object : ShakeOpenListener {
+            override fun onShakeOpen() {
+                channel.invokeMethod("onShakeOpen", null)
+            }
+        }
+        Shake.getReportConfiguration().shakeDismissListener = object : ShakeDismissListener {
+            override fun onShakeDismiss() {
+                channel.invokeMethod("onShakeDismiss", null)
+            }
+        }
+        Shake.getReportConfiguration().shakeSubmitListener = object : ShakeSubmitListener {
+            override fun onShakeSubmit(reportType: String, fields: Map<String, String>) {
+                val eventData = mutableMapOf<String, Any>()
+                eventData["type"] = reportType
+                eventData["fields"] = fields
+                channel.invokeMethod("onShakeSubmit", eventData)
+            }
+        }
     }
 }

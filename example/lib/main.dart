@@ -17,7 +17,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> startShake() async {
   const clientId = 'HtTFUmUziF5Qjk1XLraAJXtVB1cL62yHWWqsDnrG';
-  const clientSecret = 'IPRqEI2iSQhmUP6NGQcPNKCs7JQCJrpFUG0qDmLx4Yx2spd3caXnC3o';
+  const clientSecret =
+      'IPRqEI2iSQhmUP6NGQcPNKCs7JQCJrpFUG0qDmLx4Yx2spd3caXnC3o';
 
   Shake.setInvokeShakeOnScreenshot(true);
   Shake.setInvokeShakeOnShakeDeviceEvent(true);
@@ -27,6 +28,19 @@ Future<void> startShake() async {
   Shake.setSensitiveDataRedactionEnabled(true);
   Shake.setConsoleLogsEnabled(false);
   Shake.setHomeSubtitle("Flutter Shake example");
+
+  Shake.setShakeOpenListener(() {
+    print('Shake opened!');
+  });
+  Shake.setShakeDismissListener(() {
+    print('Shake dismissed!');
+  });
+  Shake.setShakeSubmitListener((String type, Map<String, String> fields) {
+    print(type);
+    print(fields);
+    print('Shake submitted!');
+  });
+
   await Shake.start(clientId, clientSecret);
 
   Shake.registerUser("test_user");

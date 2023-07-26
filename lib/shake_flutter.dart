@@ -327,7 +327,8 @@ class Shake {
   ///
   /// Inserted network request will be visible in the activity history.
   /// [NetworkRequest] should be filled properly.
-  static Future<void> insertNetworkRequest(NetworkRequest networkRequest) async {
+  static Future<void> insertNetworkRequest(
+      NetworkRequest networkRequest) async {
     NetworkRequest filteredRequest =
         _networkTracker.filterNetworkRequest(networkRequest);
     await _channel.invokeMethod(
@@ -345,7 +346,8 @@ class Shake {
   /// Sets filter for network requests.
   ///
   /// Set null if you want to remove filter.
-  static Future<void> setNetworkRequestsFilter(NetworkRequestFilter? filter) async {
+  static Future<void> setNetworkRequestsFilter(
+      NetworkRequestFilter? filter) async {
     _networkTracker.filter = filter;
   }
 
@@ -370,7 +372,8 @@ class Shake {
   /// Set null if you want to remove token.
   static Future<void> setPushNotificationsToken(String? token) async {
     if (Platform.isAndroid) {
-      await _channel.invokeMethod('setPushNotificationsToken', {'token': token});
+      await _channel
+          .invokeMethod('setPushNotificationsToken', {'token': token});
     }
   }
 
@@ -379,9 +382,31 @@ class Shake {
     if (Platform.isAndroid) {
       ChatNotification chatNotification = ChatNotification(data['ticket_id'],
           data['user_id'], data['ticket_title'], data['message']);
-      await _channel.invokeMethod(
-          'showChatNotification', {'chatNotification': chatNotification.toMap()});
+      await _channel.invokeMethod('showChatNotification',
+          {'chatNotification': chatNotification.toMap()});
     }
+  }
+
+  /// Sets Shake open event listener.
+  ///
+  /// Set null if you want to remove listener.
+  static void setShakeOpenListener(Function? listener) {
+    _configuration.onShakeOpen = listener;
+  }
+
+  /// Sets Shake dismiss event listener.
+  ///
+  /// Set null if you want to remove listener.
+  static void setShakeDismissListener(Function? listener) {
+    _configuration.onShakeDismiss = listener;
+  }
+
+  /// Sets Shake submit event listener.
+  ///
+  /// Set null if you want to remove listener.
+  static void setShakeSubmitListener(
+      Function(String, Map<String, String>)? listener) {
+    _configuration.onShakeSubmit = listener;
   }
 
   /// Handles method calls from native to Flutter
@@ -395,6 +420,19 @@ class Shake {
       case 'onUnreadMessagesReceived':
         int count = call.arguments;
         _configuration.unreadMessagesListener?.call(count);
+        break;
+      case 'onShakeOpen':
+        _configuration.onShakeOpen?.call();
+        break;
+      case 'onShakeDismiss':
+        _configuration.onShakeDismiss?.call();
+        break;
+      case 'onShakeSubmit':
+        String type = call.arguments['type'];
+        Map<String, String> fields =
+            Map.castFrom<dynamic, dynamic, String, String>(
+                call.arguments['fields']);
+        _configuration.onShakeSubmit?.call(type, fields);
         break;
     }
   }
