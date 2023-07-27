@@ -981,7 +981,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 
 // Private
 - (void)setPlatformInfo {
-    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"16.1.0" };
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"16.2.0" };
     [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
 }
 
