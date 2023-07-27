@@ -19,13 +19,17 @@ import 'package:shake_flutter/enums/shake_screen.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/models/notification_event.dart';
 import 'package:shake_flutter/models/shake_attachments.dart';
+import 'package:shake_flutter/models/shake_base_action.dart';
+import 'package:shake_flutter/models/shake_chat_action.dart';
 import 'package:shake_flutter/models/shake_email.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_form.dart';
+import 'package:shake_flutter/models/shake_home_action.dart';
 import 'package:shake_flutter/models/shake_inspect_button.dart';
 import 'package:shake_flutter/models/shake_picker.dart';
 import 'package:shake_flutter/models/shake_picker_item.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
+import 'package:shake_flutter/models/shake_submit_action.dart';
 import 'package:shake_flutter/models/shake_text_input.dart';
 import 'package:shake_flutter/models/shake_theme.dart';
 import 'package:shake_flutter/models/shake_title.dart';
@@ -252,6 +256,22 @@ class _HomeState extends State<Home> {
     Shake.setShakeTheme(shakeTheme);
   }
 
+  void _setHomeActions() async {
+    List<ShakeBaseAction> homeAction = [
+      new ShakeHomeAction(
+        "A custom home action",
+        () {
+          print("Whoopppyy!");
+        },
+        subtitle: "This is a test subtitle",
+        icon: sampleImage,
+      ),
+      new ShakeSubmitAction(),
+      new ShakeChatAction(),
+    ];
+    Shake.setHomeActions(homeAction);
+  }
+
   void _onShakingThreshold100() {
     Shake.setShakingThreshold(100);
   }
@@ -429,38 +449,15 @@ class _HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Header('Actions'),
-                        Button(
-                          'Show Home',
-                          _onShowHomePressed,
-                        ),
-                        Button(
-                          'Show New',
-                          _onShowNewPressed,
-                        ),
-                        Button(
-                          'Attach data',
-                          _onAttachDataPress,
-                        ),
-                        Button(
-                          'Silent report',
-                          _onSilentReportPress,
-                        ),
-                        Button(
-                          'Custom log',
-                          _addCustomLog,
-                        ),
-                        Button(
-                          'Add metadata',
-                          _addMetadata,
-                        ),
-                        Button(
-                          'Set custom form',
-                          _setCustomForm,
-                        ),
-                        Button(
-                          'Set custom theme',
-                          _setCustomTheme,
-                        ),
+                        Button('Show Home', _onShowHomePressed),
+                        Button('Show New', _onShowNewPressed),
+                        Button('Attach data', _onAttachDataPress),
+                        Button('Silent report', _onSilentReportPress),
+                        Button('Custom log', _addCustomLog),
+                        Button('Add metadata', _addMetadata),
+                        Button('Set custom form', _setCustomForm),
+                        Button('Set custom theme', _setCustomTheme),
+                        Button('Set custom actions', _setHomeActions),
                       ],
                     ),
                   ),
@@ -470,21 +467,12 @@ class _HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Header('Invoking'),
-                        Toggle(
-                          'Shaking',
-                          shakeInvokingEnabled!,
-                          _onShakeInvokingToggle,
-                        ),
-                        Toggle(
-                          'Button',
-                          buttonInvokingEnabled!,
-                          _onButtonInvokingToggle,
-                        ),
-                        Toggle(
-                          'Screenshot',
-                          screenshotInvokingEnabled!,
-                          _onScreenshotInvokingToggle,
-                        ),
+                        Toggle('Shaking', shakeInvokingEnabled!,
+                            _onShakeInvokingToggle),
+                        Toggle('Button', buttonInvokingEnabled!,
+                            _onButtonInvokingToggle),
+                        Toggle('Screenshot', screenshotInvokingEnabled!,
+                            _onScreenshotInvokingToggle),
                       ],
                     ),
                   ),
@@ -494,41 +482,22 @@ class _HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Header('Options'),
+                        Toggle('User feedback', userFeedbackEnabled!,
+                            _onUserFeedbackToggle),
+                        Toggle('Blackbox', blackboxEnabled!,
+                            _onEnableBlackboxToggle),
+                        Toggle('Activity history', activityHistoryEnabled!,
+                            _onEnableActivityHistoryToggle),
+                        Toggle('Console logs', consoleLogsEnabled!,
+                            _onConsoleLogsEnabledToggle),
+                        Toggle('Screen recording', screenRecordingEnabled!,
+                            _onScreenRecordingEnabledToggle),
                         Toggle(
-                          'User feedback',
-                          userFeedbackEnabled!,
-                          _onUserFeedbackToggle,
-                        ),
-                        Toggle(
-                          'Blackbox',
-                          blackboxEnabled!,
-                          _onEnableBlackboxToggle,
-                        ),
-                        Toggle(
-                          'Activity history',
-                          activityHistoryEnabled!,
-                          _onEnableActivityHistoryToggle,
-                        ),
-                        Toggle(
-                          'Console logs',
-                          consoleLogsEnabled!,
-                          _onConsoleLogsEnabledToggle,
-                        ),
-                        Toggle(
-                          'Screen recording',
-                          screenRecordingEnabled!,
-                          _onScreenRecordingEnabledToggle,
-                        ),
-                        Toggle(
-                          'Sensitive data redaction',
-                          sensitiveDataEnabled!,
-                          _onSensitiveDataEnabledToggle,
-                        ),
-                        Toggle(
-                          'Screenshot included',
-                          screenshotIncluded!,
-                          _onScreenshotIncluded,
-                        )
+                            'Sensitive data redaction',
+                            sensitiveDataEnabled!,
+                            _onSensitiveDataEnabledToggle),
+                        Toggle('Screenshot included', screenshotIncluded!,
+                            _onScreenshotIncluded)
                       ],
                     ),
                   ),
@@ -538,18 +507,9 @@ class _HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Header('Shaking threshold'),
-                        Button(
-                          '100 ',
-                          _onShakingThreshold100,
-                        ),
-                        Button(
-                          '600',
-                          _onShakingThreshold600,
-                        ),
-                        Button(
-                          '900',
-                          _onShakingThreshold900,
-                        ),
+                        Button('100 ', _onShakingThreshold100),
+                        Button('600', _onShakingThreshold600),
+                        Button('900', _onShakingThreshold900),
                       ],
                     ),
                   ),
@@ -559,22 +519,11 @@ class _HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Header('User'),
-                        Button(
-                          'Register user',
-                          _onRegisterUserPressed,
-                        ),
-                        Button(
-                          'Update user id',
-                          _onUpdateUserIdPressed,
-                        ),
-                        Button(
-                          'Update user metadata',
-                          _onUpdateUserMetadataPressed,
-                        ),
-                        Button(
-                          'Unregister user',
-                          _onUnregisterUserPressed,
-                        ),
+                        Button('Register user', _onRegisterUserPressed),
+                        Button('Update user id', _onUpdateUserIdPressed),
+                        Button('Update user metadata',
+                            _onUpdateUserMetadataPressed),
+                        Button('Unregister user', _onUnregisterUserPressed),
                       ],
                     ),
                   ),
@@ -605,38 +554,16 @@ class _HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Header('Tools'),
-                        Button(
-                          'Send GET request',
-                          _onSendGetRequest,
-                        ),
-                        Button(
-                          'Send POST request',
-                          _onSendPostRequest,
-                        ),
-                        Button(
-                          'Send GET file request',
-                          _onGetFileRequest,
-                        ),
-                        Button(
-                          'Send POST file request',
-                          _onSendMultipartFileRequest,
-                        ),
-                        Button(
-                          'Send 404 request',
-                          _onSend404Request,
-                        ),
-                        Button(
-                          'Send timeout request',
-                          _onSendTimeoutRequest,
-                        ),
-                        Button(
-                          'Insert network request',
-                          _insertNetworkRequest,
-                        ),
-                        Button(
-                          'Set network requests filter',
-                          _setNetworkRequestsFilter,
-                        ),
+                        Button('Send GET request', _onSendGetRequest),
+                        Button('Send POST request', _onSendPostRequest),
+                        Button('Send GET file request', _onGetFileRequest),
+                        Button('Send POST file request',
+                            _onSendMultipartFileRequest),
+                        Button('Send 404 request', _onSend404Request),
+                        Button('Send timeout request', _onSendTimeoutRequest),
+                        Button('Insert network request', _insertNetworkRequest),
+                        Button('Set network requests filter',
+                            _setNetworkRequestsFilter),
                       ],
                     ),
                   ),

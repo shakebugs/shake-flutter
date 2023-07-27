@@ -36,8 +36,6 @@ Future<void> startShake() async {
     print('Shake dismissed!');
   });
   Shake.setShakeSubmitListener((String type, Map<String, String> fields) {
-    print(type);
-    print(fields);
     print('Shake submitted!');
   });
 

@@ -12,6 +12,9 @@ import com.shakebugs.flutter.utils.Files
 import com.shakebugs.shake.LogLevel
 import com.shakebugs.shake.ShakeReportConfiguration
 import com.shakebugs.shake.ShakeScreen
+import com.shakebugs.shake.actions.ShakeHomeAction
+import com.shakebugs.shake.actions.ShakeHomeChatAction
+import com.shakebugs.shake.actions.ShakeHomeSubmitAction
 import com.shakebugs.shake.chat.ChatNotification
 import com.shakebugs.shake.form.ShakeAttachments
 import com.shakebugs.shake.form.ShakeEmail
@@ -34,6 +37,7 @@ class Mapper(private val context: Context) {
         return when (shakeScreenStr) {
             "newTicket" -> ShakeScreen.NEW
             "home" -> ShakeScreen.HOME
+            "chat" -> ShakeScreen.CHAT
             else -> ShakeScreen.NEW
         }
     }
@@ -42,6 +46,7 @@ class Mapper(private val context: Context) {
         return when (shakeScreen) {
             ShakeScreen.HOME -> "home"
             ShakeScreen.NEW -> "newTicket"
+            ShakeScreen.CHAT -> "chat"
             else -> null
         }
     }
@@ -194,6 +199,73 @@ class Mapper(private val context: Context) {
             }
         }
         return ShakeForm(formComponents)
+    }
+
+    fun mapArrayToHomeActions(homeActionsMaps: List<HashMap<String, Any>>?): ArrayList<ShakeHomeAction>? {
+        if (homeActionsMaps == null) return null
+
+        val homeActions: ArrayList<ShakeHomeAction> = arrayListOf()
+        homeActionsMaps.forEach { element ->
+            when (element["type"] as? String) {
+                "chat" -> {
+                    val title = element["title"] as? String
+                    val subtitle = element["subtitle"] as? String
+                    val icon = element["icon"] as? String
+
+                    val chatAction =
+                        ShakeHomeChatAction(title, subtitle, convertBase64ToDrawable(context, icon))
+                    chatAction.title =
+                        stringToRes(context, element["titleRes"] as? String, "string")
+                    chatAction.subtitle =
+                        stringToRes(context, element["subtitleRes"] as? String, "string")
+                    chatAction.icon =
+                        stringToRes(context, element["iconRes"] as? String, "drawable")
+
+                    homeActions.add(chatAction)
+                }
+                "submit" -> {
+                    val title = element["title"] as? String
+                    val subtitle = element["subtitle"] as? String
+                    val icon = element["icon"] as? String
+
+                    val submitAction = ShakeHomeSubmitAction(
+                        title,
+                        subtitle,
+                        convertBase64ToDrawable(context, icon)
+                    )
+                    submitAction.title =
+                        stringToRes(context, element["titleRes"] as? String, "string")
+                    submitAction.subtitle =
+                        stringToRes(context, element["subtitleRes"] as? String, "string")
+                    submitAction.icon =
+                        stringToRes(context, element["iconRes"] as? String, "drawable")
+
+                    homeActions.add(submitAction)
+                }
+
+                "default" -> {
+                    val title = element["title"] as? String
+                    val subtitle = element["subtitle"] as? String
+                    val icon = element["icon"] as? String
+
+                    val homeAction = ShakeHomeAction(
+                        title,
+                        subtitle,
+                        convertBase64ToDrawable(context, icon),
+                        null
+                    )
+                    homeAction.title =
+                        stringToRes(context, element["titleRes"] as? String, "string")
+                    homeAction.subtitle =
+                        stringToRes(context, element["subtitleRes"] as? String, "string")
+                    homeAction.icon =
+                        stringToRes(context, element["iconRes"] as? String, "drawable")
+
+                    homeActions.add(homeAction)
+                }
+            }
+        }
+        return homeActions
     }
 
     fun shakeFormToMap(shakeForm: ShakeForm): Map<String, Any?> {

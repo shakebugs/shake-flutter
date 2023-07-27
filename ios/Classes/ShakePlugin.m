@@ -42,6 +42,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         [self setShakeTheme:call result:result];
     } else if([@"setHomeSubtitle" isEqualToString:call.method]) {
         [self setHomeSubtitle:call result:result];
+    } else if([@"setHomeActions" isEqualToString:call.method]) {
+        [self setHomeActions:call result:result];
     } else if([@"setUserFeedbackEnabled" isEqualToString:call.method]) {
         [self setUserFeedbackEnabled:call result:result];
     } else if([@"isUserFeedbackEnabled" isEqualToString:call.method]) {
@@ -170,6 +172,20 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     result(nil);
 }
 
+- (void)setHomeActions:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSArray *homeActionsArg = call.arguments[@"homeActions"];
+    
+    NSArray<id<SHKHomeActionProtocol>> *homeActions = [self mapArrayToShakeActions:homeActionsArg];
+    for(int i = 0; i < [homeActions count]; i++) {
+        id<SHKHomeActionProtocol> action = [homeActions objectAtIndex:i];
+        action.handler = ^{
+            [channel invokeMethod:@"onHomeActionTap" arguments:action.title];
+        };
+    }
+    SHKShake.configuration.homeActions = homeActions;
+    
+    result(nil);
+}
 
 - (void)show:(FlutterMethodCall*) call result:(FlutterResult)result {
     NSString* shakeScreenArg = call.arguments[@"shakeScreen"];
@@ -522,6 +538,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         showOption = SHKShowOptionHome;
     if ([showOptionStr isEqualToString:@"newTicket"])
         showOption = SHKShowOptionNew;
+    if ([showOptionStr isEqualToString:@"chat"])
+        showOption = SHKShowOptionNewChat;
 
     return showOption;
 }
@@ -605,6 +623,58 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         @"description": (notification.description ?: @"")
     };
     return notificationDict;
+}
+
+- (NSMutableArray<id<SHKHomeActionProtocol>>*)mapArrayToShakeActions:(NSArray*)actionsArray
+{
+    if (actionsArray == nil) return nil;
+
+    NSMutableArray<id<SHKHomeActionProtocol>>* homeActions = [NSMutableArray array];
+    for(int i = 0; i < [actionsArray count]; i++) {
+        NSDictionary *actionDic = [actionsArray objectAtIndex:i];
+
+        NSString *type = [actionDic objectForKey:@"type"];
+        if ([type isEqualToString:@"chat"]) {
+            NSString *title = [actionDic objectForKey:@"title"];
+            NSString *subtitle = [actionDic objectForKey:@"subtitle"];
+            NSString *icon = [actionDic objectForKey:@"icon"];
+
+            // NSNull causes crash
+            if (title && [title isEqual:[NSNull null]]) title=nil;
+            if (subtitle && [subtitle isEqual:[NSNull null]]) subtitle=nil;
+            if (icon && [icon isEqual:[NSNull null]]) icon=nil;
+
+            SHKHomeChatAction *action = [[SHKHomeChatAction alloc] initWithTitle:title subtitle:subtitle icon:[self base64ToUIImage:icon]];
+            [homeActions addObject:action];
+        }
+        if ([type isEqualToString:@"submit"]) {
+            NSString *title = [actionDic objectForKey:@"title"];
+            NSString *subtitle = [actionDic objectForKey:@"subtitle"];
+            NSString *icon = [actionDic objectForKey:@"icon"];
+
+            // NSNull causes crash
+            if (title && [title isEqual:[NSNull null]]) title=nil;
+            if (subtitle && [subtitle isEqual:[NSNull null]]) subtitle=nil;
+            if (icon && [icon isEqual:[NSNull null]]) icon=nil;
+
+            SHKHomeSubmitAction *action = [[SHKHomeSubmitAction alloc] initWithTitle:title subtitle:subtitle icon:[self base64ToUIImage:icon]];
+            [homeActions addObject:action];
+        }
+        if ([type isEqualToString:@"default"]) {
+            NSString *title = [actionDic objectForKey:@"title"];
+            NSString *subtitle = [actionDic objectForKey:@"subtitle"];
+            NSString *icon = [actionDic objectForKey:@"icon"];
+
+            // NSNull causes crash
+            if (title && [title isEqual:[NSNull null]]) title=nil;
+            if (subtitle && [subtitle isEqual:[NSNull null]]) subtitle=nil;
+            if (icon && [icon isEqual:[NSNull null]]) icon=nil;
+
+            SHKHomeAction *action = [[SHKHomeAction alloc] initWithTitle:title subtitle:subtitle icon:[self base64ToUIImage:icon] handler:nil];
+            [homeActions addObject:action];
+        }
+    }
+    return homeActions;
 }
 
 - (SHKForm *)mapDicToShakeForm:(NSDictionary *)shakeFormDic

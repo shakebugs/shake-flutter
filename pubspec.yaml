@@ -5,6 +5,8 @@ description:
   Shake is a tool for receiving better bug reports automatically.
   Reports arrive to you instantly with a ton of useful data so you can fix them 50X faster.
 homepage: https://www.shakebugs.com
+repository: https://github.com/shakebugs/shake-flutter
+documentation: https://www.shakebugs.com/docs/flutter/overview
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
