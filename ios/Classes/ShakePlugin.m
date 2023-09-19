@@ -42,6 +42,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         [self setShakeTheme:call result:result];
     } else if([@"setHomeSubtitle" isEqualToString:call.method]) {
         [self setHomeSubtitle:call result:result];
+    } else if([@"setHomeActions" isEqualToString:call.method]) {
+        [self setHomeActions:call result:result];
     } else if([@"setUserFeedbackEnabled" isEqualToString:call.method]) {
         [self setUserFeedbackEnabled:call result:result];
     } else if([@"isUserFeedbackEnabled" isEqualToString:call.method]) {
@@ -133,6 +135,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 
     [SHKShake startWithClientId:clientId clientSecret:clientSecret];
     [self startNotificationsEmitter];
+    [self startShakeCallbacksEmitter];
 
     result(nil);
 }
@@ -169,6 +172,20 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     result(nil);
 }
 
+- (void)setHomeActions:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSArray *homeActionsArg = call.arguments[@"homeActions"];
+    
+    NSArray<id<SHKHomeActionProtocol>> *homeActions = [self mapArrayToShakeActions:homeActionsArg];
+    for(int i = 0; i < [homeActions count]; i++) {
+        id<SHKHomeActionProtocol> action = [homeActions objectAtIndex:i];
+        action.handler = ^{
+            [channel invokeMethod:@"onHomeActionTap" arguments:action.title];
+        };
+    }
+    SHKShake.configuration.homeActions = homeActions;
+    
+    result(nil);
+}
 
 - (void)show:(FlutterMethodCall*) call result:(FlutterResult)result {
     NSString* shakeScreenArg = call.arguments[@"shakeScreen"];
@@ -473,6 +490,22 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     };
 }
 
+- (void)startShakeCallbacksEmitter {
+    SHKShake.configuration.shakeOpenListener = ^() {
+        [channel invokeMethod:@"onShakeOpen" arguments:nil];
+    };
+    SHKShake.configuration.shakeDismissListener = ^() {
+        [channel invokeMethod:@"onShakeDismiss" arguments:nil];
+    };
+    SHKShake.configuration.shakeSubmitListener = ^(NSString* type, NSDictionary* fields) {
+        NSDictionary *data = @{
+            @"type": type,
+            @"fields": fields
+        };
+        [channel invokeMethod:@"onShakeSubmit" arguments:data];
+    };
+}
+
 - (void)showNotificationsSettings:(FlutterResult)result {
     // Method used just on Android
 
@@ -505,6 +538,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         showOption = SHKShowOptionHome;
     if ([showOptionStr isEqualToString:@"newTicket"])
         showOption = SHKShowOptionNew;
+    if ([showOptionStr isEqualToString:@"chat"])
+        showOption = SHKShowOptionNewChat;
 
     return showOption;
 }
@@ -590,6 +625,58 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     return notificationDict;
 }
 
+- (NSMutableArray<id<SHKHomeActionProtocol>>*)mapArrayToShakeActions:(NSArray*)actionsArray
+{
+    if (actionsArray == nil) return nil;
+
+    NSMutableArray<id<SHKHomeActionProtocol>>* homeActions = [NSMutableArray array];
+    for(int i = 0; i < [actionsArray count]; i++) {
+        NSDictionary *actionDic = [actionsArray objectAtIndex:i];
+
+        NSString *type = [actionDic objectForKey:@"type"];
+        if ([type isEqualToString:@"chat"]) {
+            NSString *title = [actionDic objectForKey:@"title"];
+            NSString *subtitle = [actionDic objectForKey:@"subtitle"];
+            NSString *icon = [actionDic objectForKey:@"icon"];
+
+            // NSNull causes crash
+            if (title && [title isEqual:[NSNull null]]) title=nil;
+            if (subtitle && [subtitle isEqual:[NSNull null]]) subtitle=nil;
+            if (icon && [icon isEqual:[NSNull null]]) icon=nil;
+
+            SHKHomeChatAction *action = [[SHKHomeChatAction alloc] initWithTitle:title subtitle:subtitle icon:[self base64ToUIImage:icon]];
+            [homeActions addObject:action];
+        }
+        if ([type isEqualToString:@"submit"]) {
+            NSString *title = [actionDic objectForKey:@"title"];
+            NSString *subtitle = [actionDic objectForKey:@"subtitle"];
+            NSString *icon = [actionDic objectForKey:@"icon"];
+
+            // NSNull causes crash
+            if (title && [title isEqual:[NSNull null]]) title=nil;
+            if (subtitle && [subtitle isEqual:[NSNull null]]) subtitle=nil;
+            if (icon && [icon isEqual:[NSNull null]]) icon=nil;
+
+            SHKHomeSubmitAction *action = [[SHKHomeSubmitAction alloc] initWithTitle:title subtitle:subtitle icon:[self base64ToUIImage:icon]];
+            [homeActions addObject:action];
+        }
+        if ([type isEqualToString:@"default"]) {
+            NSString *title = [actionDic objectForKey:@"title"];
+            NSString *subtitle = [actionDic objectForKey:@"subtitle"];
+            NSString *icon = [actionDic objectForKey:@"icon"];
+
+            // NSNull causes crash
+            if (title && [title isEqual:[NSNull null]]) title=nil;
+            if (subtitle && [subtitle isEqual:[NSNull null]]) subtitle=nil;
+            if (icon && [icon isEqual:[NSNull null]]) icon=nil;
+
+            SHKHomeAction *action = [[SHKHomeAction alloc] initWithTitle:title subtitle:subtitle icon:[self base64ToUIImage:icon] handler:nil];
+            [homeActions addObject:action];
+        }
+    }
+    return homeActions;
+}
+
 - (SHKForm *)mapDicToShakeForm:(NSDictionary *)shakeFormDic
 {
     if (shakeFormDic == nil) return nil;
@@ -604,59 +691,73 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 
         NSString *type = [component objectForKey:@"type"];
         if ([type isEqualToString:@"title"]) {
+            NSString *key = [component objectForKey:@"key"];
             NSString *label = [component objectForKey:@"label"];
-            NSString *labelRes = [component objectForKey:@"labelRes"] ?: nil;
             NSString *initialValue = [component objectForKey:@"initialValue"];
             BOOL required = [[component objectForKey:@"required"] boolValue];
             
-            if (labelRes && [labelRes isEqual:[NSNull null]]) labelRes=nil; // NSNull causes crash
+            // NSNull causes crash
+            if (key && [key isEqual:[NSNull null]]) key=nil;
+            if (label && [label isEqual:[NSNull null]]) label=nil;
+            if (initialValue && [initialValue isEqual:[NSNull null]]) initialValue=nil;
             
-            [formComponents addObject:[[SHKTitle alloc] initWithLabel:label required:required labelRes:labelRes initialValue:initialValue]];
+            [formComponents addObject:[[SHKTitle alloc] initWithKey:key label:label required:required initialValue:initialValue]];
         }
         if ([type isEqualToString:@"text_input"]) {
+            NSString *key = [component objectForKey:@"key"];
             NSString *label = [component objectForKey:@"label"];
-            NSString *labelRes = [component objectForKey:@"labelRes"];
             NSString *initialValue = [component objectForKey:@"initialValue"];
             BOOL required = [[component objectForKey:@"required"] boolValue];
             
-            if (labelRes && [labelRes isEqual:[NSNull null]]) labelRes=nil; // NSNull causes crash
+            // NSNull causes crash
+            if (key && [key isEqual:[NSNull null]]) key=nil;
+            if (label && [label isEqual:[NSNull null]]) label=nil;
+            if (initialValue && [initialValue isEqual:[NSNull null]]) initialValue=nil;
             
-            [formComponents addObject:[[SHKTextInput alloc] initWithLabel:label required:required labelRes:labelRes initialValue:initialValue]];
+            [formComponents addObject:[[SHKTextInput alloc] initWithKey:key label:label required:required initialValue:initialValue]];
         }
         if ([type isEqualToString:@"email"]) {
+            NSString *key = [component objectForKey:@"key"];
             NSString *label = [component objectForKey:@"label"];
-            NSString *labelRes = [component objectForKey:@"labelRes"];
             NSString *initialValue = [component objectForKey:@"initialValue"];
             BOOL required = [[component objectForKey:@"required"] boolValue];
             
-            if (labelRes && [labelRes isEqual:[NSNull null]]) labelRes=nil; // NSNull causes crash
+            // NSNull causes crash
+            if (key && [key isEqual:[NSNull null]]) key=nil;
+            if (label && [label isEqual:[NSNull null]]) label=nil;
+            if (initialValue && [initialValue isEqual:[NSNull null]]) initialValue=nil;
             
-            [formComponents addObject:[[SHKEmail alloc] initWithLabel:label required:required labelRes:labelRes initialValue:initialValue]];
+            [formComponents addObject:[[SHKEmail alloc] initWithKey:key label:label required:required initialValue:initialValue]];
         }
         if ([type isEqualToString:@"picker"]) {
+            NSString *key = [component objectForKey:@"key"];
             NSString *label = [component objectForKey:@"label"];
-            NSString *labelRes = [component objectForKey:@"labelRes"];
             NSArray *itemsArray = [component objectForKey:@"items"];
+            
+            // NSNull causes crash
+            if (key && [key isEqual:[NSNull null]]) key=nil;
+            if (label && [label isEqual:[NSNull null]]) label=nil;
 
             NSMutableArray<SHKPickerItem*>* items = [NSMutableArray array];
             for(int j = 0; j < [itemsArray count]; j++) {
                 NSDictionary *arrayItem = [itemsArray objectAtIndex:j];
                 
-                NSString *icon = [arrayItem objectForKey:@"icon"];
+                NSString *key = [arrayItem objectForKey:@"key"];
                 NSString *text = [arrayItem objectForKey:@"text"];
-                NSString *textRes = [arrayItem objectForKey:@"textRes"];
+                NSString *icon = [arrayItem objectForKey:@"icon"];
                 NSString *tag = [arrayItem objectForKey:@"tag"];
                 
-                if (icon && [icon isEqual:[NSNull null]]) icon=nil; // NSNull causes
-                if (textRes && [textRes isEqual:[NSNull null]]) textRes=nil; // NSNull causes crash
+                // NSNull causes
+                if (key && [key isEqual:[NSNull null]]) key=@"";
+                if (text && [text isEqual:[NSNull null]]) text=@"";
+                if (icon && [icon isEqual:[NSNull null]]) icon=nil;
+                if (tag && [tag isEqual:[NSNull null]]) tag=nil;
                 
-                SHKPickerItem* item = [[SHKPickerItem alloc] initWithIconName:icon text:text textRes:textRes tag:tag];
+                SHKPickerItem* item = [[SHKPickerItem alloc] initWithKey:key text:text icon:[self base64ToUIImage:icon] tag:tag];
                 [items addObject:item];
             }
             
-            if (labelRes && [labelRes isEqual:[NSNull null]]) labelRes=nil; // NSNull causes crash
-            
-            [formComponents addObject:[[SHKPicker alloc] initWithLabel:label items:items labelRes:labelRes]];
+            [formComponents addObject:[[SHKPicker alloc] initWithKey:key label:label items:items]];
         }
         if ([type isEqualToString:@"attachments"]) {
             [formComponents addObject:SHKAttachments.new];
@@ -685,8 +786,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
             NSDictionary *dict = [[NSDictionary alloc] init];
             dict = @{
                 @"type": @"title",
+                @"key": component.key,
                 @"label": component.label,
-                @"labelRes": component.labelRes ?: [NSNull null],
                 @"initialValue": component.initialValue ?: @"",
                 @"required": [NSNumber numberWithBool:component.required]
             };
@@ -699,8 +800,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
             NSDictionary *dict = [[NSDictionary alloc] init];
             dict = @{
                 @"type": @"text_input",
+                @"key": component.key,
                 @"label": component.label,
-                @"labelRes": component.labelRes ?: [NSNull null],
                 @"initialValue": component.initialValue ?: @"",
                 @"required": [NSNumber numberWithBool:component.required]
             };
@@ -714,8 +815,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
             NSDictionary *dict = [[NSDictionary alloc] init];
             dict = @{
                 @"type": @"email",
+                @"key": component.key,
                 @"label": component.label,
-                @"labelRes": component.labelRes ?: [NSNull null],
                 @"initialValue": component.initialValue ?: @"",
                 @"required": [NSNumber numberWithBool:component.required]
             };
@@ -732,9 +833,9 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
                 
                 NSDictionary *pickerItemDict = [[NSDictionary alloc] init];
                 pickerItemDict = @{
-                    @"icon": pickerItem.iconName ?: [NSNull null],
+                    @"key": component.key,
                     @"text": pickerItem.text,
-                    @"textRes": pickerItem.textRes ?: [NSNull null],
+                    @"icon": [self UIImageToBase64:pickerItem.icon] ?: [NSNull null],
                     @"tag": pickerItem.tag ?: [NSNull null],
                 };
                 
@@ -745,8 +846,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
             NSDictionary *componentDict = [[NSDictionary alloc] init];
             componentDict = @{
                 @"type": @"picker",
+                @"key": component.key,
                 @"label": component.label,
-                @"labelRes": component.labelRes ?: [NSNull null],
                 @"items": pickerItemsArray
             };
             
@@ -861,10 +962,26 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     return fontName;
 }
 
+- (UIImage*)base64ToUIImage:(NSString *)base64 {
+    if (base64 == nil) return nil;
+
+    NSUInteger paddedLength = base64.length + (4 - (base64.length % 4));
+    NSString* correctBase64String = [base64 stringByPaddingToLength:paddedLength withString:@"=" startingAtIndex:0];
+    NSData* data = [[NSData alloc]initWithBase64EncodedString:correctBase64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    return [UIImage imageWithData:data];
+}
+
+- (NSString *)UIImageToBase64:(UIImage *)image {
+    if (image == nil) return nil;
+
+    NSData *data = UIImagePNGRepresentation(image);
+    NSString *base64String = [data base64EncodedStringWithOptions:0];
+    return base64String;
+}
 
 // Private
 - (void)setPlatformInfo {
-    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"16.1.0" };
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"16.2.0" };
     [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
 }
 

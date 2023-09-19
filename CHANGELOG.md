@@ -1,12 +1,20 @@
+# 16.2.0
+
+- Upgraded to Shake Android and iOS native SDK 16.2+
+- Implemented methods for integrating Firebase/APNS push notifications
+- Implemented methods for setting custom Shake home screen actions
+- Implemented Shake open, dismiss and submit events callbacks
+- Added option to show new chat screen from the code
+
 # 16.1.0
 
-- Upgraded to Shake Android and iOS native SDK 16.1.0
+- Upgraded to Shake Android and iOS native SDK 16.1+
 - Implemented method for changing Shake screens theme
 - Implemented method for changing Shake home screen subtitle
 
 # 16.0.0
 
-- Upgraded to Shake Android and iOS native SDK 16.0.0
+- Upgraded to Shake Android and iOS native SDK 16.0+
 - Implemented models and method for creating Shake custom forms
 - Removed old methods for Shake form customization
 - Updated example project dependencies and added custom form code example

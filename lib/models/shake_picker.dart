@@ -3,11 +3,13 @@ import 'package:shake_flutter/models/shake_picker_item.dart';
 
 /// Represents Shake form Picker.
 class ShakePicker extends ShakeFormComponent {
-  String label;
+  String key;
+  String? label;
   List<ShakePickerItem> items;
   String? labelRes;
 
-  ShakePicker(this.label, this.items, {this.labelRes}) : super('picker');
+  ShakePicker(this.key, this.label, this.items, {this.labelRes})
+      : super('picker');
 
   /// Converts object to map.
   Map<String, dynamic> toMap() {
@@ -15,6 +17,7 @@ class ShakePicker extends ShakeFormComponent {
 
     return {
       'type': type,
+      'key': key,
       'label': label,
       'items': itemsMaps,
       'labelRes': labelRes,
@@ -23,13 +26,14 @@ class ShakePicker extends ShakeFormComponent {
 
   /// Converts map to object.
   static ShakePicker fromMap(Map data) {
-    String label = data['label'] ?? '';
+    String key = data['key'] ?? '';
+    String? label = data['label'];
     List<dynamic> itemsMaps = data['items'] ?? [];
     String? labelRes = data['labelRes'];
 
     List<ShakePickerItem> items =
         itemsMaps.map((c) => ShakePickerItem.fromMap(c)).toList();
 
-    return ShakePicker(label, items, labelRes: labelRes);
+    return ShakePicker(key, label, items, labelRes: labelRes);
   }
 }

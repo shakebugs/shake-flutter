@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -7,8 +8,10 @@ import 'package:shake_flutter/enums/shake_screen.dart';
 import 'package:shake_flutter/helpers/configuration.dart';
 import 'package:shake_flutter/helpers/network_tracker.dart';
 import 'package:shake_flutter/helpers/notifications_tracker.dart';
+import 'package:shake_flutter/models/chat_notification.dart';
 import 'package:shake_flutter/models/network_request.dart';
 import 'package:shake_flutter/models/notification_event.dart';
+import 'package:shake_flutter/models/shake_base_action.dart';
 import 'package:shake_flutter/models/shake_file.dart';
 import 'package:shake_flutter/models/shake_form.dart';
 import 'package:shake_flutter/models/shake_report_configuration.dart';
@@ -27,7 +30,7 @@ class Shake {
   ///
   /// It should be called on application start.
   /// Shake won't work if method is not called.
-  static void start(String clientID, String clientSecret) async {
+  static Future<void> start(String clientID, String clientSecret) async {
     _channel.setMethodCallHandler(_channelMethodHandler);
     await _channel.invokeMethod('start', {
       'clientId': clientID,
@@ -43,7 +46,7 @@ class Shake {
   }
 
   /// Sets shake form for the new ticket screen.
-  static void setShakeForm(ShakeForm shakeForm) async {
+  static Future<void> setShakeForm(ShakeForm shakeForm) async {
     var shakeFormMap = shakeForm.toMap();
     await _channel.invokeMethod('setShakeForm', {
       'shakeForm': shakeFormMap,
@@ -51,7 +54,7 @@ class Shake {
   }
 
   /// Sets shake theme for the Shake UI.
-  static void setShakeTheme(ShakeTheme shakeTheme) async {
+  static Future<void> setShakeTheme(ShakeTheme shakeTheme) async {
     var shakeThemeMap = shakeTheme.toMap();
     await _channel.invokeMethod('setShakeTheme', {
       'shakeTheme': shakeThemeMap,
@@ -59,24 +62,32 @@ class Shake {
   }
 
   /// Sets shake home screen subtitle.
-  static void setHomeSubtitle(String subtitle) async {
+  static Future<void> setHomeSubtitle(String subtitle) async {
     await _channel.invokeMethod('setHomeSubtitle', {
       'subtitle': subtitle,
     });
   }
 
+  /// Sets shake home screen subtitle.
+  static Future<void> setHomeActions(List<ShakeBaseAction> homeActions) async {
+    _configuration.homeActions = homeActions;
+    await _channel.invokeMethod('setHomeActions', {
+      'homeActions': homeActions.map((action) => action.toMap()).toList(),
+    });
+  }
+
   /// Shows Shake screen.
   ///
-  /// [ShakeScreen.home] or [ShakeScreen.newTicket].
+  /// [ShakeScreen.home], [ShakeScreen.newTicket] or [ShakeScreen.chat].
   /// The default one is [ShakeScreen.newTicket]
-  static void show([shakeScreen = ShakeScreen.newTicket]) async {
+  static Future<void> show([shakeScreen = ShakeScreen.newTicket]) async {
     await _channel.invokeMethod('show', {
       'shakeScreen': describeEnum(shakeScreen),
     });
   }
 
   /// Sets if user feedback is enabled.
-  static void setUserFeedbackEnabled(bool enabled) async {
+  static Future<void> setUserFeedbackEnabled(bool enabled) async {
     await _channel.invokeMethod('setUserFeedbackEnabled', {
       'enabled': enabled,
     });
@@ -88,7 +99,7 @@ class Shake {
   }
 
   /// Sets if black-box is enabled.
-  static void setEnableBlackBox(bool enabled) async {
+  static Future<void> setEnableBlackBox(bool enabled) async {
     await _channel.invokeMethod('setEnableBlackBox', {
       'enabled': enabled,
     });
@@ -100,7 +111,7 @@ class Shake {
   }
 
   /// Sets if activity history events are tracked.
-  static void setEnableActivityHistory(bool enabled) async {
+  static Future<void> setEnableActivityHistory(bool enabled) async {
     await _channel.invokeMethod('setEnableActivityHistory', {
       'enabled': enabled,
     });
@@ -112,7 +123,7 @@ class Shake {
   }
 
   /// Sets if floating report button is visible.
-  static void setShowFloatingReportButton(bool enabled) async {
+  static Future<void> setShowFloatingReportButton(bool enabled) async {
     await _channel.invokeMethod('setShowFloatingReportButton', {
       'enabled': enabled,
     });
@@ -124,7 +135,7 @@ class Shake {
   }
 
   /// Sets if shake gesture invoking is enabled.
-  static void setInvokeShakeOnShakeDeviceEvent(bool enabled) async {
+  static Future<void> setInvokeShakeOnShakeDeviceEvent(bool enabled) async {
     await _channel.invokeMethod('setInvokeShakeOnShakeDeviceEvent', {
       'enabled': enabled,
     });
@@ -146,7 +157,7 @@ class Shake {
   /// Sets screen to open when Shake is manually invoked.
   ///
   /// [ShakeScreen.home] or [ShakeScreen.newTicket].
-  static void setDefaultScreen(ShakeScreen shakeScreen) async {
+  static Future<void> setDefaultScreen(ShakeScreen shakeScreen) async {
     await _channel.invokeMethod('setDefaultScreen', {
       'shakeScreen': describeEnum(shakeScreen),
     });
@@ -158,14 +169,14 @@ class Shake {
   }
 
   ///Sets shaking threshold
-  static void setShakingThreshold(int shakingThreshold) async {
+  static Future<void> setShakingThreshold(int shakingThreshold) async {
     await _channel.invokeMethod('setShakingThreshold', {
       'shakingThreshold': shakingThreshold,
     });
   }
 
   /// Sets if screenshot invoking is enabled.
-  static void setInvokeShakeOnScreenshot(bool enabled) async {
+  static Future<void> setInvokeShakeOnScreenshot(bool enabled) async {
     await _channel.invokeMethod('setInvokeShakeOnScreenshot', {
       'enabled': enabled,
     });
@@ -182,23 +193,23 @@ class Shake {
   }
 
   ///Sets screenshot included in report
-  static void setScreenshotIncluded(bool enabled) async {
+  static Future<void> setScreenshotIncluded(bool enabled) async {
     await _channel.invokeMethod('setScreenshotIncluded', {
       'enabled': enabled,
     });
   }
 
   /// Sets files which will be attached with a ticket.
-  static void setShakeReportData(List<ShakeFile> shakeFiles) async {
+  static Future<void> setShakeReportData(List<ShakeFile> shakeFiles) async {
     await _channel.invokeMethod('setShakeReportData', {
-      'shakeFiles': _mapper.shakeFilesToMap(shakeFiles),
+      'shakeFiles': shakeFiles.map((shakeFile) => shakeFile.toMap()).toList(),
     });
   }
 
   /// Sends a ticket without showing Shake screen.
   ///
   /// [ShakeReportConfiguration] is required.
-  static void silentReport({
+  static Future<void> silentReport({
     ShakeReportConfiguration? configuration,
     String? description,
     List<ShakeFile>? shakeFiles,
@@ -209,13 +220,13 @@ class Shake {
 
     await _channel.invokeMethod('silentReport', {
       'description': description,
-      'shakeFiles': _mapper.shakeFilesToMap(shakeFiles),
+      'shakeFiles': shakeFiles.map((shakeFile) => shakeFile.toMap()).toList(),
       'configuration': configuration.toMap()
     });
   }
 
   /// Adds metadata to the new tickets.
-  static void setMetadata(String key, String value) async {
+  static Future<void> setMetadata(String key, String value) async {
     await _channel.invokeMethod('setMetadata', {
       'key': key,
       'value': value,
@@ -223,12 +234,12 @@ class Shake {
   }
 
   /// Clears existing metadata.
-  static void clearMetadata() async {
+  static Future<void> clearMetadata() async {
     await _channel.invokeMethod('clearMetadata');
   }
 
   /// Adds custom log into the activity history.
-  static void log(LogLevel logLevel, String message) async {
+  static Future<void> log(LogLevel logLevel, String message) async {
     await _channel.invokeMethod('log', {
       'level': describeEnum(logLevel),
       'message': message,
@@ -241,7 +252,7 @@ class Shake {
   }
 
   /// Sets if automatic video recording is enabled.
-  static void setAutoVideoRecording(bool enabled) async {
+  static Future<void> setAutoVideoRecording(bool enabled) async {
     await _channel.invokeMethod('setAutoVideoRecording', {
       'enabled': enabled,
     });
@@ -253,7 +264,7 @@ class Shake {
   }
 
   /// Sets if console logs are attached to the tickets.
-  static void setConsoleLogsEnabled(bool enabled) async {
+  static Future<void> setConsoleLogsEnabled(bool enabled) async {
     await _channel.invokeMethod('setConsoleLogsEnabled', {
       'enabled': enabled,
     });
@@ -265,7 +276,7 @@ class Shake {
   }
 
   /// Sets if intro message is shown on start.
-  static void setShowIntroMessage(bool enabled) async {
+  static Future<void> setShowIntroMessage(bool enabled) async {
     await _channel.invokeMethod('setShowIntroMessage', {
       'enabled': enabled,
     });
@@ -277,35 +288,35 @@ class Shake {
   }
 
   /// Sets if automatic sensitive data redaction is enabled.
-  static void setSensitiveDataRedactionEnabled(bool enabled) async {
+  static Future<void> setSensitiveDataRedactionEnabled(bool enabled) async {
     await _channel.invokeMethod('setSensitiveDataRedactionEnabled', {
       'enabled': enabled,
     });
   }
 
   /// Registers new Shake user.
-  static void registerUser(String userId) async {
+  static Future<void> registerUser(String userId) async {
     await _channel.invokeMethod('registerUser', {
       'userId': userId,
     });
   }
 
   /// Updates existing Shake user id.
-  static void updateUserId(String userId) async {
+  static Future<void> updateUserId(String userId) async {
     await _channel.invokeMethod('updateUserId', {
       'userId': userId,
     });
   }
 
   /// Updates existing Shake user metadata.
-  static void updateUserMetadata(Map<String, String?> metadata) async {
+  static Future<void> updateUserMetadata(Map<String, String?> metadata) async {
     await _channel.invokeMethod('updateUserMetadata', {
       'metadata': metadata,
     });
   }
 
   /// Unregister current Shake user.
-  static void unregisterUser() async {
+  static Future<void> unregisterUser() async {
     await _channel.invokeMethod('unregisterUser');
   }
 
@@ -313,7 +324,7 @@ class Shake {
   ///
   /// Inserted notification event will be visible in the activity history.
   /// [NotificationEvent] should be filled properly.
-  static void insertNotificationEvent(
+  static Future<void> insertNotificationEvent(
       NotificationEvent notificationEvent) async {
     NotificationEvent filteredEvent =
         _notificationsTracker.filterNotificationEvent(notificationEvent);
@@ -325,7 +336,8 @@ class Shake {
   ///
   /// Inserted network request will be visible in the activity history.
   /// [NetworkRequest] should be filled properly.
-  static void insertNetworkRequest(NetworkRequest networkRequest) async {
+  static Future<void> insertNetworkRequest(
+      NetworkRequest networkRequest) async {
     NetworkRequest filteredRequest =
         _networkTracker.filterNetworkRequest(networkRequest);
     await _channel.invokeMethod(
@@ -335,7 +347,7 @@ class Shake {
   /// Sets filter for notification events.
   ///
   /// Set null if you want to remove filter.
-  static void setNotificationEventsFilter(
+  static Future<void> setNotificationEventsFilter(
       NotificationEventFilter? filter) async {
     _notificationsTracker.filter = filter;
   }
@@ -343,24 +355,67 @@ class Shake {
   /// Sets filter for network requests.
   ///
   /// Set null if you want to remove filter.
-  static void setNetworkRequestsFilter(NetworkRequestFilter? filter) async {
+  static Future<void> setNetworkRequestsFilter(
+      NetworkRequestFilter? filter) async {
     _networkTracker.filter = filter;
   }
 
   /// Shows notifications settings screen.
   ///
   /// This is used just for Android os.
-  static void showNotificationsSettings() async {
+  static Future<void> showNotificationsSettings() async {
     await _channel.invokeMethod('showNotificationsSettings');
   }
 
   /// Sets unread chat messages number listener.
   ///
   /// Set null if you want to remove listener.
-  static void setUnreadMessagesListener(
+  static Future<void> setUnreadMessagesListener(
       UnreadMessagesListener? listener) async {
     _configuration.unreadMessagesListener = listener;
     await _channel.invokeMethod('startUnreadMessagesEmitter');
+  }
+
+  /// Sets token used to send push notifications (Only Android).
+  ///
+  /// Set null if you want to remove token.
+  static Future<void> setPushNotificationsToken(String? token) async {
+    if (Platform.isAndroid) {
+      await _channel
+          .invokeMethod('setPushNotificationsToken', {'token': token});
+    }
+  }
+
+  /// Shows Firebase chat notification (Only Android).
+  static Future<void> showChatNotification(Map<String, dynamic> data) async {
+    if (Platform.isAndroid) {
+      ChatNotification chatNotification = ChatNotification(data['ticket_id'],
+          data['user_id'], data['ticket_title'], data['message']);
+      await _channel.invokeMethod('showChatNotification',
+          {'chatNotification': chatNotification.toMap()});
+    }
+  }
+
+  /// Sets Shake open event listener.
+  ///
+  /// Set null if you want to remove listener.
+  static void setShakeOpenListener(Function? listener) {
+    _configuration.onShakeOpen = listener;
+  }
+
+  /// Sets Shake dismiss event listener.
+  ///
+  /// Set null if you want to remove listener.
+  static void setShakeDismissListener(Function? listener) {
+    _configuration.onShakeDismiss = listener;
+  }
+
+  /// Sets Shake submit event listener.
+  ///
+  /// Set null if you want to remove listener.
+  static void setShakeSubmitListener(
+      Function(String, Map<String, String>)? listener) {
+    _configuration.onShakeSubmit = listener;
   }
 
   /// Handles method calls from native to Flutter
@@ -374,6 +429,25 @@ class Shake {
       case 'onUnreadMessagesReceived':
         int count = call.arguments;
         _configuration.unreadMessagesListener?.call(count);
+        break;
+      case 'onHomeActionTap':
+        _configuration.homeActions
+            ?.firstWhere((element) => element.title == call.arguments)
+            .handler
+            ?.call();
+        break;
+      case 'onShakeOpen':
+        _configuration.onShakeOpen?.call();
+        break;
+      case 'onShakeDismiss':
+        _configuration.onShakeDismiss?.call();
+        break;
+      case 'onShakeSubmit':
+        String type = call.arguments['type'];
+        Map<String, String> fields =
+            Map.castFrom<dynamic, dynamic, String, String>(
+                call.arguments['fields']);
+        _configuration.onShakeSubmit?.call(type, fields);
         break;
     }
   }

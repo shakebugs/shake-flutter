@@ -1,29 +1,37 @@
 /// Represents Shake form Picker item.
 class ShakePickerItem {
-  String text;
-  String? textRes;
+  String key;
+  String? text;
   String? icon;
   String? tag;
+  String? textRes;
+  String? iconRes;
 
-  ShakePickerItem(this.text, {this.textRes, this.icon, this.tag});
+  ShakePickerItem(this.key, this.text,
+      {this.icon, this.tag, this.textRes, this.iconRes});
 
   /// Converts object to map.
   Map<String, dynamic> toMap() {
     return {
+      'key': key,
       'text': text,
-      'textRes': textRes,
       'icon': icon,
       'tag': tag,
+      'textRes': textRes,
+      'iconRes': iconRes,
     };
   }
 
   /// Converts map to object.
   static ShakePickerItem fromMap(Map data) {
-    String text = data['text'] ?? '';
-    String? textRes = data['textRes'];
+    String key = data['key'] ?? '';
+    String? text = data['text'];
     String? icon = data['icon'];
     String? tag = data['tag'];
+    String? textRes = data['textRes'];
+    String? iconRes = data['iconRes'];
 
-    return ShakePickerItem(text, textRes: textRes, icon: icon, tag: tag);
+    return ShakePickerItem(key, text,
+        icon: icon, tag: tag, textRes: textRes, iconRes: iconRes);
   }
 }

@@ -1,43 +1,41 @@
 import UIKit
 import Flutter
 import Shake
+import FirebaseCore
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
-  override func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-  ) -> Bool {
-      let center = UNUserNotificationCenter.current()
-      center.delegate = self
+    override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-      // Request notifications permission to enabled chat notifications
-      center.requestAuthorization(options: [.sound,.alert,.badge]) { (granted, error) in
-                      if granted {
-                          print("Notification Enable Successfully")
-                      }else{
-                          print("Some Error Occure")
-                      }
-                  }
-    GeneratedPluginRegistrant.register(with: self)
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
+        UNUserNotificationCenter.current().delegate = self
 
-  override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-      if response.notification.request.content.categoryIdentifier.contains(SHKNotificationCategoryIdentifierDomain) {
-          Shake.report(center, didReceive: response, withCompletionHandler: completionHandler)
-          return;
-      }
+        UIApplication.shared.registerForRemoteNotifications()
+        
+        FirebaseApp.configure()
 
-      completionHandler()
-  }
+        GeneratedPluginRegistrant.register(with: self)
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
 
-  override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-      if notification.request.content.categoryIdentifier.contains(SHKNotificationCategoryIdentifierDomain) {
-          Shake.report(center, willPresent: notification, withCompletionHandler: completionHandler)
-          return;
-      }
+    override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Shake.didRegisterForRemoteNotifications(withDeviceToken: deviceToken)
+    }
 
-      completionHandler([.badge, .sound, .alert])
-  }
+    override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if Shake.isShakeNotification(response.notification) {
+            Shake.report(center, didReceive: response, withCompletionHandler: completionHandler)
+            return;
+        }
+
+        completionHandler()
+    }
+
+    override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if Shake.isShakeNotification(notification) {
+            Shake.report(center, willPresent: notification, withCompletionHandler: completionHandler)
+            return;
+        }
+
+        completionHandler([.badge, .sound, .alert])
+    }
 }
