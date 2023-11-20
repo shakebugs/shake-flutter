@@ -122,6 +122,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         [self startUnreadMessagesEmitter:result];
     } else if([@"showNotificationsSettings" isEqualToString:call.method]) {
         [self showNotificationsSettings:result];
+    } else if([@"setTags" isEqualToString:call.method]) {
+        [self setTags:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -508,6 +510,13 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 
 - (void)showNotificationsSettings:(FlutterResult)result {
     // Method used just on Android
+
+    result(nil);
+}
+
+- (void)setTags:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSArray *tags = call.arguments[@"tags"];
+    SHKShake.configuration.tags = tags;
 
     result(nil);
 }

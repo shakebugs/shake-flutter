@@ -418,6 +418,13 @@ class Shake {
     _configuration.onShakeSubmit = listener;
   }
 
+  /// Sets ticket tags.
+  static Future<void> setTags(List<String> tags) async {
+    await _channel.invokeMethod('setTags', {
+      'tags': tags,
+    });
+  }
+
   /// Handles method calls from native to Flutter
   static Future<void> _channelMethodHandler(MethodCall call) async {
     switch (call.method) {
