@@ -46,8 +46,8 @@ class Shake {
   }
 
   /// Sets shake form for the new ticket screen.
-  static Future<void> setShakeForm(ShakeForm shakeForm) async {
-    var shakeFormMap = shakeForm.toMap();
+  static Future<void> setShakeForm(ShakeForm? shakeForm) async {
+    var shakeFormMap = shakeForm?.toMap();
     await _channel.invokeMethod('setShakeForm', {
       'shakeForm': shakeFormMap,
     });

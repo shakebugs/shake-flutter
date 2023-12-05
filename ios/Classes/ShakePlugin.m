@@ -146,6 +146,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     NSDictionary* shakeFormDict = call.arguments[@"shakeForm"];
     
     SHKForm* shakeForm = [self mapDicToShakeForm:shakeFormDict];
+    if (shakeForm == nil) shakeForm = SHKForm.defaultForm;
     SHKShake.configuration.form = shakeForm;
     
     result(nil);
@@ -688,7 +689,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 
 - (SHKForm *)mapDicToShakeForm:(NSDictionary *)shakeFormDic
 {
-    if (shakeFormDic == nil) return nil;
+    if (shakeFormDic == nil || [shakeFormDic isEqual:[NSNull null]]) return nil;
     
     NSMutableArray *dictComponents = [shakeFormDic objectForKey:@"components"];
     if (dictComponents == nil) dictComponents = [NSMutableArray array];
