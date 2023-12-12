@@ -1,3 +1,7 @@
+# 16.2.1
+
+- Implemented setTags method for setting tags from code
+
 # 16.2.0
 
 - Upgraded to Shake Android and iOS native SDK 16.2+

@@ -122,6 +122,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         [self startUnreadMessagesEmitter:result];
     } else if([@"showNotificationsSettings" isEqualToString:call.method]) {
         [self showNotificationsSettings:result];
+    } else if([@"setTags" isEqualToString:call.method]) {
+        [self setTags:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -144,6 +146,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     NSDictionary* shakeFormDict = call.arguments[@"shakeForm"];
     
     SHKForm* shakeForm = [self mapDicToShakeForm:shakeFormDict];
+    if (shakeForm == nil) shakeForm = SHKForm.defaultForm;
     SHKShake.configuration.form = shakeForm;
     
     result(nil);
@@ -512,6 +515,13 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     result(nil);
 }
 
+- (void)setTags:(FlutterMethodCall*) call result:(FlutterResult) result {
+    NSArray *tags = call.arguments[@"tags"];
+    SHKShake.configuration.tags = tags;
+
+    result(nil);
+}
+
 // Mappers
 - (LogLevel)mapToLogLevel:(NSString*)logLevelStr {
     LogLevel logLevel = LogLevelInfo;
@@ -679,7 +689,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 
 - (SHKForm *)mapDicToShakeForm:(NSDictionary *)shakeFormDic
 {
-    if (shakeFormDic == nil) return nil;
+    if (shakeFormDic == nil || [shakeFormDic isEqual:[NSNull null]]) return nil;
     
     NSMutableArray *dictComponents = [shakeFormDic objectForKey:@"components"];
     if (dictComponents == nil) dictComponents = [NSMutableArray array];

@@ -272,6 +272,10 @@ class _HomeState extends State<Home> {
     Shake.setHomeActions(homeAction);
   }
 
+  void _setTags() {
+    Shake.setTags(["test-tag"]);
+  }
+
   void _onShakingThreshold100() {
     Shake.setShakingThreshold(100);
   }
@@ -458,6 +462,7 @@ class _HomeState extends State<Home> {
                         Button('Set custom form', _setCustomForm),
                         Button('Set custom theme', _setCustomTheme),
                         Button('Set custom actions', _setHomeActions),
+                        Button('Set tags', _setTags),
                       ],
                     ),
                   ),

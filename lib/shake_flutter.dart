@@ -46,8 +46,8 @@ class Shake {
   }
 
   /// Sets shake form for the new ticket screen.
-  static Future<void> setShakeForm(ShakeForm shakeForm) async {
-    var shakeFormMap = shakeForm.toMap();
+  static Future<void> setShakeForm(ShakeForm? shakeForm) async {
+    var shakeFormMap = shakeForm?.toMap();
     await _channel.invokeMethod('setShakeForm', {
       'shakeForm': shakeFormMap,
     });
@@ -416,6 +416,13 @@ class Shake {
   static void setShakeSubmitListener(
       Function(String, Map<String, String>)? listener) {
     _configuration.onShakeSubmit = listener;
+  }
+
+  /// Sets ticket tags.
+  static Future<void> setTags(List<String> tags) async {
+    await _channel.invokeMethod('setTags', {
+      'tags': tags,
+    });
   }
 
   /// Handles method calls from native to Flutter

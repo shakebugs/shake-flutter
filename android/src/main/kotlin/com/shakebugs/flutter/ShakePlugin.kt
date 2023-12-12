@@ -116,6 +116,7 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "showNotificationsSettings" -> showNotificationsSettings(call, result)
             "setPushNotificationsToken" -> setPushNotificationsToken(call, result)
             "showChatNotification" -> showChatNotification(call, result)
+            "setTags" -> setTags(call, result)
             else -> result.notImplemented()
         }
     }
@@ -490,6 +491,15 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         chatNotificationMap?.let {
             val chatNotification: ChatNotification? = mapper?.mapToChatNotification(it)
             Shake.showChatNotification(chatNotification)
+        }
+
+        result.success(null)
+    }
+
+    private fun setTags(call: MethodCall, result: Result) {
+        val tags: List<String>? = call.argument("tags")
+        tags?.let {
+            Shake.getReportConfiguration().tags = tags
         }
 
         result.success(null)
