@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +18,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 Future<void> startShake() async {
-  const clientId = 'HtTFUmUziF5Qjk1XLraAJXtVB1cL62yHWWqsDnrG';
-  const clientSecret =
-      'IPRqEI2iSQhmUP6NGQcPNKCs7JQCJrpFUG0qDmLx4Yx2spd3caXnC3o';
 
   Shake.setInvokeShakeOnScreenshot(true);
   Shake.setInvokeShakeOnShakeDeviceEvent(true);
@@ -39,7 +38,10 @@ Future<void> startShake() async {
     print('Shake submitted!');
   });
 
-  await Shake.start(clientId, clientSecret);
+  String apiKey = Platform.isIOS ?
+    'zqED60FOrcVXsDBPyXBIUjLetFRg0thRYDQDgMje1qzZvE56VyeiQPC' :
+    'JAHVv8hcIvifbThYFCuUC167u7u22DhlKKRzlzmo0mJfiAlbU3rFOYo';
+  await Shake.start(apiKey);
 
   Shake.registerUser("test_user");
 }

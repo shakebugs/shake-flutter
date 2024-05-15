@@ -135,14 +135,13 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun start(call: MethodCall, result: Result) {
-        val clientId: String? = call.argument("clientId")
-        val clientSecret: String? = call.argument("clientSecret")
+        val apiKey: String? = call.argument("apiKey")
 
         ShakeReflection.setShakeInfo(buildShakePlatformInfo())
 
         when (context) {
-            is Activity -> ShakeReflection.start(context as Activity, clientId, clientSecret)
-            is Application -> Shake.start(context as Application, clientId, clientSecret)
+            is Activity -> ShakeReflection.start(context as Activity, apiKey)
+            is Application -> Shake.start(context as Application, apiKey)
         }
 
         startNotificationsEmitter()

@@ -11,16 +11,15 @@ import java.lang.reflect.Method
 object ShakeReflection {
     private const val CLASS_NAME = "com.shakebugs.shake.Shake"
 
-    fun start(activity: Activity?, clientId: String?, clientSecret: String?) {
+    fun start(activity: Activity?, apiKey: String?) {
         try {
             val method: Method? = Reflection.getMethod(
                 Class.forName(CLASS_NAME),
                 "startFromWrapper",
                 Activity::class.java,
-                String::class.java,
                 String::class.java
             )
-            method?.invoke(null, activity, clientId, clientSecret)
+            method?.invoke(null, activity, apiKey)
         } catch (e: Exception) {
             Logger.e("Failed to start Shake", e)
         }

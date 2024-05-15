@@ -30,11 +30,10 @@ class Shake {
   ///
   /// It should be called on application start.
   /// Shake won't work if method is not called.
-  static Future<void> start(String clientID, String clientSecret) async {
+  static Future<void> start(String apiKey) async {
     _channel.setMethodCallHandler(_channelMethodHandler);
     await _channel.invokeMethod('start', {
-      'clientId': clientID,
-      'clientSecret': clientSecret,
+      'apiKey': apiKey,
     });
   }
 
