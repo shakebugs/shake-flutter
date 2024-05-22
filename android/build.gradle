@@ -26,7 +26,7 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 31
-    namespace 'com.shakebugs.flutter'
+    namespace = 'com.shakebugs.flutter'
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
