@@ -130,12 +130,11 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 }
 
 - (void)start:(FlutterMethodCall*) call result:(FlutterResult)result {
-    NSString *clientId = call.arguments[@"clientId"];
-    NSString *clientSecret = call.arguments[@"clientSecret"];
+    NSString *apiKey = call.arguments[@"apiKey"];
 
     [self setPlatformInfo];
 
-    [SHKShake startWithClientId:clientId clientSecret:clientSecret];
+    [SHKShake startWithApiKey:apiKey];
     [self startNotificationsEmitter];
     [self startShakeCallbacksEmitter];
 
@@ -991,7 +990,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 
 // Private
 - (void)setPlatformInfo {
-    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"16.2.0" };
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"17.0.0" };
     [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
 }
 

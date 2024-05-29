@@ -5,7 +5,7 @@
       <entry key="ANDROID_DEPENDENCY" value="com.shakebugs:shake" />
       <entry key="IOS_DEPENDENCY" value="Shake" />
     </option>
-    <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+    <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
     <method v="2" />
   </configuration>
 </component>

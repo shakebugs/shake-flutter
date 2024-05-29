@@ -1,3 +1,7 @@
+# 17.0.0
+
+- Starting Shake using apiKey instead clientId and clientSecret
+
 # 16.2.1
 
 - Implemented setTags method for setting tags from code
