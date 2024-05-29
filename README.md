@@ -27,7 +27,7 @@ Flutter plugin for [bug reporting](https://www.shakebugs.com).
 Add Shake to your `pubspec.yaml` file.
 ```yaml
 dependencies:
-      shake_flutter: ^16.2.1
+      shake_flutter: ^17.0.0
 ```
 
 Install package by running command in terminal.
@@ -37,27 +37,23 @@ flutter packages get
 
 ### Start Shake
 
-Add Shake import.
-```dart
-import 'package:shake_flutter/shake_flutter.dart';
-```
-
 Call `Shake.start()` method in the `main.dart` file.
 ```dart
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:shake_flutter/shake_flutter.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  Shake.setInvokeShakeOnShakeDeviceEvent(true);
-  Shake.setShowFloatingReportButton(false);
-  Shake.setInvokeShakeOnScreenshot(false);
-
-  Shake.start('client-id', 'client-secret');
+  String apiKey = Platform.isIOS ? 'ios-app-api-key' : 'android-app-api-key';
+  Shake.start(apiKey);
 
   runApp(MyApp());
 }
 ```
 
-Replace `client-id` and `client-secret` with the actual values you have in [your workspace settings](https://app.shakebugs.com/settings/workspace#general).
+Replace `ios-app-api-key` and `android-app-api-key` with the actual values you have in your app settings.
 
 ## Resources
 
