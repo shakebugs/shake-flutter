@@ -7,7 +7,7 @@ version: 17.0.0
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -19,7 +19,7 @@ dependencies:
   firebase_core: ^2.10.0
   firebase_messaging: ^14.6.5
   url_launcher: ^6.1.10
-  package_info: ^2.0.2
+  package_info_plus: ^8.0.0
   path_provider: ^2.0.14
   fluttertoast: ^8.2.1
   flutter_local_notifications: ^13.0.0
