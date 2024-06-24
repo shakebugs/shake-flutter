@@ -1,3 +1,7 @@
+# 17.0.1
+
+- Updated Android native module
+
 # 17.0.0
 
 - Starting Shake using apiKey instead clientId and clientSecret
