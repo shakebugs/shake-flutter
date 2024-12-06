@@ -9,14 +9,14 @@ Example app can be run in two environments: **staging** and **production**
 Use the following commands to run example app:
 
 Staging:
-`flutter run android -t lib/main.dart --flavor staging`
-`flutter run ios -t lib/main.dart --flavor staging`
+`ANDROID_DEPENDENCY=com.shakebugs:shake-staging && flutter run android -t lib/main.dart --flavor staging`
+`IOS_DEPENDENCY=Shake-Staging && flutter run ios -t lib/main.dart --flavor staging`
 
 Production:
-`flutter run android -t lib/main.dart --flavor production`
-`flutter run ios -t lib/main.dart --flavor production`
+`ANDROID_DEPENDENCY=com.shakebugs:shake && flutter run android -t lib/main.dart --flavor production`
+`IOS_DEPENDENCY=Shake && flutter run ios -t lib/main.dart --flavor production`
 
-Or you can run app from Intellij run configurations.
+Or you can simply run app from Intellij run configurations.
 
 ## Push notifications
 
