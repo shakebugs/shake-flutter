@@ -224,10 +224,13 @@ class Shake {
   }
 
   /// Adds metadata to the new tickets.
-  static Future<void> setMetadata(String key, String value) async {
+  static Future<void> setMetadata(String key, String? value) async {
+    if (key.isEmpty) return;
+    String metadataValue = value == null ? "null" : value;
+    
     await _channel.invokeMethod('setMetadata', {
       'key': key,
-      'value': value,
+      'value': metadataValue,
     });
   }
 
