@@ -27,7 +27,7 @@ Flutter plugin for [bug reporting](https://www.shakebugs.com).
 Add Shake to your `pubspec.yaml` file.
 ```yaml
 dependencies:
-      shake_flutter: ^17.0.1
+      shake_flutter: ^17.1.0
 ```
 
 Install package by running command in terminal.

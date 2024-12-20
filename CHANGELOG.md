@@ -1,3 +1,7 @@
+# 17.1.0
+
+- Support for null metadata
+
 # 17.0.1
 
 - Updated Android native module
