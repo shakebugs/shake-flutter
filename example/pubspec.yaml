@@ -16,21 +16,21 @@ dependencies:
   shake_flutter:
     path: ..
 
-  firebase_core: ^2.10.0
-  firebase_messaging: ^14.6.5
+  firebase_core: ^3.13.0
+  firebase_messaging: ^15.2.5
   url_launcher: ^6.1.10
   package_info_plus: ^8.0.0
   path_provider: ^2.0.14
   fluttertoast: ^8.2.1
-  flutter_local_notifications: ^13.0.0
+  flutter_local_notifications: ^19.1.0
 
-  # Uncomment following lines to use interceptors from file system
-  #  shake_http_client:
-  #    path: ../../shake-http-client
-  #  shake_dio_interceptor:
-  #    path: ../../shake-dio-interceptor
-  #  http: ^0.13.1
-  #  http_parser: ^4.0.0
+# Uncomment following lines to use interceptors from file system
+#  shake_http_client:
+#    path: ../../shake-http-client
+#  shake_dio_interceptor:
+#    path: ../../shake-dio-interceptor
+#  http: ^0.13.1
+#  http_parser: ^4.0.0
 
 dev_dependencies:
   flutter_test:
