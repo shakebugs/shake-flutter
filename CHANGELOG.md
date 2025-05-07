@@ -1,3 +1,7 @@
+# 17.1.1
+
+- Fixed network requests status code
+
 # 17.1.0
 
 - Support for null metadata

@@ -600,11 +600,12 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 - (NSDictionary*)mapToNetworkRequest:(nonnull NSDictionary*)requestDict {
     NSDictionary *networkRequest = [[NSDictionary alloc] init];
     NSData *data = [requestDict[@"requestBody"] dataUsingEncoding:NSUTF8StringEncoding];
+    NSNumber *statusCode = [self parseIntegerFromString:requestDict[@"status"]];
     networkRequest = @{
         @"url": requestDict[@"url"],
         @"method": requestDict[@"method"],
         @"responseBody": requestDict[@"responseBody"],
-        @"statusCode": requestDict[@"status"],
+        @"statusCode": statusCode,
         @"requestBody": data,
         @"requestHeaders": requestDict[@"requestHeaders"],
         @"duration": requestDict[@"duration"],
@@ -612,6 +613,13 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         @"timestamp": requestDict[@"timestamp"]
     };
     return networkRequest;
+}
+
+- (NSNumber*)parseIntegerFromString:(NSString*)string {
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    formatter.numberStyle = NSNumberFormatterNoStyle;
+
+    return [formatter numberFromString:string];
 }
 
 - (NSDictionary*)mapToNotificationEvent:(nonnull NSDictionary*)notificationDict {
