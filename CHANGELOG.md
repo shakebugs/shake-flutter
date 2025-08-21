@@ -1,3 +1,7 @@
+# 17.1.2
+
+- Added null checks to prevent crashes
+
 # 17.1.1
 
 - Fixed network requests status code
