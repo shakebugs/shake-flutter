@@ -1,3 +1,9 @@
+# 17.2.0
+
+- Fixed keyboard hiding inputs on Android
+- Fixed crash on submit button click on Android
+- Fixed crash caused by console logs on iOS
+
 # 17.1.1
 
 - Fixed network requests status code
