@@ -50,7 +50,7 @@ android {
     }
 
     dependencies {
-        api "$System.env.ANDROID_DEPENDENCY:17.0.+"
+        api "$System.env.ANDROID_DEPENDENCY:17.2.+"
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
     }
