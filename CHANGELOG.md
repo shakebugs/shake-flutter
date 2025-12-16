@@ -4,6 +4,10 @@
 - Fixed crash on submit button click on Android
 - Fixed crash caused by console logs on iOS
 
+# 17.1.2
+
+- Added null checks to prevent crashes
+
 # 17.1.1
 
 - Fixed network requests status code
