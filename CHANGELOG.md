@@ -1,3 +1,7 @@
+# 17.2.1
+
+- Fixed iOS LogLevel build error
+
 # 17.2.0
 
 - Fixed keyboard hiding inputs on Android

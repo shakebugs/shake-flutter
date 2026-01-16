@@ -390,7 +390,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     NSString* logLevelStr = call.arguments[@"level"];
     NSString* message = call.arguments[@"message"];
 
-    LogLevel logLevel = [self mapToLogLevel:logLevelStr];
+    ShakeLogLevel logLevel = [self mapToLogLevel:logLevelStr];
     [SHKShake logWithLevel: logLevel message: message];
 
     result(nil);
@@ -522,8 +522,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 }
 
 // Mappers
-- (LogLevel)mapToLogLevel:(NSString*)logLevelStr {
-    LogLevel logLevel = LogLevelInfo;
+- (ShakeLogLevel)mapToLogLevel:(NSString*)logLevelStr {
+    ShakeLogLevel logLevel = LogLevelInfo;
 
     if ([logLevelStr isEqualToString:@"verbose"])
         logLevel = LogLevelVerbose;
