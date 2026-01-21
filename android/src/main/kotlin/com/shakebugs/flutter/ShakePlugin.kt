@@ -193,6 +193,8 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
 
         Shake.getReportConfiguration().homeActions = actions
+
+        result.success(null)
     }
 
     private fun show(call: MethodCall, result: Result) {
