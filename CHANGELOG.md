@@ -1,3 +1,7 @@
+# 17.2.2
+
+- Fixed Shake.setHomeActions method async call
+
 # 17.2.1
 
 - Fixed iOS LogLevel build error
