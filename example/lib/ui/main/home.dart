@@ -233,7 +233,7 @@ class _HomeState extends State<Home> {
       ShakeAttachments(),
     ]);
 
-    Shake.setShakeForm(shakeForm);
+    await Shake.setShakeForm(shakeForm);
   }
 
   void _setCustomTheme() async {
@@ -253,7 +253,7 @@ class _HomeState extends State<Home> {
     shakeTheme.shadowRadius = 3;
     shakeTheme.shadowOpacity = 0.5;
 
-    Shake.setShakeTheme(shakeTheme);
+    await Shake.setShakeTheme(shakeTheme);
   }
 
   void _setHomeActions() async {
@@ -269,7 +269,7 @@ class _HomeState extends State<Home> {
       new ShakeSubmitAction(),
       new ShakeChatAction(),
     ];
-    Shake.setHomeActions(homeAction);
+    await Shake.setHomeActions(homeAction);
   }
 
   void _setTags() {
