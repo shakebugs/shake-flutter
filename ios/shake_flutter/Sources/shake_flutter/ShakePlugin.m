@@ -1,4 +1,4 @@
-#import "ShakePlugin.h"
+#import "./include/shake_flutter/ShakePlugin.h"
 #if __has_include(<shake_flutter/shake_flutter-Swift.h>)
 #import <shake_flutter/shake_flutter-Swift.h>
 #else

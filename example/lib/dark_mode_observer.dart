@@ -31,11 +31,9 @@ class _DarkModeObserverState extends State<DarkModeObserver>
         View.of(context).platformDispatcher.platformBrightness;
     if (currentBrightness == Brightness.dark) {
       ShakeTheme darkTheme = ShakeTheme();
-      darkTheme.accentColor = "#FFFFFF";
       Shake.setShakeTheme(darkTheme);
     } else {
       ShakeTheme lightTheme = ShakeTheme();
-      lightTheme.accentColor = "#000000";
       Shake.setShakeTheme(lightTheme);
     }
   }
