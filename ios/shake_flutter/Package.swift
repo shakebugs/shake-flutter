@@ -19,7 +19,7 @@ let package = Package(
             name: "shake_flutter",
             dependencies: [
                 .product(name: "Flutter", package: "FlutterFramework"),
-                .product(name: "Shake", package: ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_PACKAGE_ID"]),
+                .product(name: "Shake", package: "Shake"),
             ],
             cSettings: [
                 .headerSearchPath("include/shake_flutter")
