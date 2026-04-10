@@ -2,11 +2,10 @@
 import PackageDescription
 import Foundation
 
-let isStaging: Bool = ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_STAGING"] != nil
 let url: String = ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_URL"]!
 let packageName: String = ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_PACKAGE"]!
 
-let shakeDependency: Package.Dependency = isStaging
+let shakeDependency: Package.Dependency = url.contains("staging")
     ? .package(url: url, exact: "17.2.4-rc.1637")
     : .package(url: url, .upToNextMinor(from: "17.2.0"))
 
