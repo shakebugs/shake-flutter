@@ -3,9 +3,12 @@ import PackageDescription
 import Foundation
 
 let isStaging: Bool = ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_STAGING"] != nil
-let shakeVersion: Package.Dependency.Requirement = isStaging
-  ? .exact("17.2.4-rc.1637")
-  : .upToNextMinor(from: "17.2.0")
+let url: String = ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_URL"]!
+let packageName: String = ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_PACKAGE"]!
+
+let shakeDependency: Package.Dependency = isStaging
+    ? .package(url: url, exact: "17.2.4-rc.1637")
+    : .package(url: url, .upToNextMinor(from: "17.2.0"))
 
 let package = Package(
     name: "shake_flutter",
@@ -16,13 +19,13 @@ let package = Package(
         .library(name: "shake-flutter", targets: ["shake_flutter"])
     ],
     dependencies: [
-        .package(url: ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_URL"], requirement: shakeVersion),
+        shakeDependency,
     ],
     targets: [
         .target(
             name: "shake_flutter",
             dependencies: [
-                .product(name: "Shake", package: ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_PACKAGE"]),
+                .product(name: "Shake", package: packageName),
             ],
             cSettings: [
                 .headerSearchPath("include/shake_flutter")
