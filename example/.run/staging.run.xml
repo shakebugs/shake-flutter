@@ -3,7 +3,11 @@
     <option name="buildFlavor" value="staging" />
     <option name="envs">
       <entry key="ANDROID_DEPENDENCY" value="com.shakebugs:shake-staging" />
-      <entry key="IOS_DEPENDENCY" value="Shake-Staging" />
+      <entry key="IOS_SHAKE_COCOAPOD_PACKAGE" value="Shake-Staging" />
+      <entry key="IOS_SHAKE_SPM_PACKAGE" value="shake-ios-staging" />
+      <entry key="IOS_SHAKE_SPM_STAGING" value="true" />
+      <entry key="IOS_SHAKE_SPM_URL" value="git@github.com:shakebugs/shake-ios-staging.git" />
+      <entry key="adw" value="git@github.com:shakebugs/shake-ios-staging.git" />
     </option>
     <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
     <method v="2" />

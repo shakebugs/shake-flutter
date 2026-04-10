@@ -2,24 +2,27 @@
 import PackageDescription
 import Foundation
 
+let isStaging: Bool = ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_STAGING"] != nil
+let shakeVersion: Package.Dependency.Requirement = isStaging
+  ? .exact("17.2.4-rc.1637")
+  : .upToNextMinor(from: "17.2.0")
+
 let package = Package(
     name: "shake_flutter",
     platforms: [
         .iOS("12.0")
     ],
     products: [
-        .library(name: "shake_flutter", targets: ["shake_flutter"])
+        .library(name: "shake-flutter", targets: ["shake_flutter"])
     ],
     dependencies: [
-        .package(name: "FlutterFramework", path: "../Flutter"),
-        .package(url: ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_URL"], upToNextMinor: "17.2.0-rc.0"),
+        .package(url: ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_URL"], requirement: shakeVersion),
     ],
     targets: [
         .target(
             name: "shake_flutter",
             dependencies: [
-                .product(name: "Flutter", package: "FlutterFramework"),
-                .product(name: "Shake", package: "Shake"),
+                .product(name: "Shake", package: ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_PACKAGE"]),
             ],
             cSettings: [
                 .headerSearchPath("include/shake_flutter")
