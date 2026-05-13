@@ -1,3 +1,7 @@
+# 17.2.3
+
+- Swift Package manager support
+
 # 17.2.2
 
 - Fixed Shake.setHomeActions method async call
