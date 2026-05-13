@@ -3,7 +3,9 @@
     <option name="buildFlavor" value="production" />
     <option name="envs">
       <entry key="ANDROID_DEPENDENCY" value="com.shakebugs:shake" />
-      <entry key="IOS_DEPENDENCY" value="Shake" />
+      <entry key="IOS_SHAKE_COCOAPOD_PACKAGE" value="Shake" />
+      <entry key="IOS_SHAKE_SPM_PACKAGE" value="shake-ios" />
+      <entry key="IOS_SHAKE_SPM_URL" value="https://github.com/shakebugs/shake-ios.git" />
     </option>
     <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
     <method v="2" />
