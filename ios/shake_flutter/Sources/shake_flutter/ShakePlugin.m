@@ -124,7 +124,8 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 - (void)start:(FlutterMethodCall*) call result:(FlutterResult)result {
     NSString *apiKey = call.arguments[@"apiKey"];
 
-    [self setPlatformInfo];
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"17.0.0" };
+    [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
 
     [SHKShake startWithApiKey:apiKey];
     [self startNotificationsEmitter];
@@ -349,7 +350,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     NSDictionary *requestDict = call.arguments[@"networkRequest"];
 
     NSDictionary* networkRequest = [self mapToNetworkRequest:requestDict];
-    [self insertRNNetworkRequest:networkRequest];
+    [SHKShake performSelector:sel_getUid(@"_insertNetworkRequest:".UTF8String) withObject:networkRequest];
 
     result(nil);
 }
@@ -358,7 +359,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     NSDictionary *notificationDict = call.arguments[@"notificationEvent"];
 
     NSDictionary* notificationEvent = [self mapToNotificationEvent:notificationDict];
-    [self insertRNNotificationEvent:notificationEvent];
+    [SHKShake performSelector:sel_getUid(@"_reportNotification:".UTF8String) withObject:notificationEvent];
 
     result(nil);
 }
@@ -990,19 +991,5 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     NSData *data = UIImagePNGRepresentation(image);
     NSString *base64String = [data base64EncodedStringWithOptions:0];
     return base64String;
-}
-
-// Private
-- (void)setPlatformInfo {
-    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"17.0.0" };
-    [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
-}
-
-- (void)insertRNNotificationEvent:(nonnull NSDictionary*)notificationEvent {
-    [SHKShake performSelector:sel_getUid(@"_reportNotification:".UTF8String) withObject:notificationEvent];
-}
-
-- (void)insertRNNetworkRequest:(nonnull NSDictionary*)networkRequest{
-    [SHKShake performSelector:sel_getUid(@"_reportRequestCompleted:".UTF8String) withObject:networkRequest];
 }
 @end
