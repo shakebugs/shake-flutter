@@ -124,7 +124,7 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
 - (void)start:(FlutterMethodCall*) call result:(FlutterResult)result {
     NSString *apiKey = call.arguments[@"apiKey"];
 
-    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"17.0.0" };
+    NSDictionary *shakeInfo = @{ @"platform": @"Flutter", @"sdkVersion": @"18.0.0" };
     [SHKShake performSelector:sel_getUid(@"_setPlatformAndSDKVersion:".UTF8String) withObject:shakeInfo];
 
     [SHKShake startWithApiKey:apiKey];

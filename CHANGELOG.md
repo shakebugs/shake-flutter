@@ -1,3 +1,7 @@
+# 18.0.0
+
+- Introduced session tracking
+
 # 17.2.3
 
 - Swift Package manager support

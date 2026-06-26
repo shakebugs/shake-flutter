@@ -1,12 +1,12 @@
 {
   "pins" : [
     {
-      "identity" : "shake-ios",
+      "identity" : "shake-ios-staging",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/shakebugs/shake-ios.git",
+      "location" : "git@github.com:shakebugs/shake-ios-staging.git",
       "state" : {
-        "revision" : "f53b127d5ef517194a48b287fa9dfc4e679e9e12",
-        "version" : "17.2.4"
+        "revision" : "6973d58b25a720b8f3eb2e60e5816e8dfa2b5f9a",
+        "version" : "18.0.0-rc.1647"
       }
     }
   ],
