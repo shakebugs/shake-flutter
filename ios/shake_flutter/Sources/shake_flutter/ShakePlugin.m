@@ -48,6 +48,16 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
         [self setEnableBlackBox:call result:result];
     } else if([@"isEnableBlackBox" isEqualToString:call.method]) {
         [self isEnableBlackBox:call result:result];
+    } else if([@"setCrashReportingEnabled" isEqualToString:call.method]) {
+        [self setCrashReportingEnabled:call result:result];
+    } else if([@"isCrashReportingEnabled" isEqualToString:call.method]) {
+        [self isCrashReportingEnabled:call result:result];
+    } else if([@"setAskForCrashDescription" isEqualToString:call.method]) {
+        [self setAskForCrashDescription:call result:result];
+    } else if([@"isAskForCrashDescription" isEqualToString:call.method]) {
+        [self isAskForCrashDescription:call result:result];
+    } else if([@"handleExternalCrash" isEqualToString:call.method]) {
+        [self handleExternalCrash:call result:result];
     } else if([@"setShowFloatingReportButton" isEqualToString:call.method]) {
         [self setShowFloatingReportButton:call result:result];
     } else if([@"isShowFloatingReportButton" isEqualToString:call.method]) {
@@ -231,6 +241,58 @@ static NSObject<FlutterPluginRegistrar> *pluginRegistrar = nil;
     NSNumber *isEnableBlackBoxObj = [NSNumber numberWithBool:isEnableBlackBox];
     
     result(isEnableBlackBoxObj);
+}
+
+- (void)setCrashReportingEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL crashReportingEnabled = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isCrashReportingEnabled = crashReportingEnabled;
+
+    result(nil);
+}
+
+- (void)isCrashReportingEnabled:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isCrashReportingEnabled = SHKShake.configuration.isCrashReportingEnabled;
+    NSNumber *isCrashReportingEnabledObj = [NSNumber numberWithBool:isCrashReportingEnabled];
+
+    result(isCrashReportingEnabledObj);
+}
+
+- (void)setAskForCrashDescription:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL askForCrashDescription = [call.arguments[@"enabled"] boolValue];
+    SHKShake.configuration.isAskForCrashDescriptionEnabled = askForCrashDescription;
+
+    result(nil);
+}
+
+- (void)isAskForCrashDescription:(FlutterMethodCall*) call result:(FlutterResult)result {
+    BOOL isAskForCrashDescription = SHKShake.configuration.isAskForCrashDescriptionEnabled;
+    NSNumber *isAskForCrashDescriptionObj = [NSNumber numberWithBool:isAskForCrashDescription];
+
+    result(isAskForCrashDescriptionObj);
+}
+
+- (void)handleExternalCrash:(FlutterMethodCall*) call result:(FlutterResult)result {
+    NSString *type = [self stringOrNil:call.arguments[@"type"]];
+
+    if (type == nil) {
+        result(nil);
+        return;
+    }
+
+    NSArray *frames = call.arguments[@"frames"];
+
+    [SHKShake handleExternalCrashOfType:type
+                                message:[self stringOrNil:call.arguments[@"message"]]
+                                 frames:[frames isKindOfClass:NSArray.class] ? frames : @[]
+                          rawStackTrace:[self stringOrNil:call.arguments[@"rawStackTrace"]]
+                                  fatal:[call.arguments[@"fatal"] boolValue]
+                              clusterID:[self stringOrNil:call.arguments[@"clusterId"]]];
+
+    result(nil);
+}
+
+- (nullable NSString *)stringOrNil:(id)value {
+    return [value isKindOfClass:NSString.class] ? value : nil;
 }
 
 - (void)setShowFloatingReportButton:(FlutterMethodCall*) call result:(FlutterResult)result {

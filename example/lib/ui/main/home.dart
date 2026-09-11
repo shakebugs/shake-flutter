@@ -54,6 +54,7 @@ class _HomeState extends State<Home> {
   bool? sensitiveDataEnabled = false;
   bool? screenshotIncluded = false;
   int? shakingThreshold = 400;
+  bool throwOnBuild = false;
 
   File? file1;
   File? file2;
@@ -203,6 +204,29 @@ class _HomeState extends State<Home> {
 
   void _addCustomLog() {
     Shake.log(LogLevel.info, 'Custom log.');
+  }
+
+  /// Reported automatically as a fatal crash, the widget tree could not build.
+  void _onWidgetErrorPress() {
+    setState(() {
+      throwOnBuild = true;
+    });
+  }
+
+  /// Reported automatically as a fatal crash, nothing awaits this error.
+  void _onAsyncErrorPress() {
+    Future(() {
+      throw StateError('Async error from the Flutter example app.');
+    });
+  }
+
+  /// Reported manually as a non fatal issue.
+  void _onHandledErrorPress() {
+    try {
+      throw Exception('Caught error from the Flutter example app.');
+    } catch (error, stackTrace) {
+      Shake.handleError(error, stackTrace, clusterId: 'flutter_example');
+    }
   }
 
   void _addMetadata() {
@@ -471,6 +495,19 @@ class _HomeState extends State<Home> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Header('Crash reporting'),
+                        Button('Widget error (fatal)', _onWidgetErrorPress),
+                        Button('Async error (fatal)', _onAsyncErrorPress),
+                        Button('Handled error (non fatal)', _onHandledErrorPress),
+                        if (throwOnBuild) _CrashingWidget(),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Header('Invoking'),
                         Toggle('Shaking', shakeInvokingEnabled!,
                             _onShakeInvokingToggle),
@@ -602,5 +639,13 @@ class _HomeState extends State<Home> {
             ),
           )),
     );
+  }
+}
+
+/// Fails to build, so Flutter reports it through FlutterError.onError.
+class _CrashingWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    throw StateError('Widget error from the Flutter example app.');
   }
 }

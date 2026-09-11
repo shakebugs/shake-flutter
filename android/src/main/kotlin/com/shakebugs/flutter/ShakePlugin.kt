@@ -15,6 +15,8 @@ import com.shakebugs.shake.chat.UnreadChatMessagesListener
 import com.shakebugs.shake.form.ShakeForm
 import com.shakebugs.shake.internal.domain.models.NetworkRequest
 import com.shakebugs.shake.internal.domain.models.NotificationEvent
+import com.shakebugs.shake.report.ExternalCrash
+import com.shakebugs.shake.report.ExternalCrashFrame
 import com.shakebugs.shake.report.ShakeDismissListener
 import com.shakebugs.shake.report.ShakeOpenListener
 import com.shakebugs.shake.report.ShakeSubmitListener
@@ -81,6 +83,11 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "isEnableBlackBox" -> isEnableBlackBox(call, result)
             "setEnableActivityHistory" -> setEnableActivityHistory(call, result)
             "isEnableActivityHistory" -> isEnableActivityHistory(call, result)
+            "setCrashReportingEnabled" -> setCrashReportingEnabled(call, result)
+            "isCrashReportingEnabled" -> isCrashReportingEnabled(call, result)
+            "setAskForCrashDescription" -> setAskForCrashDescription(call, result)
+            "isAskForCrashDescription" -> isAskForCrashDescription(call, result)
+            "handleExternalCrash" -> handleExternalCrash(call, result)
             "setShowFloatingReportButton" -> setShowFloatingReportButton(call, result)
             "isShowFloatingReportButton" -> isShowFloatingReportButton(call, result)
             "setInvokeShakeOnShakeDeviceEvent" -> setInvokeShakeOnShakeDeviceEvent(call, result)
@@ -242,6 +249,61 @@ class ShakePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         val enabled: Boolean = Shake.getReportConfiguration().isEnableActivityHistory
 
         result.success(enabled)
+    }
+
+    private fun setCrashReportingEnabled(call: MethodCall, result: Result) {
+        val enabled: Boolean? = call.argument("enabled")
+        enabled?.let { Shake.setCrashReportingEnabled(it) }
+
+        result.success(null)
+    }
+
+    private fun isCrashReportingEnabled(call: MethodCall, result: Result) {
+        val enabled: Boolean = Shake.isCrashReportingEnabled()
+
+        result.success(enabled)
+    }
+
+    private fun setAskForCrashDescription(call: MethodCall, result: Result) {
+        val enabled: Boolean? = call.argument("enabled")
+        enabled?.let { Shake.setAskForCrashDescription(it) }
+
+        result.success(null)
+    }
+
+    private fun isAskForCrashDescription(call: MethodCall, result: Result) {
+        val enabled: Boolean = Shake.isAskForCrashDescription()
+
+        result.success(enabled)
+    }
+
+    private fun handleExternalCrash(call: MethodCall, result: Result) {
+        val type: String? = call.argument("type")
+        val message: String? = call.argument("message")
+        val frames: List<Map<String, Any?>>? = call.argument("frames")
+        val rawStackTrace: String? = call.argument("rawStackTrace")
+        val fatal: Boolean = call.argument("fatal") ?: false
+        val clusterId: String? = call.argument("clusterId")
+
+        if (type == null) {
+            result.success(null)
+            return
+        }
+
+        val crashFrames: List<ExternalCrashFrame> = frames.orEmpty().map { frame ->
+            ExternalCrashFrame(
+                frame["file"] as? String,
+                frame["line"] as? String,
+                frame["method"] as? String,
+                frame["is_application"] as? Boolean ?: false
+            )
+        }
+
+        Shake.handleExternalCrash(
+            ExternalCrash(type, message, crashFrames, rawStackTrace, fatal, clusterId)
+        )
+
+        result.success(null)
     }
 
     private fun setShowFloatingReportButton(call: MethodCall, result: Result) {

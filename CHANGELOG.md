@@ -1,5 +1,6 @@
 # 18.0.0
 
+- Introduced crash reporting
 - Introduced session tracking
 
 # 17.2.3

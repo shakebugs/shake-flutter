@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:shake_flutter/enums/log_level.dart';
 import 'package:shake_flutter/enums/shake_screen.dart';
 import 'package:shake_flutter/helpers/configuration.dart';
+import 'package:shake_flutter/helpers/crash_reporter.dart';
 import 'package:shake_flutter/helpers/network_tracker.dart';
 import 'package:shake_flutter/helpers/notifications_tracker.dart';
 import 'package:shake_flutter/models/chat_notification.dart';
@@ -24,6 +25,7 @@ class Shake {
   static NotificationsTracker _notificationsTracker = NotificationsTracker();
   static NetworkTracker _networkTracker = NetworkTracker();
   static Mapper _mapper = Mapper();
+  static CrashReporter _crashReporter = CrashReporter();
 
   /// Initializes Shake.
   ///
@@ -31,6 +33,7 @@ class Shake {
   /// Shake won't work if method is not called.
   static Future<void> start(String apiKey) async {
     _channel.setMethodCallHandler(_channelMethodHandler);
+    _crashReporter.attach(_handleExternalCrash);
     await _channel.invokeMethod('start', {
       'apiKey': apiKey,
     });
@@ -113,6 +116,46 @@ class Shake {
     await _channel.invokeMethod('setEnableActivityHistory', {
       'enabled': enabled,
     });
+  }
+
+  /// Sets if crash reporting is enabled.
+  ///
+  /// Covers both crashes of the app and uncaught Dart errors.
+  static Future<void> setCrashReportingEnabled(bool enabled) async {
+    await _channel.invokeMethod('setCrashReportingEnabled', {
+      'enabled': enabled,
+    });
+  }
+
+  /// Checks if crash reporting is enabled.
+  static Future<bool?> isCrashReportingEnabled() async {
+    return await _channel.invokeMethod('isCrashReportingEnabled');
+  }
+
+  /// Sets if users are asked to describe what they were doing when the app crashed.
+  static Future<void> setAskForCrashDescription(bool enabled) async {
+    await _channel.invokeMethod('setAskForCrashDescription', {
+      'enabled': enabled,
+    });
+  }
+
+  /// Checks if users are asked to describe what they were doing when the app crashed.
+  static Future<bool?> isAskForCrashDescription() async {
+    return await _channel.invokeMethod('isAskForCrashDescription');
+  }
+
+  /// Reports a caught error to the crash reporter as a non fatal issue.
+  ///
+  /// Uncaught Dart errors are reported automatically as fatal ones.
+  /// Cluster id affects dashboard grouping.
+  static Future<void> handleError(
+    Object error,
+    StackTrace? stackTrace, {
+    String? clusterId,
+  }) async {
+    await _handleExternalCrash(
+      _crashReporter.buildCrash(error, stackTrace, false, clusterId),
+    );
   }
 
   /// Checks if activity history events are tracked.
@@ -424,6 +467,11 @@ class Shake {
     await _channel.invokeMethod('setTags', {
       'tags': tags,
     });
+  }
+
+  /// Sends a Dart crash to the native crash reporter.
+  static Future<void> _handleExternalCrash(Map<String, dynamic> crash) async {
+    await _channel.invokeMethod('handleExternalCrash', crash);
   }
 
   /// Handles method calls from native to Flutter
