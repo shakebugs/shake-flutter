@@ -6,8 +6,8 @@ let url: String = ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_URL"]!
 let packageName: String = ProcessInfo.processInfo.environment["IOS_SHAKE_SPM_PACKAGE"]!
 
 let shakeDependency: Package.Dependency = url.contains("staging")
-    ? .package(url: url, exact: "17.2.4-rc.1637")
-    : .package(url: url, .upToNextMinor(from: "17.2.0"))
+    ? .package(url: url, exact: "18.0.0-rc.1647")
+    : .package(url: url, .upToNextMinor(from: "18.0.0"))
 
 let package = Package(
     name: "shake_flutter",
